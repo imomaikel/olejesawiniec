@@ -1,8 +1,8 @@
+import ShoppingCart from '@/components/ShoppingCart';
 import { Epilogue } from 'next/font/google';
 import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
 import './globals.css';
-import ShoppingCart from '@/components/ShoppingCart';
 
 const epilogue = Epilogue({ subsets: ['latin'] });
 

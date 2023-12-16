@@ -1,7 +1,7 @@
 'use client';
+import { Button } from '../../../components/ui/button';
 import { slideIn, zoomOut } from '@/utils/motion';
 import { motion } from 'framer-motion';
-import { Button } from './ui/button';
 
 const Hero = () => {
 	return (
@@ -10,6 +10,7 @@ const Hero = () => {
 				variants={zoomOut(0, 1)}
 				initial='hidden'
 				whileInView='show'
+				viewport={{ once: true }}
 				className='w-full flex items-center justify-center flex-col max-w-2xl z-10'
 			>
 				<div className='text-center'>
