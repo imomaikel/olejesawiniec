@@ -2,6 +2,7 @@ import MobileNavbar from '@/components/MobileNavbar';
 import Navbar from '@/components/Navbar';
 import Hero from './_components/Hero';
 import ProductPhotos from './_components/ProductPhotos';
+import ProductsPreview from './_components/ProductsPreview';
 
 export default function Home() {
 	return (
@@ -16,6 +17,9 @@ export default function Home() {
 			</section>
 			<section>
 				<ProductPhotos />
+			</section>
+			<section>
+				<ProductsPreview />
 			</section>
 
 			<MobileNavbar />
