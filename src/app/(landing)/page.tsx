@@ -2,6 +2,7 @@ import ProductsPreview from './_components/ProductsPreview';
 import ProductPhotos from './_components/ProductPhotos';
 import MobileNavbar from '@/components/MobileNavbar';
 import Newsletter from './_components/Newsletter';
+import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import About from './_components/About';
 import Quote from './_components/Quote';
@@ -41,6 +42,10 @@ export default function Home() {
 					<Newsletter />
 				</section>
 			</main>
+
+			<footer>
+				<Footer />
+			</footer>
 
 			<MobileNavbar />
 		</>

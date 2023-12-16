@@ -43,7 +43,7 @@ const Hero = () => {
 					</motion.div>
 				</div>
 			</motion.div>
-			<div className='absolute w-full h-full bg-black/20 top-0 z-0' />
+			<div className='absolute w-full h-full bg-black/20 top-0 z-0 backdrop-blur-sm' />
 			<div className='absolute w-[300px] h-[500px] md:ml-20 rotate md:rotate-45 bg-gradient-to-r from-red-600 to-green-500 blur-[200px] opacity-50 md:opacity-70' />
 		</div>
 	);
