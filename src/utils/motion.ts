@@ -30,11 +30,22 @@ export const slideIn = (
 	direction: 'top' | 'right' | 'bottom' | 'left',
 	type: TTransition,
 	delay: number,
-	duration: number
+	duration: number,
+	value?: number
 ) => ({
 	hidden: {
-		x: direction === 'right' ? '100%' : direction === 'left' ? '-100%' : 0,
-		y: direction === 'top' ? '100%' : direction === 'bottom' ? '-100%' : 0,
+		x:
+			direction === 'right'
+				? `${value ?? 100}%`
+				: direction === 'left'
+				? `-${value ?? 100}%`
+				: 0,
+		y:
+			direction === 'top'
+				? `${value ?? 100}%`
+				: direction === 'bottom'
+				? `-${value ?? 100}%`
+				: 0,
 	},
 	show: {
 		x: 0,

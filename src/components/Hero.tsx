@@ -1,11 +1,11 @@
 'use client';
-import { container, slideIn, zoomOut } from '@/utils/motion';
+import { slideIn, zoomOut } from '@/utils/motion';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 
 const Hero = () => {
 	return (
-		<div className='bg-hero bg-no-repeat bg-cover bg-center flex items-center justify-center py-96 px-8relative'>
+		<div className='bg-hero bg-no-repeat bg-cover bg-center flex items-center justify-center pt-36 px-9 pb-24 md:py-96 md:px-8 relative'>
 			<motion.div
 				variants={zoomOut(0, 1)}
 				initial='hidden'
@@ -22,8 +22,8 @@ const Hero = () => {
 						wspierają kondycję mózgu, skóry i układu krążenia.
 					</p>
 				</div>
-				<div className='md:space-x-6 translate-y-14 mt-2 flex flex-col md:flex-row md:space-y-0 space-y-6'>
-					<motion.div variants={slideIn('left', 'tween', 0, 1)}>
+				<div className='md:space-x-6 translate-y-14 mt-2 flex items-center flex-col md:flex-row md:space-y-0 space-y-6'>
+					<motion.div variants={slideIn('left', 'tween', 0, 1, 50)}>
 						<Button
 							className='rounded-full dark bg-black text-[16px] hover:bg-primary transition-all shadow-md shadow-black/90 hover:shadow-primary/90'
 							size='2xl'
@@ -32,7 +32,7 @@ const Hero = () => {
 							Zobacz Produkty
 						</Button>
 					</motion.div>
-					<motion.div variants={slideIn('right', 'tween', 0, 1)}>
+					<motion.div variants={slideIn('right', 'tween', 0, 1, 50)}>
 						<Button
 							className='uppercase rounded-full text-[16px] hover:bg-black/90 transition-all shadow-md shadow-primary hover:shadow-black/90'
 							size='2xl'
@@ -42,7 +42,7 @@ const Hero = () => {
 					</motion.div>
 				</div>
 			</motion.div>
-			<div className='absolute w-full h-full bg-black/50 z-0' />
+			<div className='absolute w-full h-full bg-black/20 top-0 z-0' />
 			<div className='absolute w-[300px] h-[500px] md:ml-20 rotate md:rotate-45 bg-gradient-to-r from-red-600 to-green-500 blur-[200px] opacity-50 md:opacity-70' />
 		</div>
 	);
