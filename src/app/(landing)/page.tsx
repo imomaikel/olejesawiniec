@@ -1,6 +1,7 @@
 import ProductsPreview from './_components/ProductsPreview';
 import ProductPhotos from './_components/ProductPhotos';
 import MobileNavbar from '@/components/MobileNavbar';
+import Newsletter from './_components/Newsletter';
 import Navbar from '@/components/Navbar';
 import About from './_components/About';
 import Quote from './_components/Quote';
@@ -34,6 +35,10 @@ export default function Home() {
 
 				<section>
 					<Quote />
+				</section>
+
+				<section>
+					<Newsletter />
 				</section>
 			</main>
 
