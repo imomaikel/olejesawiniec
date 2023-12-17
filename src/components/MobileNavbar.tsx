@@ -31,7 +31,10 @@ const MobileNavbar = () => {
 				<div>
 					<div
 						className='flex my-6 items-center rounded-full border py-2 px-6 tracking-wide font-medium cursor-pointer transition-colors hover:border-primary justify-between'
-						onClick={onCartOpen}
+						onClick={() => {
+							onOpenChange();
+							onCartOpen();
+						}}
 						role='button'
 					>
 						<div className='flex'>

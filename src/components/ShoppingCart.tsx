@@ -23,7 +23,7 @@ const ShoppingCart = () => {
 				<SheetHeader>
 					<SheetTitle>Koszyk</SheetTitle>
 					<SheetDescription>
-						Produkty które zostały dodane do koszyka
+						Produkty, które zostały dodane do koszyka
 					</SheetDescription>
 				</SheetHeader>
 			</SheetContent>

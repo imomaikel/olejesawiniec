@@ -1,8 +1,9 @@
 'use client';
 import { motion, useAnimationControls } from 'framer-motion';
-import Image from 'next/image';
-import { Button } from './ui/button';
+import { formatPrice } from '@/lib/utils';
 import { slideIn } from '@/utils/motion';
+import { Button } from './ui/button';
+import Image from 'next/image';
 import Link from 'next/link';
 
 type TProduct = {
@@ -51,8 +52,10 @@ const Product = ({ id, description, image, label, price }: TProduct) => {
 						</div>
 					</div>
 				</div>
-				<div className='p-2 text-center'>
+				<div className='py-2 px-4 text-center flex justify-between'>
 					<span className='font-medium'>{label}</span>
+					<div className='border flex flex-1 h-[1px] my-auto mx-4' />
+					<span className='text-primary font-bold'>{formatPrice(price)}</span>
 				</div>
 			</div>
 			<motion.div
@@ -69,7 +72,9 @@ const Product = ({ id, description, image, label, price }: TProduct) => {
 						<div className='h-[300px] w-[1px] bg-black/20' />
 						<div className='flex flex-col px-6 space-y-2'>
 							<div className='text-2xl font-medium'>{label}</div>
-							<div className='text-primary text-3xl font-bold'>{price} PLN</div>
+							<div className='text-primary text-3xl font-bold'>
+								{formatPrice(price)}
+							</div>
 							<ul>
 								{description.map((entry) => (
 									<li key={entry}>{entry}</li>

@@ -2,10 +2,8 @@
 import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { useMobileNav } from '@/hooks/use-mobile-nav';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import ContentWrapper from './ContentWrapper';
 import { NAV_LINKS } from '@/utils/constans';
 import { useCart } from '@/hooks/use-cart';
-import { slideIn } from '@/utils/motion';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import Image from 'next/image';
@@ -16,38 +14,63 @@ const Navbar = () => {
 	const { onOpen: onMobileNavOpen } = useMobileNav();
 
 	return (
-		<ContentWrapper className='absolute left-[50%] -translate-x-[50%] py-4 max-w-screen-2xl z-10'>
+		<div className='w-full absolute z-20'>
 			<motion.div
-				variants={slideIn('bottom', 'spring', 0, 1)}
-				initial='hidden'
-				whileInView='show'
-				className='flex md:justify-between items-center'
+				initial={{
+					y: -200,
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+					y: 0,
+				}}
+				transition={{
+					duration: 0.75,
+					type: 'tween',
+				}}
 				viewport={{ once: true }}
+				className='w-full min-h-fit max-w-7xl mx-auto pt-6 flex md:justify-between px-10 lg:px-20'
 			>
 				<div
-					className='flex md:hidden ml-4 mr-6'
+					className='flex md:hidden ml-4 mr-6 items-center'
 					role='button'
 					onClick={onMobileNavOpen}
 				>
-					<GiHamburgerMenu className='w-14 h-14 text-white cursor-pointer hover:text-primary transition-colors' />
+					<GiHamburgerMenu className='w-12 h-12 text-white cursor-pointer hover:text-primary transition-colors' />
 				</div>
-				<div className='cursor-pointer w-[271px] h-[107px] relative	mb-4'>
+				<div className='relative'>
 					<Link href='/'>
-						<Image src='/signature.png' fill alt='podpis' />
+						<Image
+							src='/signature.png'
+							className='object-contain object-center'
+							width={271}
+							height={107}
+							alt='podpis'
+						/>
 					</Link>
 				</div>
-				<div className='text-white hidden md:flex items-center'>
-					<ul className='flex space-x-2 lg:space-x-12'>
+				<div className='items-center text-white hidden md:flex'>
+					<ul className='flex space-x-5'>
 						{NAV_LINKS.map((entry) => (
-							<li key={entry.label}>
+							<motion.li
+								initial={{
+									x: -100,
+									opacity: 0,
+								}}
+								animate={{
+									x: 0,
+									opacity: 1,
+								}}
+								key={entry.label}
+							>
 								<Button variant='ghost' asChild>
 									<Link href={entry.path}>{entry.label}</Link>
 								</Button>
-							</li>
+							</motion.li>
 						))}
 					</ul>
 					<div
-						className='ml-6 flex items-center space-x-2 rounded-full border py-2 px-6 tracking-wide font-medium cursor-pointer transition-colors hover:border-primary'
+						className='ml-6 flex h-min items-center space-x-2 rounded-full border py-2 px-6 tracking-wide font-medium cursor-pointer transition-colors hover:border-primary'
 						onClick={onCartOpen}
 						role='button'
 					>
@@ -57,7 +80,7 @@ const Navbar = () => {
 					</div>
 				</div>
 			</motion.div>
-		</ContentWrapper>
+		</div>
 	);
 };
 

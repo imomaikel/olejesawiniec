@@ -1,6 +1,7 @@
 import ProductsPreview from './_components/ProductsPreview';
 import ProductPhotos from './_components/ProductPhotos';
 import MobileNavbar from '@/components/MobileNavbar';
+import ScrollButton from '@/components/ScrollButton';
 import Newsletter from './_components/Newsletter';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
@@ -48,6 +49,7 @@ export default function Home() {
 			</footer>
 
 			<MobileNavbar />
+			<ScrollButton />
 		</>
 	);
 }

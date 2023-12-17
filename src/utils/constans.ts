@@ -13,6 +13,39 @@ export const NAV_LINKS = [
 	},
 ];
 
+export const FOOTER_LINKS = [
+	{
+		header: 'Dla klienta',
+		options: [
+			{
+				label: 'Regulamin',
+				link: '#',
+			},
+			{
+				label: 'Polityka prywatności',
+				link: '#',
+			},
+			{
+				label: 'Oferta dla sklepów',
+				link: '#',
+			},
+		],
+	},
+	{
+		header: 'Kontakt',
+		options: [
+			{
+				label: '780 031 831',
+				link: 'tel:780031831',
+			},
+			{
+				label: 'sawiniec.olejarnia@gmail.com',
+				link: 'mailto:sawiniec.olejarnia@gmail.com',
+			},
+		],
+	},
+];
+
 export const TEMP_PRODUCTS = [
 	{
 		label: 'Olej rzepakowy',

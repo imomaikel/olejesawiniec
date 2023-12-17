@@ -17,7 +17,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang='pl' className='h-full'>
+		<html lang='pl' className='h-full scroll-smooth'>
 			<body className={cn('h-full relative', epilogue.className)}>
 				<main className='relative flex flex-col min-h-screen'>
 					<div className='flex-1 flex-grow overflow-hidden relative'>
