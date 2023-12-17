@@ -1,7 +1,7 @@
 export const NAV_LINKS = [
 	{
 		label: 'Sklep',
-		path: '#',
+		path: '/sklep',
 	},
 	{
 		label: 'Oleje',

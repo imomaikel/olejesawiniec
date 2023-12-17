@@ -54,11 +54,12 @@ const Hero = () => {
 					</motion.div>
 					<motion.div variants={slideIn('left', 'spring', 0, 1)}>
 						<Button
+							asChild
 							className='rounded-full dark bg-black text-[16px] hover:bg-primary transition-all shadow-md shadow-black/90 hover:shadow-primary/90'
 							size='2xl'
 							variant='secondary'
 						>
-							Zobacz Produkty
+							<Link href='/sklep'>Zobacz Produkty</Link>
 						</Button>
 					</motion.div>
 					<motion.div variants={slideIn('right', 'spring', 0, 1)}>
