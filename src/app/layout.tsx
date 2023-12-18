@@ -1,4 +1,5 @@
 import ShoppingCart from '@/components/ShoppingCart';
+import MobileNavbar from '@/components/MobileNavbar';
 import { Epilogue } from 'next/font/google';
 import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ export default function RootLayout({
 					</div>
 				</main>
 				<ShoppingCart />
+				<MobileNavbar />
 			</body>
 		</html>
 	);

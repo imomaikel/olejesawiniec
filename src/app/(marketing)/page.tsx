@@ -1,6 +1,5 @@
 import ProductsPreview from './_components/ProductsPreview';
 import ProductPhotos from './_components/ProductPhotos';
-import MobileNavbar from '@/components/MobileNavbar';
 import ScrollButton from '@/components/ScrollButton';
 import Newsletter from './_components/Newsletter';
 import Footer from '@/components/Footer';
@@ -48,7 +47,6 @@ export default function Home() {
 				<Footer />
 			</footer>
 
-			<MobileNavbar />
 			<ScrollButton />
 		</>
 	);

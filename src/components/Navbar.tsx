@@ -6,15 +6,21 @@ import { NAV_LINKS } from '@/utils/constans';
 import { useCart } from '@/hooks/use-cart';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const Navbar = () => {
+type TNavbar = {
+	className?: string;
+	textColor?: 'white' | 'black';
+	topPadding?: number;
+};
+const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 	const { onOpen: onCartOpen } = useCart();
 	const { onOpen: onMobileNavOpen } = useMobileNav();
 
 	return (
-		<div className='w-full absolute z-20'>
+		<div className={cn('w-full absolute z-20', className)}>
 			<motion.div
 				initial={{
 					y: -200,
@@ -29,14 +35,22 @@ const Navbar = () => {
 					type: 'tween',
 				}}
 				viewport={{ once: true }}
-				className='w-full min-h-fit max-w-7xl mx-auto pt-6 flex md:justify-between px-10 lg:px-20'
+				className={cn(
+					'w-full min-h-fit max-w-7xl mx-auto flex md:justify-between px-10 lg:px-20',
+					topPadding !== undefined ? `pt-${topPadding}` : 'pt-6'
+				)}
 			>
 				<div
 					className='flex md:hidden ml-4 mr-6 items-center'
 					role='button'
 					onClick={onMobileNavOpen}
 				>
-					<GiHamburgerMenu className='w-12 h-12 text-white cursor-pointer hover:text-primary transition-colors' />
+					<GiHamburgerMenu
+						className={cn(
+							'w-12 h-12 cursor-pointer hover:text-primary transition-colors',
+							textColor === 'black' ? 'text-black' : 'text-white'
+						)}
+					/>
 				</div>
 				<div className='relative'>
 					<Link href='/'>
@@ -49,7 +63,12 @@ const Navbar = () => {
 						/>
 					</Link>
 				</div>
-				<div className='items-center text-white hidden md:flex'>
+				<div
+					className={cn(
+						'items-center text-white hidden md:flex',
+						textColor === 'black' ? 'text-black' : 'text-white'
+					)}
+				>
 					<ul className='flex space-x-5'>
 						{NAV_LINKS.map((entry) => (
 							<motion.li

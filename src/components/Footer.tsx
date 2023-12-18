@@ -58,18 +58,20 @@ const Footer = () => {
 				</div>
 			</div>
 			<div className='px-8 py-2'>
-				<div className='text-sm'>
-					© 2023 Oleje Sawiniec. Wszelkie prawa zastrzeżone.
-				</div>
-				<div className='text-muted-foreground space-x-1 text-xs'>
-					<span>Strona wykonana przez</span>
-					<Link
-						href='https://github.com/imomaikel'
-						target='_blank'
-						className='underline'
-					>
-						imomaikel
-					</Link>
+				<div className='flex mx-auto items-start flex-col max-w-[1920px]'>
+					<div className='text-sm'>
+						© 2023 Oleje Sawiniec. Wszelkie prawa zastrzeżone.
+					</div>
+					<div className='text-muted-foreground space-x-1 text-xs'>
+						<span>Strona wykonana przez</span>
+						<Link
+							href='https://github.com/imomaikel'
+							target='_blank'
+							className='underline'
+						>
+							imomaikel
+						</Link>
+					</div>
 				</div>
 			</div>
 		</>
