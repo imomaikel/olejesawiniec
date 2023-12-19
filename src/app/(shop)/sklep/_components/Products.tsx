@@ -8,7 +8,7 @@ import React from 'react';
 const Products = () => {
 	return (
 		<div className='flex flex-col w-full space-y-8'>
-			<div className='flex items-center justify-between'>
+			<div className='flex items-center justify-between flex-col md:flex-row'>
 				<h1 className='text-4xl font-bold'>Nasze Produkty</h1>
 				<SortProducts />
 			</div>
@@ -18,7 +18,7 @@ const Products = () => {
 					...TEMP_PRODUCTS,
 					...TEMP_PRODUCTS,
 					...TEMP_PRODUCTS.slice(2),
-				].map((product, index) => (
+				].map((product) => (
 					<motion.div
 						initial={{
 							x: 100,

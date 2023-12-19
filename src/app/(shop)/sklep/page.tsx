@@ -1,13 +1,10 @@
 'use client';
+import ProductControls from './_components/ProductControls';
 import { Separator } from '@/components/ui/separator';
 import ScrollButton from '@/components/ScrollButton';
-import Categories from './_components/Categories';
 import Products from './_components/Products';
-import Search from './_components/Search';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
-import Tags from './_components/Tags';
-import { Button } from '@/components/ui/button';
 
 const ShopPage = () => {
 	return (
@@ -19,13 +16,7 @@ const ShopPage = () => {
 
 				<div className='flex space-x-0 md:space-x-12 mb-24'>
 					<div className='hidden md:flex flex-col space-y-6'>
-						<Search />
-						<Categories />
-						<Tags />
-						<Separator />
-						<Button variant='ghost' className='w-full'>
-							Wyczyść filtry
-						</Button>
+						<ProductControls />
 					</div>
 					<div className='flex w-full'>
 						<Products />

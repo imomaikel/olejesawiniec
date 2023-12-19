@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 
 const Tags = () => {
 	return (
-		<div className='w-[300px]'>
+		<div className='w-full md:w-[300px]'>
 			<div className='flex items-center relative'>
 				<div>
 					<h3 className='whitespace-nowrap font-medium'>Właściwości</h3>

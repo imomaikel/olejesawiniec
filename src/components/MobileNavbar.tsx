@@ -7,16 +7,20 @@ import {
 } from '@/components/ui/sheet';
 import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { useMobileNav } from '@/hooks/use-mobile-nav';
+import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
 import { useEffect, useState } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import ProductControls from '@/app/(shop)/sklep/_components/ProductControls';
+import { Separator } from './ui/separator';
 
 const MobileNavbar = () => {
 	const [isMounted, setIsMounted] = useState(false);
 	const { isOpen, onOpenChange } = useMobileNav();
 	const { onOpen: onCartOpen } = useCart();
+	const pathname = usePathname();
 
 	useEffect(() => setIsMounted(true), []);
 
@@ -24,7 +28,7 @@ const MobileNavbar = () => {
 
 	return (
 		<Sheet onOpenChange={onOpenChange} open={isOpen}>
-			<SheetContent side='left'>
+			<SheetContent side='left' className='w-[300px] overflow-y-auto'>
 				<SheetHeader>
 					<SheetTitle>Menu</SheetTitle>
 				</SheetHeader>
@@ -43,6 +47,9 @@ const MobileNavbar = () => {
 						</div>
 						<HiOutlineShoppingBag className='h-6 w-6' />
 					</div>
+
+					<Separator className='my-4' />
+
 					<ul className='space-y-3'>
 						{NAV_LINKS.map((entry) => (
 							<li key={entry.label}>
@@ -52,6 +59,12 @@ const MobileNavbar = () => {
 							</li>
 						))}
 					</ul>
+
+					<Separator className='my-4' />
+
+					<div className='flex flex-col space-y-6'>
+						<ProductControls />
+					</div>
 				</div>
 			</SheetContent>
 		</Sheet>
