@@ -2,12 +2,18 @@
 import { FaArrowAltCircleUp } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 
-const ScrollButton = () => {
+type TScrollButton = {
+	trackElementIdOrHeight: number | string;
+};
+const ScrollButton = ({ trackElementIdOrHeight }: TScrollButton) => {
 	const [showButton, setShowButton] = useState(false);
 
 	useEffect(() => {
 		const checkScroll = () => {
-			const firstSectionPos = document.getElementById('zdjecia')?.offsetHeight;
+			const firstSectionPos =
+				typeof trackElementIdOrHeight === 'string'
+					? document.getElementById(trackElementIdOrHeight)?.offsetHeight
+					: trackElementIdOrHeight;
 			const currentScrollPos = document.documentElement.scrollTop;
 
 			if (firstSectionPos && currentScrollPos > firstSectionPos) {

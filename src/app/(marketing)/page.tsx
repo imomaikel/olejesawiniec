@@ -52,7 +52,7 @@ export default function Home() {
 				<Footer />
 			</footer>
 
-			<ScrollButton />
+			<ScrollButton trackElementIdOrHeight='zdjecia' />
 		</>
 	);
 }

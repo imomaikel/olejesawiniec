@@ -1,8 +1,8 @@
 'use client';
 import { motion, useAnimationControls } from 'framer-motion';
+import { Button } from '../../../components/ui/button';
 import { formatPrice } from '@/lib/utils';
 import { slideIn } from '@/utils/motion';
-import { Button } from './ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 

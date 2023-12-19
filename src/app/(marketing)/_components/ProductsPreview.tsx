@@ -2,10 +2,10 @@
 import ContentWrapper from '@/components/ContentWrapper';
 import { TEMP_PRODUCTS } from '@/utils/constans';
 import { Button } from '@/components/ui/button';
-import Product from '@/components/Product';
+import { useEffect, useState } from 'react';
 import SectionInfo from './SectionInfo';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import Product from './Product';
 
 const ProductsPreview = () => {
 	const [isMounted, setIsMounted] = useState(false);
