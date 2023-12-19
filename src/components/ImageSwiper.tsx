@@ -11,6 +11,7 @@ import Link from 'next/link';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { Dialog, DialogClose, DialogContent, DialogFooter } from './ui/dialog';
 
 type TImageSwiper = {
 	urls: string[];
@@ -18,6 +19,7 @@ type TImageSwiper = {
 	className?: string;
 	caption?: string;
 	captionLink?: string;
+	fullSizeOnClick?: boolean;
 };
 const ImageSwiper = ({
 	urls,
@@ -25,14 +27,22 @@ const ImageSwiper = ({
 	className,
 	caption,
 	captionLink,
+	fullSizeOnClick,
 }: TImageSwiper) => {
 	const [swiper, setSwiper] = useState<null | TSwiper>(null);
+	const [isImage, setIsImage] = useState(false);
+	const [image, setImage] = useState('');
 	const [controls, setControls] = useState({
 		isFirst: true,
 		isLast: urls.length >= 2 ? false : true,
 	});
 
 	const imageCount = urls.length;
+
+	const showFullSize = (imgUrl: string) => {
+		setImage(imgUrl);
+		setIsImage(true);
+	};
 
 	useEffect(() => {
 		swiper?.on('slideChange', ({ activeIndex }) => {
@@ -45,64 +55,88 @@ const ImageSwiper = ({
 	}, [swiper, imageCount]);
 
 	return (
-		<div className={cn('h-96 w-full relative', className)}>
-			<div
-				className={cn(
-					'absolute z-20 top-1/2 -translate-y-1/2 -left-4 cursor-pointer hover:text-primary transition-colors block',
-					controls.isFirst && 'hidden'
-				)}
-				role='button'
-				onClick={() => swiper?.slidePrev()}
-			>
-				<FaArrowAltCircleLeft className='h-8 w-8' />
-				<div className='h-7 w-7 absolute left-[2px] top-[2px] rounded-full bg-white -z-10' />
-			</div>
-			<div
-				className={cn(
-					'absolute z-20 top-1/2 -translate-y-1/2 -right-4 cursor-pointer hover:text-primary transition-colors block',
-					controls.isLast && 'hidden'
-				)}
-				role='button'
-				onClick={() => swiper?.slideNext()}
-			>
-				<FaArrowCircleRight className='h-8 w-8' />
-				<div className='h-7 w-7 absolute left-[2px] top-[2px] rounded-full bg-white -z-10' />
-			</div>
-			<Swiper
-				modules={[Pagination]}
-				pagination={{
-					type: 'progressbar',
-					renderProgressbar: (progressbarFillClass) => {
-						return `<span class="${progressbarFillClass} imageSwipeBar"></span>`;
-					},
-				}}
-				onSwiper={setSwiper}
-				className='h-full w-full bg-gray-200 rounded-lg select-none shadow-2xl cursor-grab'
-			>
-				{urls.map((url) => (
-					<SwiperSlide key={url} className='w-full relative h-full'>
-						<Image
-							loading='eager'
-							alt={alt}
-							src={url}
-							className='w-full h-full object-cover object-center rounded-lg'
-							fill
-						/>
-					</SwiperSlide>
-				))}
-			</Swiper>
-			{caption && (
-				<div className='text-muted-foreground mt-2 text-center'>
-					{captionLink ? (
-						<Link href={captionLink} className='hover:underline'>
-							{caption}
-						</Link>
-					) : (
-						caption
+		<>
+			<div className={cn('h-96 w-full relative', className)}>
+				<div
+					className={cn(
+						'absolute z-20 top-1/2 -translate-y-1/2 -left-4 cursor-pointer hover:text-primary transition-colors block',
+						controls.isFirst && 'hidden'
 					)}
+					role='button'
+					onClick={() => swiper?.slidePrev()}
+				>
+					<FaArrowAltCircleLeft className='h-8 w-8' />
+					<div className='h-7 w-7 absolute left-[2px] top-[2px] rounded-full bg-white -z-10' />
 				</div>
-			)}
-		</div>
+				<div
+					className={cn(
+						'absolute z-20 top-1/2 -translate-y-1/2 -right-4 cursor-pointer hover:text-primary transition-colors block',
+						controls.isLast && 'hidden'
+					)}
+					role='button'
+					onClick={() => swiper?.slideNext()}
+				>
+					<FaArrowCircleRight className='h-8 w-8' />
+					<div className='h-7 w-7 absolute left-[2px] top-[2px] rounded-full bg-white -z-10' />
+				</div>
+				<Swiper
+					modules={[Pagination]}
+					pagination={{
+						type: 'progressbar',
+						renderProgressbar: (progressbarFillClass) => {
+							return `<span class="${progressbarFillClass} imageSwipeBar"></span>`;
+						},
+					}}
+					onSwiper={setSwiper}
+					className={cn(
+						'h-full w-full bg-gray-200 rounded-lg select-none shadow-2xl',
+						fullSizeOnClick ? 'cursor-pointer' : 'cursor-grab'
+					)}
+				>
+					{urls.map((url) => (
+						<SwiperSlide
+							key={url}
+							className='w-full relative h-full'
+							onClick={() => (fullSizeOnClick ? showFullSize(url) : undefined)}
+						>
+							<Image
+								loading='eager'
+								alt={alt}
+								src={url}
+								className='w-full h-full object-cover object-center rounded-lg'
+								fill
+							/>
+						</SwiperSlide>
+					))}
+				</Swiper>
+				{caption && (
+					<div className='text-muted-foreground mt-2 text-center'>
+						{captionLink ? (
+							<Link href={captionLink} className='hover:underline'>
+								{caption}
+							</Link>
+						) : (
+							caption
+						)}
+					</div>
+				)}
+			</div>
+			<Dialog open={isImage} onOpenChange={setIsImage}>
+				<DialogContent className=''>
+					<div className='pt-6'>
+						<Image
+							src={image}
+							alt='produkt'
+							width={0}
+							height={0}
+							sizes='100vw'
+							loading='eager'
+							className='w-full h-full'
+						/>
+					</div>
+				</DialogContent>
+			</Dialog>
+		</>
 	);
 };
 

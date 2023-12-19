@@ -2,6 +2,7 @@
 import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { useMobileNav } from '@/hooks/use-mobile-nav';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
 import { useCart } from '@/hooks/use-cart';
 import { motion } from 'framer-motion';
@@ -16,8 +17,11 @@ type TNavbar = {
 	topPadding?: number;
 };
 const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
-	const { onOpen: onCartOpen } = useCart();
 	const { onOpen: onMobileNavOpen } = useMobileNav();
+	const { onOpen: onCartOpen } = useCart();
+	const pathname = usePathname();
+
+	const signatureImageUrl = pathname.startsWith('/sklep/') ? '/sklep' : '/';
 
 	return (
 		<div className={cn('w-full absolute z-20', className)}>
@@ -53,7 +57,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 					/>
 				</div>
 				<div className='relative'>
-					<Link href='/'>
+					<Link href={signatureImageUrl}>
 						<Image
 							src={
 								textColor === 'black' ? '/signatureBlack.png' : '/signature.png'

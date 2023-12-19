@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 const Footer = () => {
 	return (
-		<div className='flex flex-col'>
+		<div className='flex flex-col' id='footer'>
 			<div className='bg-gradient-to-l from-[#596340] to-[#2D331F] text-white px-16 md:px-24 py-12'>
 				<div className='flex flex-col md:flex-row justify-center md:justify-around w-full items-center max-w-[1920px] mx-auto'>
 					<div className='cursor-pointer relative	mb-4 lg:block hidden'>
