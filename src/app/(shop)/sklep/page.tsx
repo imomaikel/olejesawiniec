@@ -10,7 +10,7 @@ const ShopPage = () => {
 	return (
 		<div className='flex flex-col min-h-screen border justify-between'>
 			<div className='w-full max-w-screen-2xl mx-auto flex flex-col relative px-8 md:px-12'>
-				<Navbar className='relative' textColor='black' topPadding={0} />
+				<Navbar className='relative mt-4' textColor='black' topPadding={0} />
 
 				<Separator className='my-4' />
 

@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 
 const Tags = () => {
 	return (
-		<div className='w-full md:w-[300px]'>
+		<div className='w-full md:w-[300px] relative z-10'>
 			<div className='flex items-center relative'>
 				<div>
 					<h3 className='whitespace-nowrap font-medium'>Właściwości</h3>
@@ -29,6 +29,7 @@ const Tags = () => {
 					Na kości
 				</Badge>
 			</div>
+			<div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px] opacity-75' />
 		</div>
 	);
 };

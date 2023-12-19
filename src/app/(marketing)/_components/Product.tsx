@@ -61,7 +61,7 @@ const Product = ({ id, description, image, label, price }: TProduct) => {
 			</div>
 			<motion.div
 				variants={slideIn('top', 'spring', 0, 0.75)}
-				className='fixed left-0 top-0 z-20 w-screen h-screen'
+				className='fixed inset-0 z-20 w-screen h-screen'
 				initial='hidden'
 				animate={controls}
 			>

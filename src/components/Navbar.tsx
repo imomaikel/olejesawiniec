@@ -55,7 +55,9 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 				<div className='relative'>
 					<Link href='/'>
 						<Image
-							src='/signature.png'
+							src={
+								textColor === 'black' ? '/signatureBlack.png' : '/signature.png'
+							}
 							className='object-contain object-center'
 							width={271}
 							loading='eager'
