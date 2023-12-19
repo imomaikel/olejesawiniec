@@ -28,8 +28,8 @@ const ImageSwiper = ({
 }: TImageSwiper) => {
 	const [swiper, setSwiper] = useState<null | TSwiper>(null);
 	const [controls, setControls] = useState({
-		isStart: true,
-		isEnd: urls.length >= 2 ? false : true,
+		isFirst: true,
+		isLast: urls.length >= 2 ? false : true,
 	});
 
 	const imageCount = urls.length;
@@ -38,8 +38,8 @@ const ImageSwiper = ({
 		swiper?.on('slideChange', ({ activeIndex }) => {
 			const currentIndex = activeIndex + 1;
 			setControls({
-				isStart: currentIndex === 1,
-				isEnd: currentIndex === imageCount,
+				isFirst: currentIndex === 1,
+				isLast: currentIndex === imageCount,
 			});
 		});
 	}, [swiper, imageCount]);
@@ -49,7 +49,7 @@ const ImageSwiper = ({
 			<div
 				className={cn(
 					'absolute z-20 top-1/2 -translate-y-1/2 -left-4 cursor-pointer hover:text-primary transition-colors block',
-					controls.isStart && 'hidden'
+					controls.isFirst && 'hidden'
 				)}
 				role='button'
 				onClick={() => swiper?.slidePrev()}
@@ -60,7 +60,7 @@ const ImageSwiper = ({
 			<div
 				className={cn(
 					'absolute z-20 top-1/2 -translate-y-1/2 -right-4 cursor-pointer hover:text-primary transition-colors block',
-					controls.isEnd && 'hidden'
+					controls.isLast && 'hidden'
 				)}
 				role='button'
 				onClick={() => swiper?.slideNext()}
@@ -70,6 +70,12 @@ const ImageSwiper = ({
 			</div>
 			<Swiper
 				modules={[Pagination]}
+				pagination={{
+					type: 'progressbar',
+					renderProgressbar: (progressbarFillClass) => {
+						return `<span class="${progressbarFillClass} imageSwipeBar"></span>`;
+					},
+				}}
 				onSwiper={setSwiper}
 				className='h-full w-full bg-gray-200 rounded-lg select-none shadow-2xl cursor-grab'
 			>

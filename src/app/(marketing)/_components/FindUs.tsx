@@ -27,13 +27,20 @@ const FindUs = () => {
 					buttonLink='/sklep'
 				/>
 			</motion.div>
-			<ImageSwiper
-				urls={['/shop1.jpg', '/shop2.jpg', '/shop3.jpg']}
-				alt='sklep stacjonarny'
-				className='max-w-lg'
-				caption='Zamość, ul. Partyzantów 100'
-				captionLink='https://maps.app.goo.gl/YKn2FDUXzxjFHfMJA'
-			/>
+			<motion.div
+				initial='hidden'
+				whileInView='show'
+				viewport={{ once: true }}
+				variants={slideIn('right', 'spring', 0, 0.75)}
+			>
+				<ImageSwiper
+					urls={['/shop1.jpg', '/shop2.jpg', '/shop3.jpg']}
+					alt='sklep stacjonarny'
+					className='max-w-lg'
+					caption='Zamość, ul. Partyzantów 100'
+					captionLink='https://maps.app.goo.gl/YKn2FDUXzxjFHfMJA'
+				/>
+			</motion.div>
 		</ContentWrapper>
 	);
 };
