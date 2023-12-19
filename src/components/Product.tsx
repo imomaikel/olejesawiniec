@@ -31,6 +31,7 @@ const Product = ({ id, description, image, label, price }: TProduct) => {
 					<Image
 						src={image}
 						alt='produkt'
+						loading='eager'
 						fill
 						className='group-hover:-translate-x-1/4 transition-transform'
 					/>
@@ -67,7 +68,13 @@ const Product = ({ id, description, image, label, price }: TProduct) => {
 				<div className='absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-6 border-2 rounded-lg bg-background'>
 					<div className='flex'>
 						<div className='w-[300px] max-w-[300px] max-h-[300px] h-[300px]'>
-							<Image alt='olej' src={image} width={300} height={300} />
+							<Image
+								loading='eager'
+								alt='olej'
+								src={image}
+								width={300}
+								height={300}
+							/>
 						</div>
 						<div className='h-[300px] w-[1px] bg-black/20' />
 						<div className='flex flex-col px-6 space-y-2'>

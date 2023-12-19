@@ -12,7 +12,11 @@ const Hero = () => {
 
 	useEffect(() => setIsMounted(true), []);
 
-	const vpHeight = isMounted ? window.innerHeight : null;
+	const vpHeight = isMounted
+		? window.innerHeight >= 850
+			? window.innerHeight
+			: 850
+		: null;
 
 	return (
 		<div
@@ -44,11 +48,12 @@ const Hero = () => {
 						initial='hidden'
 						whileInView='show'
 						viewport={{ once: true }}
-						className='absolute w-full z-20 -bottom-[75%] lg:-bottom-[200%] left-0'
+						className='absolute w-full z-20 -bottom-[50%] lg:-bottom-[200%] left-0'
 					>
-						<div className='h-full  mx-auto flex items-center justify-center'>
-							<Link href='#zdjecia' scroll>
-								<FaArrowCircleDown className='h-12 w-12 text-white transition-colors hover:text-primary' />
+						<div className='h-full mx-auto flex items-center justify-center relative'>
+							<Link href='#zdjecia' className='relative group' scroll>
+								<FaArrowCircleDown className='h-12 w-12 text-white transition-colors hover:text-primary z-10 relative' />
+								<div className='absolute top-0 left-0 h-12 w-12 mx-auto z-0 bg-gradient-to-r from-emerald-500 to-lime-600 blur-[30px] group-hover:blur-[20px] transition-all' />
 							</Link>
 						</div>
 					</motion.div>

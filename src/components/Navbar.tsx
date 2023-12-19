@@ -58,6 +58,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 							src='/signature.png'
 							className='object-contain object-center'
 							width={271}
+							loading='eager'
 							height={107}
 							alt='podpis'
 						/>

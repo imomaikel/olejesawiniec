@@ -17,6 +17,7 @@ const Footer = () => {
 								className='object-contain object-center'
 								width={271}
 								height={107}
+								loading='eager'
 								alt='podpis'
 							/>
 						</Link>

@@ -9,7 +9,7 @@ import React from 'react';
 const About = () => {
 	return (
 		<ContentWrapper>
-			<div className='flex justify-center w-full flex-wrap'>
+			<div className='flex justify-center w-full flex-wrap flex-col md:flex-row items-center md:items-start'>
 				<motion.div
 					variants={slideIn('left', 'spring', 0.1, 1)}
 					initial='hidden'
@@ -17,8 +17,8 @@ const About = () => {
 					viewport={{ once: true }}
 				>
 					<SectionInfo
-						className='max-w-sm'
-						bigTitle='Odkryj Unikalne Doznania Kulinarne Z Naszym Olejami'
+						className='max-w-md'
+						bigTitle='Odkryj Unikalne Doznania Kulinarne Z Naszymi Olejami'
 						smallTitle='Olejarnia Sawiniec'
 						buttonText='Właściwości zdrowotne'
 						description='W Olejarni Sawiniec tworzymy wyjątkowe oleje ręcznie robione,
@@ -27,7 +27,7 @@ const About = () => {
 					/>
 				</motion.div>
 				<motion.div
-					variants={slideIn('right', 'spring', 0.1, 1)}
+					variants={slideIn('right', 'spring', 0.1, 0.75)}
 					initial='hidden'
 					whileInView='show'
 					viewport={{ once: true }}
@@ -36,20 +36,22 @@ const About = () => {
 						damping: 100,
 						type: 'spring',
 					}}
-					className='relative max-w-md aspect-video min-w-[400px] min-h-[530px]'
+					className='relative aspect-video max-w-md w-full md:min-w-[400px] md:min-h-[530px] min-h-[400px]'
 				>
 					<Image
 						src='/oil.png'
 						width={0}
+						loading='eager'
 						height={0}
 						alt='olej'
 						sizes='100vw'
-						className='w-full h-full aspect-video'
+						className='w-full h-full aspect-video max-w-[400px] md:max-w-none'
 					/>
+					<div className='absolute w-1/2 rotate-45 h-3/4 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-yellow-100 via-yellow-300 to-yellow-500 blur-[90px] -z-10' />
 				</motion.div>
 				<div className='max-w-sm mt-6 space-y-8'>
 					<motion.div
-						variants={slideIn('top', 'spring', 0.2, 0.75)}
+						variants={slideIn('top', 'spring', 0.1, 0.75)}
 						initial='hidden'
 						whileInView='show'
 						viewport={{ once: true }}
@@ -71,7 +73,7 @@ const About = () => {
 						</p>
 					</motion.div>
 					<motion.div
-						variants={slideIn('top', 'spring', 0.4, 0.75)}
+						variants={slideIn('top', 'spring', 0.2, 0.75)}
 						initial='hidden'
 						whileInView='show'
 						viewport={{ once: true }}
@@ -92,7 +94,7 @@ const About = () => {
 						</p>
 					</motion.div>
 					<motion.div
-						variants={slideIn('top', 'spring', 0.4, 0.75)}
+						variants={slideIn('top', 'spring', 0.3, 0.75)}
 						initial='hidden'
 						whileInView='show'
 						viewport={{ once: true }}

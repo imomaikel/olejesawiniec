@@ -5,8 +5,15 @@ import { Button } from '@/components/ui/button';
 import Product from '@/components/Product';
 import SectionInfo from './SectionInfo';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 const ProductsPreview = () => {
+	const [isMounted, setIsMounted] = useState(false);
+
+	useEffect(() => setIsMounted(true), []);
+
+	const vpWidth = isMounted ? window.innerWidth : null;
+
 	return (
 		<ContentWrapper className='bg-gray-100'>
 			<div className='w-full flex justify-center flex-col items-center'>
@@ -32,7 +39,11 @@ const ProductsPreview = () => {
 								opacity: 1,
 							}}
 							transition={{
-								delay: 0.15 * index,
+								delay: vpWidth
+									? vpWidth <= 1000
+										? 0.1
+										: 0.1 * index
+									: 0.15 * index,
 								damping: 30,
 							}}
 							viewport={{ once: true, amount: 0.25 }}

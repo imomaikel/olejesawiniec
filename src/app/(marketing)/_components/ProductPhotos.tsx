@@ -1,10 +1,9 @@
 'use client';
 import ContentWrapper from '@/components/ContentWrapper';
-import { Button } from '@/components/ui/button';
 import { slideIn } from '@/utils/motion';
+import SectionInfo from './SectionInfo';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import SectionInfo from './SectionInfo';
 
 const ProductPhotos = () => {
 	return (
@@ -38,6 +37,7 @@ const ProductPhotos = () => {
 					className='lg:pt-6'
 				>
 					<Image
+						loading='eager'
 						src='/product1.jpg'
 						alt='produkt'
 						width={0}
@@ -54,6 +54,7 @@ const ProductPhotos = () => {
 					className='lg:pt-24 lg:pb-4 lg:mb-4'
 				>
 					<Image
+						loading='eager'
 						src='/product1.jpg'
 						alt='produkt'
 						width={0}
@@ -70,6 +71,7 @@ const ProductPhotos = () => {
 					className='lg:pt-12 lg:pb-2'
 				>
 					<Image
+						loading='eager'
 						src='/product1.jpg'
 						alt='produkt'
 						width={0}
