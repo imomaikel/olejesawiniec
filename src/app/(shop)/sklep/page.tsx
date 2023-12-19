@@ -1,5 +1,6 @@
 'use client';
 import { Separator } from '@/components/ui/separator';
+import SortProducts from './_components/SortProducts';
 import Categories from './_components/Categories';
 import Search from './_components/Search';
 import Footer from '@/components/Footer';
@@ -15,6 +16,7 @@ const ShopPage = () => {
 
 				<Search />
 				<Categories />
+				<SortProducts />
 			</div>
 			<Footer />
 		</>
