@@ -2,6 +2,7 @@ import ProductsPreview from './_components/ProductsPreview';
 import ProductPhotos from './_components/ProductPhotos';
 import ScrollButton from '@/components/ScrollButton';
 import Newsletter from './_components/Newsletter';
+import FindUs from './_components/FindUs';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import About from './_components/About';
@@ -32,6 +33,10 @@ export default function Home() {
 
 				<section>
 					<About />
+				</section>
+
+				<section>
+					<FindUs />
 				</section>
 
 				<section>
