@@ -10,8 +10,7 @@ const Categories = () => {
 				</div>
 				<div className='border flex-1 mx-2' />
 			</div>
-			<div className='space-y-2'>
-				{/*  */}
+			<div className='space-y-2 mt-2'>
 				<div className='flex items-center justify-between'>
 					<div className='flex items-center space-x-3'>
 						<Checkbox className='w-6 h-6' id='key1' />

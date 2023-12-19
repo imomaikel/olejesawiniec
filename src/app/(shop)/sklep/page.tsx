@@ -6,6 +6,8 @@ import Products from './_components/Products';
 import Search from './_components/Search';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import Tags from './_components/Tags';
+import { Button } from '@/components/ui/button';
 
 const ShopPage = () => {
 	return (
@@ -19,6 +21,11 @@ const ShopPage = () => {
 					<div className='hidden md:flex flex-col space-y-6'>
 						<Search />
 						<Categories />
+						<Tags />
+						<Separator />
+						<Button variant='ghost' className='w-full'>
+							Wyczyść filtry
+						</Button>
 					</div>
 					<div className='flex w-full'>
 						<Products />
