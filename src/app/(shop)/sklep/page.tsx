@@ -1,5 +1,6 @@
 'use client';
 import { Separator } from '@/components/ui/separator';
+import Categories from './_components/Categories';
 import Search from './_components/Search';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
@@ -13,6 +14,7 @@ const ShopPage = () => {
 				<Separator className='my-4' />
 
 				<Search />
+				<Categories />
 			</div>
 			<Footer />
 		</>
