@@ -9,7 +9,65 @@ datasource db {
 }
 
 // [ ====== SHOP MODELS ====== ]
+model Product {
+  id            String          @id @default(cuid())
+  label         String          @unique
+  link          String          @unique
+  enabled       Boolean?        @default(false)
+  description   String?         @db.Text
+  mainPhoto     String?
+  extraPhotos   ExtraPhoto[]
+  variants      Variant[]
+  tags          Tag[]
+  details       ProductDetail[]
+  nutritionFact NutritionFact?
+}
+
+model NutritionFact {
+  id                 String @id @default(cuid())
+  fat                Float
+  saturatedFat       Float?
+  polyunsaturatedFat Float?
+  monounsaturatedFat Float?
+  carbohydrate       Float?
+  carbohydrateSugar  Float?
+  protein            Float?
+  fiber              Float?
+  sodium             Float?
+
+  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String  @unique
+}
+
+model ProductDetail {
+  id      String @id @default(cuid())
+  content String
+
+  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productId String?
+}
+
+model ExtraPhoto {
+  id String @id @default(cuid())
+
+  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productId String?
+}
+
+model Variant {
+  id       String @id @default(cuid())
+  unit     String @db.TinyText
+  price    Float
+  capacity Int
+
+  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productId String?
+}
+
 model Tag {
   id    Int    @id @default(autoincrement())
   label String @unique
+
+  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productId String?
 }

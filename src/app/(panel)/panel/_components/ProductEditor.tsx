@@ -19,10 +19,7 @@ import ProductStatus from './ProductStatus';
 import { formatPrice } from '@/lib/utils';
 import { FaTools } from 'react-icons/fa';
 
-type TProductCreator = {
-	mode: 'edit' | 'add';
-};
-const ProductCreator = ({ mode }: TProductCreator) => {
+const ProductEditor = () => {
 	return (
 		<>
 			{/* Product Controls */}
@@ -38,11 +35,8 @@ const ProductCreator = ({ mode }: TProductCreator) => {
 						<ProductStatus status='create mode' />
 					</div>
 					{/* Control Buttons */}
-					<div>{mode === 'add' && <Button>Dodaj produkt</Button>}</div>
 					<div>
-						{mode === 'edit' && (
-							<Button variant='destructive'>Usuń produkt</Button>
-						)}
+						<Button variant='destructive'>Usuń produkt</Button>
 					</div>
 				</div>
 			</div>
@@ -277,4 +271,4 @@ const ProductCreator = ({ mode }: TProductCreator) => {
 	);
 };
 
-export default ProductCreator;
+export default ProductEditor;

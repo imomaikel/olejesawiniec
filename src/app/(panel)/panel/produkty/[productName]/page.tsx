@@ -1,4 +1,4 @@
-import ProductCreator from '../../_components/ProductCreator';
+import ProductEditor from '../../_components/ProductEditor';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { IoOptions } from 'react-icons/io5';
@@ -22,7 +22,7 @@ const page = () => {
 
 				<Separator />
 
-				<ProductCreator mode='edit' />
+				<ProductEditor />
 			</div>
 		</div>
 	);

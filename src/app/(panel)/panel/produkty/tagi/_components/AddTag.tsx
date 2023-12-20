@@ -1,8 +1,8 @@
 'use client';
 import { ElementRef, useEffect, useRef, useState } from 'react';
 import { errorToast, successToast } from '@/lib/utils';
+import ActionButton from '@/components/ActionButton';
 import { trpc } from '@/components/providers/TRPC';
-import { Button } from '@/components/ui/button';
 import { useEventListener } from 'usehooks-ts';
 import { Input } from '@/components/ui/input';
 
@@ -53,9 +53,12 @@ const AddTag = ({ onAdd }: TAddTag) => {
 					onChange={(e) => setTagName(e.target.value)}
 					ref={ref}
 				/>
-				<Button disabled={isLoading} onClick={() => addNewTag({ tagName })}>
+				<ActionButton
+					disabled={isLoading}
+					onClick={() => addNewTag({ tagName })}
+				>
 					Dodaj
-				</Button>
+				</ActionButton>
 			</div>
 		</div>
 	);

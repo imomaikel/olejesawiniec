@@ -64,7 +64,7 @@ export const PANEL_TABS = [
 		link: '/panel/produkty',
 		options: [
 			{
-				label: 'Dodaj nowy',
+				label: 'Dodaj produkt',
 				Icon: CiCirclePlus,
 				link: '/panel/produkty/nowy',
 			},
@@ -126,3 +126,16 @@ export const TEMP_PRODUCTS = [
 		],
 	},
 ];
+
+export const PRODUCT_NAME_REGEX = /^[a-zA-Z\s]+$/;
+export const DISALLOWED_PRODUCT_NAMES = PANEL_TABS.filter((tab) =>
+	tab.options?.some((option) => option.link.startsWith('/panel/produkty/'))
+)
+	.map((tab) =>
+		tab.options?.map((option) => {
+			const splitPath = option.link.split('/');
+			const lastElement = splitPath[splitPath.length - 1];
+			return lastElement;
+		})
+	)
+	.flat();
