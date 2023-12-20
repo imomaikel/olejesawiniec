@@ -1,8 +1,10 @@
+import { TRPCProvider } from '@/components/providers/TRPC';
 import ShoppingCart from '@/components/ShoppingCart';
 import MobileNavbar from '@/components/MobileNavbar';
 import { Epilogue } from 'next/font/google';
 import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const epilogue = Epilogue({ subsets: ['latin'] });
@@ -20,13 +22,16 @@ export default function RootLayout({
 	return (
 		<html lang='pl' className='h-full scroll-smooth'>
 			<body className={cn('h-full relative', epilogue.className)}>
-				<main className='relative flex flex-col min-h-screen'>
-					<div className='flex-1 flex-grow overflow-hidden relative'>
-						{children}
-					</div>
-				</main>
-				<ShoppingCart />
-				<MobileNavbar />
+				<TRPCProvider>
+					<main className='relative flex flex-col min-h-screen'>
+						<div className='flex-1 flex-grow overflow-hidden relative'>
+							{children}
+						</div>
+					</main>
+					<ShoppingCart />
+					<MobileNavbar />
+				</TRPCProvider>
+				<Toaster richColors position='top-center' />
 			</body>
 		</html>
 	);
