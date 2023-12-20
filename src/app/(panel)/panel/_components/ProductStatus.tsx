@@ -4,28 +4,22 @@ import {
 	IoMdCheckmarkCircle,
 } from 'react-icons/io';
 import { Badge, BadgeProps } from '@/components/ui/badge';
-import { FaCircleQuestion } from 'react-icons/fa6';
 
 type TProductStatus = {
-	status: 'enabled' | 'disabled' | 'out of stock' | 'create mode';
+	status: 'enabled' | 'disabled' | 'out of stock';
 };
 const ProductStatus = ({ status }: TProductStatus) => {
 	let variant: BadgeProps['variant'] = 'default';
 	let message, Icon;
 
-	if (status === 'create mode') {
-		// product does not exist
-		message = 'produkt nie istnieje';
-		Icon = FaCircleQuestion;
-		variant = 'destructive';
-	} else if (status === 'disabled') {
+	if (status === 'disabled') {
 		// product is hidden
-		message = 'produkt jest ukryty';
+		message = 'produkt jest wyłączony';
 		Icon = IoMdEyeOff;
 		variant = 'warning';
 	} else if (status === 'enabled') {
 		// product is visible to customers
-		message = 'produkt jest widoczny';
+		message = 'produkt jest włączony';
 		Icon = IoMdCheckmarkCircle;
 		variant = 'default';
 	} else if (status === 'out of stock') {

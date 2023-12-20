@@ -1,4 +1,8 @@
-import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX } from '@/utils/constans';
+import {
+	DISALLOWED_PRODUCT_NAMES,
+	PRODUCT_NAME_REGEX,
+	REPLACE_LETTERS,
+} from '@/utils/constans';
 import { publicProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
@@ -14,14 +18,20 @@ type TSuccessStatus = {
 };
 type TPanelRouterResponse = TErrorStatus | TSuccessStatus;
 
+const PRODUCT_NAME_MIN_LENGTH = 3;
+const PRODUCT_NAME_MAX_LENGTH = 30;
+
+const TAG_MIN_LENGTH = 2;
+const TAG_MAX_LENGTH = 25;
+
 export const panelRouter = router({
 	createTag: publicProcedure
 		.input(
 			z.object({
 				tagName: z
 					.string()
-					.min(2, { message: 'Tag jest za krótki.' })
-					.max(25, { message: 'Tag jest za długi.' }),
+					.min(TAG_MIN_LENGTH, { message: 'Tag jest za krótki.' })
+					.max(TAG_MAX_LENGTH, { message: 'Tag jest za długi.' }),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -51,7 +61,9 @@ export const panelRouter = router({
 			} as TPanelRouterResponse;
 		}),
 	removeTag: publicProcedure
-		.input(z.object({ tagName: z.string().min(2).max(25) }))
+		.input(
+			z.object({ tagName: z.string().min(TAG_MIN_LENGTH).max(TAG_MAX_LENGTH) })
+		)
 		.mutation(async ({ ctx, input }) => {
 			const { tagName } = input;
 			const { prisma } = ctx;
@@ -83,13 +95,21 @@ export const panelRouter = router({
 			z.object({
 				productName: z
 					.string()
-					.min(3, { message: 'Nazwa produktu jest za krótka.' })
-					.max(30, { message: 'Nazwa produktu jest za długa.' }),
+					.min(PRODUCT_NAME_MIN_LENGTH, {
+						message: 'Nazwa produktu jest za krótka.',
+					})
+					.max(PRODUCT_NAME_MAX_LENGTH, {
+						message: 'Nazwa produktu jest za długa.',
+					}),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
+			let { productName } = input;
 			const { prisma } = ctx;
-			const { productName } = input;
+
+			REPLACE_LETTERS.forEach((letter) =>
+				productName.replaceAll(letter.from, letter.to)
+			);
 
 			try {
 				let message, status: TPanelRouterResponse['status'];
@@ -123,6 +143,102 @@ export const panelRouter = router({
 					status,
 					message,
 				} as TPanelRouterResponse;
+			} catch {
+				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+			}
+		}),
+	getProductInfo: publicProcedure
+		.input(z.object({ productLink: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const { productLink } = input;
+			const { prisma } = ctx;
+
+			try {
+				const product = await prisma.product.findFirst({
+					where: { link: productLink },
+					include: {
+						details: true,
+						extraPhotos: true,
+						nutritionFact: true,
+						tags: true,
+						variants: true,
+					},
+				});
+
+				return product ?? null;
+			} catch {
+				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+			}
+		}),
+	appendTag: publicProcedure
+		.input(
+			z.object({
+				productId: z.string(),
+				tagId: z.number(),
+				tagLabel: z.string(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const { productId, tagId, tagLabel } = input;
+			const { prisma } = ctx;
+
+			let message, status: TPanelRouterResponse['status'];
+
+			try {
+				await prisma.product.update({
+					where: {
+						id: productId,
+
+						tags: {
+							none: {
+								id: {
+									equals: tagId,
+								},
+							},
+						},
+					},
+					data: {
+						tags: {
+							connect: { id: tagId },
+						},
+					},
+				});
+				message = `Dodano tag "${tagLabel}"`;
+				status = 'success';
+			} catch (error: any) {
+				status = 'error';
+				const translateError = handlePrismaError(error);
+				if (translateError === 'Object already exists') {
+					message = `Tag "${tagLabel}" jest już dodany`;
+				}
+			}
+			return {
+				status,
+				message,
+			} as TPanelRouterResponse;
+		}),
+	detachTag: publicProcedure
+		.input(
+			z.object({
+				productId: z.string(),
+				tagId: z.number(),
+				tagLabel: z.string(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const { productId, tagId, tagLabel } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.product.update({
+					where: { id: productId },
+					data: {
+						tags: {
+							disconnect: { id: tagId },
+						},
+					},
+				});
+				return `Usunięto tag "${tagLabel}"`;
 			} catch {
 				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
 			}

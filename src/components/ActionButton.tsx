@@ -12,7 +12,8 @@ type TActionButton = {
 		| 'outline'
 		| 'secondary'
 		| 'link'
-		| 'ghost';
+		| 'ghost'
+		| 'warning';
 	onClick?: () => void;
 	size?: 'sm' | 'lg' | 'icon' | 'xl' | '2xl';
 	className?: string;

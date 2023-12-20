@@ -29,7 +29,7 @@ const PanelControls = () => {
 							{tab.options &&
 								isSelected &&
 								tab.options.map((option) => {
-									const isSelected = pathname.startsWith(option.link);
+									const isSelected = pathname === option.link;
 									return (
 										<div key={option.link} className='text-right'>
 											<Link href={option.link}>

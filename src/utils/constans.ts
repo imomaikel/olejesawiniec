@@ -127,7 +127,7 @@ export const TEMP_PRODUCTS = [
 	},
 ];
 
-export const PRODUCT_NAME_REGEX = /^[a-zA-Z\s]+$/;
+export const PRODUCT_NAME_REGEX = /^[a-zA-Z\sąćęłńóśźżł]+$/;
 export const DISALLOWED_PRODUCT_NAMES = PANEL_TABS.filter((tab) =>
 	tab.options?.some((option) => option.link.startsWith('/panel/produkty/'))
 )
@@ -139,3 +139,41 @@ export const DISALLOWED_PRODUCT_NAMES = PANEL_TABS.filter((tab) =>
 		})
 	)
 	.flat();
+export const REPLACE_LETTERS = [
+	{
+		from: 'ą',
+		to: 'a',
+	},
+	{
+		from: 'ć',
+		to: 'c',
+	},
+	{
+		from: 'ę',
+		to: 'e',
+	},
+	{
+		from: 'ł',
+		to: 'l',
+	},
+	{
+		from: 'ń',
+		to: 'n',
+	},
+	{
+		from: 'ó',
+		to: 'o',
+	},
+	{
+		from: 'ś',
+		to: 's',
+	},
+	{
+		from: 'ż',
+		to: 'z',
+	},
+	{
+		from: 'ź',
+		to: 'x',
+	},
+];

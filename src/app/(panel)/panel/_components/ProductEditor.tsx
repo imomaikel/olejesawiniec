@@ -1,3 +1,4 @@
+'use client';
 import {
 	Table,
 	TableBody,
@@ -7,21 +8,79 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import { errorToast, formatPrice } from '@/lib/utils';
+import ActionButton from '@/components/ActionButton';
 import { Textarea } from '@/components/ui/textarea';
+import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import TagControl from './controls/TagControl';
 import { Label } from '@/components/ui/label';
-import { FaTrashAlt } from 'react-icons/fa';
+import { Input } from '@/components/ui/input';
 import { IoOptions } from 'react-icons/io5';
+import { useRouter } from 'next/navigation';
+import { FaTrashAlt } from 'react-icons/fa';
 import ProductStatus from './ProductStatus';
-import { formatPrice } from '@/lib/utils';
 import { FaTools } from 'react-icons/fa';
 
-const ProductEditor = () => {
+type TProductEditor = {
+	productLink: string;
+};
+const ProductEditor = ({ productLink }: TProductEditor) => {
+	const router = useRouter();
+
+	const {
+		data: product,
+		isLoading: isProductLoading,
+		refetch: _refetchProduct,
+	} = trpc.panel.getProductInfo.useQuery(
+		{ productLink },
+		{
+			onSuccess: (data) => {
+				if (!data) {
+					errorToast('Nie znaleziono produktu!');
+					router.push('/panel/produkty');
+				}
+			},
+			onError: () => {
+				errorToast();
+				router.push('/panel/produkty');
+			},
+			refetchOnWindowFocus: false,
+		}
+	);
+
+	const {
+		data: tags,
+		isLoading: isTagLoading,
+		refetch: _refetchTags,
+	} = trpc.panel.getTagList.useQuery(undefined, {
+		refetchOnWindowFocus: false,
+	});
+
+	const refetchProduct = () => _refetchProduct();
+	const refetchTags = () => _refetchTags();
+
+	if (isProductLoading || isTagLoading || !product || !tags) {
+		return 'Loading...';
+	}
+
+	const productStatus = product.enabled ? 'enabled' : 'disabled';
+	const isOutOfStock = !product.variants.some((variant) => variant.stock > 0);
+
 	return (
 		<>
+			{/* Product name */}
+			<div>
+				<div className='flex mb-1'>
+					<IoOptions className='w-6 h-6 mr-2' />
+					<h2 className='font-medium text-lg'>Nazwa produktu</h2>
+				</div>
+				<Input value={product.label} disabled />
+			</div>
+
+			<Separator />
+
 			{/* Product Controls */}
 			<div>
 				<div className='flex'>
@@ -30,13 +89,21 @@ const ProductEditor = () => {
 				</div>
 				{/* Product Status */}
 				<div>
-					<div className='flex items-center space-x-2'>
-						<h3 className='font-bold text-lg'>Aktualny stan produktu</h3>
-						<ProductStatus status='create mode' />
+					<div className='flex flex-col md:flex-row items-center space-x-0 md:space-x-2 space-y-2 md:space-y-2'>
+						<h3 className='font-bold text-lg md:mt-1.5'>
+							Aktualny stan produktu
+						</h3>
+						<ProductStatus status={productStatus} />
+						{isOutOfStock && <ProductStatus status='out of stock' />}
 					</div>
 					{/* Control Buttons */}
-					<div>
-						<Button variant='destructive'>Usuń produkt</Button>
+					<div className='mt-2 space-x-0 md:space-x-2 space-y-2 md:space-y-0 flex flex-col md:flex-row'>
+						{productStatus === 'enabled' ? (
+							<ActionButton variant='warning'>Wyłącz produkt</ActionButton>
+						) : (
+							<ActionButton>Włącz produkt</ActionButton>
+						)}
+						<ActionButton variant='destructive'>Usuń produkt</ActionButton>
 					</div>
 				</div>
 			</div>
@@ -44,34 +111,13 @@ const ProductEditor = () => {
 			<Separator />
 
 			{/* Product tags */}
-			<div>
-				<div className='flex'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Tagi produktu</h2>
-				</div>
-				<p className='text-muted-foreground'>Kliknij na tag aby go dodać</p>
-				<div className='flex flex-wrap gap-1'>
-					<Badge className='cursor-pointer' variant='default'>
-						Witamina A
-					</Badge>
-					<Badge className='cursor-pointer' variant='secondary'>
-						Witamina D
-					</Badge>
-					<Badge className='cursor-pointer' variant='default'>
-						Witamina E
-					</Badge>
-					<Badge className='cursor-pointer' variant='secondary'>
-						Witamina K
-					</Badge>
-				</div>
-				<div className='mt-2'>
-					<span className='text-muted-foreground'>Dodaj nowy tag</span>
-					<div className='flex space-x-2 items-center'>
-						<Input className='max-w-[125px]' />
-						<Button size='sm'>Dodaj</Button>
-					</div>
-				</div>
-			</div>
+			<TagControl
+				allTags={tags}
+				productTags={product.tags}
+				productId={product.id}
+				refetchTag={refetchTags}
+				refetchProduct={refetchProduct}
+			/>
 
 			<Separator />
 
