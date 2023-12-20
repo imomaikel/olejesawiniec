@@ -1,4 +1,5 @@
 const PanelSummaryPage = () => {
+	// rechart
 	return <div>PanelSummaryPage</div>;
 };
 
