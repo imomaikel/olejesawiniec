@@ -108,7 +108,7 @@ const ProductPage = () => {
 				{/* Price */}
 				<div className='mt-4 relative'>
 					<div className='flex items-center space-x-2'>
-						<span className='text-2xl font-medium'>Wybrany rozmiar</span>
+						<span className='text-2xl font-medium'>Wybrana pojemność</span>
 						<Badge>
 							{selectedVariant.size}
 							{selectedVariant.unit}

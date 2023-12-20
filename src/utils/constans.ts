@@ -1,11 +1,14 @@
+import { FaShopify, FaChartLine } from 'react-icons/fa6';
+import { BiSolidShoppingBags } from 'react-icons/bi';
+
 export const NAV_LINKS = [
 	{
 		label: 'Sklep',
 		path: '/sklep',
 	},
 	{
-		label: 'Oleje',
-		path: '#',
+		label: 'Panel',
+		path: '/panel',
 	},
 	{
 		label: 'Kontakt',
@@ -43,6 +46,24 @@ export const FOOTER_LINKS = [
 				link: 'mailto:sawiniec.olejarnia@gmail.com',
 			},
 		],
+	},
+];
+
+export const PANEL_TABS = [
+	{
+		label: 'Podsumowanie',
+		Icon: FaChartLine,
+		link: '/panel',
+	},
+	{
+		label: 'Produkty',
+		Icon: FaShopify,
+		link: '/panel/produkty',
+	},
+	{
+		label: 'Zamówienia',
+		Icon: BiSolidShoppingBags,
+		link: '/panel/zamowienia',
 	},
 ];
 

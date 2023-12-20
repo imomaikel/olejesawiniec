@@ -21,7 +21,11 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 	const { onOpen: onCartOpen } = useCart();
 	const pathname = usePathname();
 
-	const signatureImageUrl = pathname.startsWith('/sklep/') ? '/sklep' : '/';
+	const signatureImageUrl = pathname.startsWith('/sklep/')
+		? '/sklep'
+		: pathname.startsWith('/panel')
+		? '/panel'
+		: '/';
 
 	return (
 		<div className={cn('w-full absolute z-20', className)}>
