@@ -1,0 +1,15 @@
+// [ ====== GENERAL SETTINGS START ====== ]
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// [ ====== SHOP MODELS ====== ]
+model Tag {
+  id    Int    @id @default(autoincrement())
+  label String @unique
+}
