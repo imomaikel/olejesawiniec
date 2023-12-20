@@ -5,16 +5,17 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from '@/components/ui/sheet';
+import ProductControls from '@/app/(shop)/sklep/_components/ProductControls';
+import PanelControls from '@/app/(panel)/panel/_components/PanelControls';
 import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { useMobileNav } from '@/hooks/use-mobile-nav';
 import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
 import { useEffect, useState } from 'react';
+import { Separator } from './ui/separator';
 import { useCart } from '@/hooks/use-cart';
 import { Button } from './ui/button';
 import Link from 'next/link';
-import ProductControls from '@/app/(shop)/sklep/_components/ProductControls';
-import { Separator } from './ui/separator';
 
 const MobileNavbar = () => {
 	const [isMounted, setIsMounted] = useState(false);
@@ -23,6 +24,9 @@ const MobileNavbar = () => {
 	const pathname = usePathname();
 
 	useEffect(() => setIsMounted(true), []);
+
+	const showShopNav = pathname.startsWith('/sklep');
+	const showPanelNav = pathname.startsWith('/panel');
 
 	if (!isMounted) return null;
 
@@ -63,7 +67,8 @@ const MobileNavbar = () => {
 					<Separator className='my-4' />
 
 					<div className='flex flex-col space-y-6'>
-						<ProductControls />
+						{showShopNav && <ProductControls />}
+						{showPanelNav && <PanelControls />}
 					</div>
 				</div>
 			</SheetContent>

@@ -1,14 +1,9 @@
 'use client';
+import PanelControls from './_components/PanelControls';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { PANEL_TABS } from '@/utils/constans';
-import { usePathname } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import Link from 'next/link';
 
 const PanelLayout = ({ children }: { children: React.ReactNode }) => {
-	const pathname = usePathname();
-
 	return (
 		<div className='flex flex-col min-h-screen justify-between'>
 			<div className='w-full max-w-screen-2xl mx-auto flex flex-col relative px-8 md:px-12'>
@@ -19,48 +14,7 @@ const PanelLayout = ({ children }: { children: React.ReactNode }) => {
 				<div className='flex space-x-0 md:space-x-12 mb-24'>
 					<div className='hidden md:flex flex-col space-y-6 w-[250px] relative'>
 						<div className='flex flex-col space-y-1'>
-							{PANEL_TABS.map((tab) => {
-								let isSelected = pathname.startsWith(tab.link);
-								if (
-									pathname.startsWith(`${tab.link}/`) &&
-									tab.link === '/panel'
-								) {
-									isSelected = false;
-								}
-
-								return (
-									<div key={tab.label}>
-										<Link href={tab.link}>
-											<Button
-												variant={isSelected ? 'default' : 'secondary'}
-												className='w-full'
-											>
-												{<tab.Icon className='w-6 h-6 mr-2' />}
-												{tab.label}
-											</Button>
-										</Link>
-										<div className='flex flex-col space-y-2 my-1'>
-											{tab.options &&
-												isSelected &&
-												tab.options.map((option) => {
-													const isSelected = pathname.startsWith(option.link);
-													return (
-														<div key={option.link} className='text-right'>
-															<Link href={option.link}>
-																<Button
-																	className='w-3/4'
-																	variant={isSelected ? 'default' : 'secondary'}
-																>
-																	{option.label}
-																</Button>
-															</Link>
-														</div>
-													);
-												})}
-										</div>
-									</div>
-								);
-							})}
+							<PanelControls />
 						</div>
 						<div className='after:absolute after:h-full after:w-[1px] after:bg-black/40 after:-right-6 after:top-0' />
 					</div>

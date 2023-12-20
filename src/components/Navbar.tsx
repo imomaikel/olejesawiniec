@@ -44,12 +44,12 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 				}}
 				viewport={{ once: true }}
 				className={cn(
-					'w-full min-h-fit max-w-7xl mx-auto flex md:justify-between px-10 lg:px-20',
+					'w-full min-h-fit max-w-7xl mx-auto flex justify-between lg:px-20',
 					topPadding !== undefined ? `pt-${topPadding}` : 'pt-6'
 				)}
 			>
 				<div
-					className='flex md:hidden ml-4 mr-6 items-center'
+					className='flex md:hidden items-center'
 					role='button'
 					onClick={onMobileNavOpen}
 				>
