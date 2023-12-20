@@ -36,7 +36,7 @@ const FloatingProduct = ({
 		const handleScroll = () => {
 			if (window.innerWidth < 768) return;
 			if (window.scrollY >= maxHeight) {
-				if (maxHeight !== scrollY) setScrollY(maxHeight);
+				setScrollY(maxHeight);
 				return;
 			}
 			setScrollY(window.scrollY);

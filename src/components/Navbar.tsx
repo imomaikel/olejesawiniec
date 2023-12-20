@@ -39,7 +39,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 					y: 0,
 				}}
 				transition={{
-					duration: 0.75,
+					duration: 0.5,
 					type: 'tween',
 				}}
 				viewport={{ once: true }}

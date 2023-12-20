@@ -24,7 +24,7 @@ const ScrollButton = ({ trackElementIdOrHeight }: TScrollButton) => {
 		};
 		window.addEventListener('scroll', checkScroll);
 		return () => window.removeEventListener('scroll', checkScroll);
-	}, []);
+	}, [trackElementIdOrHeight]);
 
 	if (!showButton) return null;
 

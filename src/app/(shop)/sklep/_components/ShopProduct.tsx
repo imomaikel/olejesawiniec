@@ -9,10 +9,13 @@ type TShopProduct = {
 	label: string;
 	image: string;
 	price: number;
+	editMode?: boolean;
 };
-const ShopProduct = ({ id, image, label, price }: TShopProduct) => {
+const ShopProduct = ({ id, image, label, price, editMode }: TShopProduct) => {
+	const productLink = editMode ? `/panel/produkty/${id}` : `/sklep/${id}`;
+
 	return (
-		<Link href={`/sklep/${id}`}>
+		<Link href={productLink}>
 			<div className='shadow-2xl overflow-hidden bg-white rounded-xl hover:scale-105 transition-transform cursor-pointer ring-1 ring-primary/10 z-20 hover:z-10 relative'>
 				<div className='w-auto h-[300px] relative flex flex-col items-center'>
 					<Image
@@ -25,7 +28,9 @@ const ShopProduct = ({ id, image, label, price }: TShopProduct) => {
 				</div>
 				<div className='py-2 px-4 text-center flex flex-col  justify-between'>
 					<span className='font-medium tracking-wide mb-1'>{label}</span>
-					<span className='text-primary font-bold'>{formatPrice(price)}</span>
+					{!editMode && (
+						<span className='text-primary font-bold'>{formatPrice(price)}</span>
+					)}
 				</div>
 			</div>
 		</Link>
