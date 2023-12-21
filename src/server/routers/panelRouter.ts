@@ -3,6 +3,7 @@ import {
 	PRODUCT_NAME_REGEX,
 	REPLACE_LETTERS,
 } from '@/utils/constans';
+import { PanelVariantProductValidator } from '@/lib/validators/panel';
 import { publicProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
@@ -240,6 +241,59 @@ export const panelRouter = router({
 				});
 				return `Usunięto tag "${tagLabel}"`;
 			} catch {
+				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+			}
+		}),
+	createVariant: publicProcedure
+		.input(PanelVariantProductValidator)
+		.mutation(async ({ ctx, input }) => {
+			const { options, productId } = input;
+			const { capacity, price, stock, unit } = options;
+			const { prisma } = ctx;
+
+			let message, status: TPanelRouterResponse['status'];
+
+			try {
+				await prisma.product.update({
+					where: { id: productId },
+					data: {
+						variants: {
+							create: { capacity, price, stock: stock ?? 0, unit },
+						},
+					},
+				});
+				status = 'success';
+				message = `Dodano opcję "${capacity}${unit}"`;
+			} catch (error: any) {
+				status = 'error';
+				const translateError = handlePrismaError(error);
+				if (translateError === 'Object already exists') {
+					message = `Opcja "${capacity}${unit}" już istnieje`;
+				}
+			}
+			return {
+				status,
+				message,
+			} as TPanelRouterResponse;
+		}),
+	removeVariant: publicProcedure
+		.input(
+			z.object({
+				variantId: z.string(),
+				productId: z.string(),
+				capacityUnit: z.string(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const { capacityUnit, productId, variantId } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.variant.delete({
+					where: { id: variantId },
+				});
+				return `Opcja "${capacityUnit}" została usunięta`;
+			} catch (err) {
 				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
 			}
 		}),

@@ -1,13 +1,11 @@
 'use client';
 import ProductEditor from '../../_components/ProductEditor';
+import { useParams } from 'next/navigation';
 
-type TEditProductPage = {
-	params: {
+const EditProductPage = () => {
+	const { productLink } = useParams<{
 		productLink: string;
-	};
-};
-const EditProductPage = ({ params }: TEditProductPage) => {
-	const { productLink } = params;
+	}>();
 
 	return (
 		<div className='flex flex-col space-y-4'>

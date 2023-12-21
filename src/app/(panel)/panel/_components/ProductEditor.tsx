@@ -8,20 +8,20 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { errorToast, formatPrice } from '@/lib/utils';
+import { FaTools, FaTrashAlt } from 'react-icons/fa';
 import ActionButton from '@/components/ActionButton';
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/components/providers/TRPC';
-import { TiChevronRight } from 'react-icons/ti';
+import VariantList from './controls/VariantList';
 import { Button } from '@/components/ui/button';
+import { TiChevronRight } from 'react-icons/ti';
 import TagControl from './controls/TagControl';
-import { Label } from '@/components/ui/label';
+import NewVariant from './controls/NewVariant';
 import { Input } from '@/components/ui/input';
-import { IoOptions } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
-import { FaTrashAlt } from 'react-icons/fa';
+import { IoOptions } from 'react-icons/io5';
 import ProductStatus from './ProductStatus';
-import { FaTools } from 'react-icons/fa';
+import { errorToast } from '@/lib/utils';
 
 type TProductEditor = {
 	productLink: string;
@@ -82,6 +82,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 			<Separator />
 
 			{/* Product Controls */}
+			{/* TODO */}
 			<div>
 				<div className='flex'>
 					<FaTools className='w-6 h-6 mr-2' />
@@ -127,48 +128,8 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 					<IoOptions className='w-6 h-6 mr-2' />
 					<h2 className='font-medium text-lg'>Opcje produktu</h2>
 				</div>
-				{/* Added variants */}
-				<h3 className='mt-4 font-medium'>Aktualne opcje</h3>
-				<div>
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Pojemność</TableHead>
-								<TableHead>Cena</TableHead>
-								<TableHead>Usuń</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							<TableRow>
-								<TableCell>100ml</TableCell>
-								<TableCell>{formatPrice(20)}</TableCell>
-								<TableCell>
-									<FaTrashAlt className='w-4 h-4 cursor-pointer hover:text-destructive transition-colors' />
-								</TableCell>
-							</TableRow>
-						</TableBody>
-					</Table>
-				</div>
-
-				<Separator />
-
-				{/* New variant */}
-				<h3 className='mt-4 font-medium'>Dodaj nową opcję</h3>
-				<div className='flex flex-col md:flex-row space-x-0 md:space-x-2'>
-					<div>
-						<Label htmlFor='productSize'>Pojemność</Label>
-						<Input id='productSide' placeholder='100' />
-					</div>
-					<div>
-						<Label htmlFor='productUnit'>Jednostka (ml/kg/g ...)</Label>
-						<Input id='productUnit' placeholder='ml' />
-					</div>
-					<div>
-						<Label htmlFor='productPrice'>Cena (zł)</Label>
-						<Input id='productPrice' type='number' placeholder='20' />
-					</div>
-					<Button className='mt-2 md:mt-auto'>Dodaj opcje</Button>
-				</div>
+				<VariantList refetchProduct={refetchProduct} product={product} />
+				<NewVariant productId={product.id} refetchProduct={refetchProduct} />
 			</div>
 
 			<Separator />
