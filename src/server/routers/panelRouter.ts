@@ -297,4 +297,16 @@ export const panelRouter = router({
 				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
 			}
 		}),
+	getAllProducts: publicProcedure.query(async ({ ctx }) => {
+		const { prisma } = ctx;
+
+		return await prisma.product.findMany({
+			select: {
+				link: true,
+				mainPhoto: true,
+				label: true,
+				variants: true,
+			},
+		});
+	}),
 });

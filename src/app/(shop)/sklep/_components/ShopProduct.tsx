@@ -5,14 +5,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type TShopProduct = {
-	id: string;
+	link: string;
 	label: string;
 	image: string;
-	price: number;
+	price?: number;
 	editMode?: boolean;
 };
-const ShopProduct = ({ id, image, label, price, editMode }: TShopProduct) => {
-	const productLink = editMode ? `/panel/produkty/${id}` : `/sklep/${id}`;
+const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
+	const productLink = editMode ? `/panel/produkty/${link}` : `/sklep/${link}`;
 
 	return (
 		<Link href={productLink}>
@@ -20,7 +20,7 @@ const ShopProduct = ({ id, image, label, price, editMode }: TShopProduct) => {
 				<div className='w-auto h-[300px] relative flex flex-col items-center'>
 					<Image
 						src={image}
-						alt='produkt'
+						alt={label}
 						loading='eager'
 						fill
 						className='object-contain object-center'
@@ -28,7 +28,7 @@ const ShopProduct = ({ id, image, label, price, editMode }: TShopProduct) => {
 				</div>
 				<div className='py-2 px-4 text-center flex flex-col  justify-between'>
 					<span className='font-medium tracking-wide mb-1'>{label}</span>
-					{!editMode && (
+					{!editMode && price && (
 						<span className='text-primary font-bold'>{formatPrice(price)}</span>
 					)}
 				</div>

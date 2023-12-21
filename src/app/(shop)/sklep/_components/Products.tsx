@@ -1,11 +1,17 @@
 'use client';
-import { TEMP_PRODUCTS } from '@/utils/constans';
+import { trpc } from '@/components/providers/TRPC';
 import SortProducts from './SortProducts';
 import ShopProduct from './ShopProduct';
-import { motion } from 'framer-motion';
-import React from 'react';
 
 const Products = () => {
+	// TODO Change router
+	const { data: products, isLoading } = trpc.panel.getAllProducts.useQuery(
+		undefined,
+		{
+			refetchOnWindowFocus: false,
+		}
+	);
+
 	return (
 		<div className='flex flex-col w-full space-y-8'>
 			<div className='flex items-center justify-between flex-col md:flex-row'>
@@ -13,32 +19,25 @@ const Products = () => {
 				<SortProducts />
 			</div>
 			<div className='grid gap-5 2xl:gap-10 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 '>
-				{[
-					...TEMP_PRODUCTS,
-					...TEMP_PRODUCTS,
-					...TEMP_PRODUCTS,
-					...TEMP_PRODUCTS.slice(2),
-				].map((product) => (
-					<motion.div
-						initial={{
-							x: 100,
-							opacity: 0,
-						}}
-						whileInView={{
-							x: 0,
-							opacity: 1,
-						}}
-						viewport={{ once: true, amount: 0.25 }}
-						key={product.label}
-					>
-						<ShopProduct
-							id={product.label}
-							image={product.image}
-							label={product.label}
-							price={product.price}
-						/>
-					</motion.div>
-				))}
+				{isLoading
+					? 'Ładowanie'
+					: products
+					? products.map((product) => {
+							const { label, link, mainPhoto, variants } = product;
+							variants.sort((a, b) => b.price - a.price);
+							if (!variants[0]) return;
+							const lowestPrice = variants[0].price;
+							return (
+								<ShopProduct
+									label={label}
+									image={mainPhoto ?? ''}
+									link={link}
+									key={link}
+									price={lowestPrice}
+								/>
+							);
+					  })
+					: 'Brak produktów'}
 			</div>
 		</div>
 	);

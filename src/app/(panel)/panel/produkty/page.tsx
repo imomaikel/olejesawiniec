@@ -1,7 +1,15 @@
+'use client';
 import ShopProduct from '@/app/(shop)/sklep/_components/ShopProduct';
-import { TEMP_PRODUCTS } from '@/utils/constans';
+import { trpc } from '@/components/providers/TRPC';
 
 const PanelProductsPage = () => {
+	const { data: products, isLoading } = trpc.panel.getAllProducts.useQuery(
+		undefined,
+		{
+			refetchOnWindowFocus: false,
+		}
+	);
+
 	return (
 		<div className='flex flex-col space-y-4 w-full'>
 			<div>
@@ -11,22 +19,21 @@ const PanelProductsPage = () => {
 				</p>
 			</div>
 			<div className='grid gap-5 2xl:gap-10 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
-				{[
-					...TEMP_PRODUCTS,
-					...TEMP_PRODUCTS,
-					...TEMP_PRODUCTS,
-					...TEMP_PRODUCTS.slice(2),
-				].map((product) => (
-					<div key={product.label}>
-						<ShopProduct
-							id={product.label}
-							image={product.image}
-							label={product.label}
-							price={product.price}
-							editMode
-						/>
-					</div>
-				))}
+				{isLoading
+					? [...Array.from(Array(12).keys())].map((index) => (
+							<ShopProduct.Skeleton key={`skeleton${index}`} />
+					  ))
+					: products
+					? products.map((product) => (
+							<ShopProduct
+								editMode
+								image=''
+								label={product.label}
+								link={product.link}
+								key={product.link}
+							/>
+					  ))
+					: 'Brak produktów'}
 			</div>
 		</div>
 	);

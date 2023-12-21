@@ -1,11 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import {
-	PanelVariantValidator,
-	TPanelVariantValidator,
-} from '@/lib/validators/panel';
 import {
 	Form,
 	FormControl,
@@ -14,8 +6,16 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
-import { trpc } from '@/components/providers/TRPC';
+import {
+	PanelVariantValidator,
+	TPanelVariantValidator,
+} from '@/lib/validators/panel';
 import { errorToast, successToast } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { trpc } from '@/components/providers/TRPC';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
 
 type TNewVariant = {
 	productId: string;
