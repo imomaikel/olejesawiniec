@@ -14,7 +14,7 @@ export default function Home() {
 		<>
 			<header>
 				<nav>
-					<Navbar />
+					<Navbar className='px-8 md:px-12' />
 				</nav>
 			</header>
 

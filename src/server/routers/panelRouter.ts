@@ -285,7 +285,7 @@ export const panelRouter = router({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const { capacityUnit, productId, variantId } = input;
+			const { capacityUnit, variantId } = input;
 			const { prisma } = ctx;
 
 			try {

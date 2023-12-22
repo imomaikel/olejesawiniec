@@ -12,6 +12,7 @@ import { FaTools, FaTrashAlt } from 'react-icons/fa';
 import ActionButton from '@/components/ActionButton';
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/components/providers/TRPC';
+import PhotoManager from './controls/PhotoManager';
 import VariantList from './controls/VariantList';
 import { Button } from '@/components/ui/button';
 import { TiChevronRight } from 'react-icons/ti';
@@ -135,27 +136,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 			<Separator />
 
 			{/* Product images */}
-			<div>
-				<div className='flex'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Zdjęcia produktu</h2>
-				</div>
-				<div>
-					<h3 className='mt-4 font-medium'>Zdjęcie główne</h3>
-					<div className='flex items-center'>
-						<Input type='file' className='mr-4' />
-						<FaTrashAlt className='w-6 h-6 cursor-pointer transition-colors hover:text-destructive' />
-					</div>
-				</div>
-				<div className='space-y-2'>
-					<h3 className='mt-4 font-medium'>Dodatkowe zdjęcia</h3>
-					<div className='flex items-center'>
-						<Input type='file' className='mr-4' />
-						<FaTrashAlt className='w-6 h-6 cursor-pointer transition-colors hover:text-destructive' />
-					</div>
-					<Button variant='ghost'>Dodaj nowe</Button>
-				</div>
-			</div>
+			<PhotoManager product={product} refetch={refetchProduct} />
 
 			<Separator />
 
