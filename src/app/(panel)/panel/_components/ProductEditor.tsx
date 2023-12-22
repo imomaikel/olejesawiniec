@@ -7,9 +7,8 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import ProductManager from './controls/ProductManager';
 import { Separator } from '@/components/ui/separator';
-import { FaTools, FaTrashAlt } from 'react-icons/fa';
-import ActionButton from '@/components/ActionButton';
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/components/providers/TRPC';
 import PhotoManager from './controls/PhotoManager';
@@ -21,7 +20,7 @@ import NewVariant from './controls/NewVariant';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { IoOptions } from 'react-icons/io5';
-import ProductStatus from './ProductStatus';
+import { FaTrashAlt } from 'react-icons/fa';
 import { errorToast } from '@/lib/utils';
 
 type TProductEditor = {
@@ -66,9 +65,6 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 		return 'Loading...';
 	}
 
-	const productStatus = product.enabled ? 'enabled' : 'disabled';
-	const isOutOfStock = !product.variants.some((variant) => variant.stock > 0);
-
 	return (
 		<>
 			{/* Product name */}
@@ -83,32 +79,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 			<Separator />
 
 			{/* Product Controls */}
-			{/* TODO */}
-			<div>
-				<div className='flex'>
-					<FaTools className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Zarządzanie produktem</h2>
-				</div>
-				{/* Product Status */}
-				<div>
-					<div className='flex flex-col md:flex-row items-center space-x-0 md:space-x-2 space-y-2 md:space-y-2'>
-						<h3 className='font-bold text-lg md:mt-1.5'>
-							Aktualny stan produktu
-						</h3>
-						<ProductStatus status={productStatus} />
-						{isOutOfStock && <ProductStatus status='out of stock' />}
-					</div>
-					{/* Control Buttons */}
-					<div className='mt-2 space-x-0 md:space-x-2 space-y-2 md:space-y-0 flex flex-col md:flex-row'>
-						{productStatus === 'enabled' ? (
-							<ActionButton variant='warning'>Wyłącz produkt</ActionButton>
-						) : (
-							<ActionButton>Włącz produkt</ActionButton>
-						)}
-						<ActionButton variant='destructive'>Usuń produkt</ActionButton>
-					</div>
-				</div>
-			</div>
+			<ProductManager product={product} refetch={refetchProduct} />
 
 			<Separator />
 

@@ -7,7 +7,7 @@ import { PanelVariantProductValidator } from '@/lib/validators/panel';
 import { publicProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 
 type TErrorStatus = {
 	status: 'error';
@@ -309,4 +309,40 @@ export const panelRouter = router({
 			},
 		});
 	}),
+	productState: publicProcedure
+		.input(
+			z.object({
+				productId: z.string(),
+				newState: z.boolean(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const { productId, newState } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.product.update({
+					where: { id: productId, enabled: !newState },
+					data: { enabled: newState },
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		}),
+	deleteProduct: publicProcedure
+		.input(z.object({ productId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const { productId } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.product.delete({
+					where: { id: productId },
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		}),
 });
