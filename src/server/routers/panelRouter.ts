@@ -382,4 +382,20 @@ export const panelRouter = router({
 				return false;
 			}
 		}),
+	updateDescription: publicProcedure
+		.input(z.object({ description: z.string(), productId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const { description, productId } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.product.update({
+					where: { id: productId },
+					data: { description },
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		}),
 });

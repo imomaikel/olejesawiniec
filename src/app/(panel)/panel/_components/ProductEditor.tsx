@@ -7,22 +7,19 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import ProductDescription from './controls/ProductDescription';
 import ProductManager from './controls/ProductManager';
+import ProductDetails from './controls/ProductDetails';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/components/providers/TRPC';
 import PhotoManager from './controls/PhotoManager';
 import VariantList from './controls/VariantList';
-import { Button } from '@/components/ui/button';
-import { TiChevronRight } from 'react-icons/ti';
 import TagControl from './controls/TagControl';
 import NewVariant from './controls/NewVariant';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { IoOptions } from 'react-icons/io5';
-import { FaTrashAlt } from 'react-icons/fa';
 import { errorToast } from '@/lib/utils';
-import ProductDetails from './controls/ProductDetails';
 
 type TProductEditor = {
 	productLink: string;
@@ -118,13 +115,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 			<Separator />
 
 			{/* Product description */}
-			<div>
-				<div className='flex'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Opis produktu</h2>
-				</div>
-				<Textarea rows={10}></Textarea>
-			</div>
+			<ProductDescription product={product} refetch={refetchProduct} />
 
 			<Separator />
 
