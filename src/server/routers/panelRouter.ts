@@ -345,4 +345,41 @@ export const panelRouter = router({
 				return false;
 			}
 		}),
+	addDetail: publicProcedure
+		.input(z.object({ detail: z.string(), productId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const { detail, productId } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.product.update({
+					where: { id: productId },
+					data: {
+						details: {
+							create: {
+								content: detail,
+							},
+						},
+					},
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		}),
+	removeDetail: publicProcedure
+		.input(z.object({ detailId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const { detailId } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.productDetail.delete({
+					where: { id: detailId },
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		}),
 });

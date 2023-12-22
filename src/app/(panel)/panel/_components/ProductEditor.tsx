@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation';
 import { IoOptions } from 'react-icons/io5';
 import { FaTrashAlt } from 'react-icons/fa';
 import { errorToast } from '@/lib/utils';
+import ProductDetails from './controls/ProductDetails';
 
 type TProductEditor = {
 	productLink: string;
@@ -112,27 +113,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 			<Separator />
 
 			{/* Product details  */}
-			<div>
-				<div className='flex'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Właściwości produktu</h2>
-				</div>
-				<h3 className='mt-4 font-medium'>Aktualne właściwości</h3>
-				<ul className='ml-6'>
-					<li className='flex items-center'>
-						<TiChevronRight className='w-6 h-6' />
-						<span>Wspomaga prace serca</span>
-						<FaTrashAlt className='w-6 h-6 cursor-pointer transition-colors hover:text-destructive ml-4' />
-					</li>
-				</ul>
-				<div>
-					<h3 className='mt-4 font-medium'>Dodaj nową właściwość</h3>
-					<div className='flex items-center space-x-2'>
-						<Input />
-						<Button>Dodaj</Button>
-					</div>
-				</div>
-			</div>
+			<ProductDetails product={product} refetch={refetchProduct} />
 
 			<Separator />
 
