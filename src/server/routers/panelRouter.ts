@@ -7,7 +7,7 @@ import { PanelVariantProductValidator } from '@/lib/validators/panel';
 import { publicProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
-import { boolean, z } from 'zod';
+import { z } from 'zod';
 
 type TErrorStatus = {
 	status: 'error';
@@ -120,7 +120,11 @@ export const panelRouter = router({
 					message = 'Nieprawidłowa nazwa produktu.';
 					status = 'error';
 				} else {
-					const link = productName.toLowerCase().replace(/ /gi, '-');
+					const link = productName
+						.toLowerCase()
+						.trim()
+						.replace(/\s+/g, ' ')
+						.replace(/ /gi, '-');
 					let query;
 					try {
 						query = await prisma.product.create({
@@ -258,7 +262,13 @@ export const panelRouter = router({
 					where: { id: productId },
 					data: {
 						variants: {
-							create: { capacity, price, stock: stock ?? 0, unit },
+							create: {
+								capacity,
+								price,
+								stock: stock ?? 0,
+								unit,
+								parentId: productId,
+							},
 						},
 					},
 				});
