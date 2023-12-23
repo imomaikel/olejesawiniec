@@ -408,4 +408,95 @@ export const panelRouter = router({
 				return false;
 			}
 		}),
+	updateCalories: publicProcedure
+		.input(
+			z.object({
+				fat: z.number().min(0).max(100),
+				saturatedFat: z.number().min(0).max(100).optional(),
+				monounsaturatedFat: z.number().min(0).max(100).optional(),
+				polyunsaturatedFat: z.number().min(0).max(100).optional(),
+				carbohydrate: z.number().min(0).max(100),
+				carbohydrateSugar: z.number().min(0).max(100),
+				fiber: z.number().min(0).max(100),
+				protein: z.number().min(0).max(100),
+				sodium: z.number().min(0).max(100),
+				productId: z.string(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const { prisma } = ctx;
+			const {
+				carbohydrate,
+				carbohydrateSugar,
+				fat,
+				fiber,
+				protein,
+				sodium,
+				monounsaturatedFat,
+				polyunsaturatedFat,
+				saturatedFat,
+				productId,
+			} = input;
+
+			let status = 'OK';
+
+			if (carbohydrate + fat + fiber + protein + sodium !== 100) {
+				status = 'Nieprawidłowa suma składników';
+			} else if (
+				(monounsaturatedFat ?? 0) +
+					(polyunsaturatedFat ?? 0) +
+					(saturatedFat ?? 0) >
+				fat
+			) {
+				status = 'Nieprawidłowa suma tłuszczów';
+			} else if (carbohydrateSugar > carbohydrate) {
+				status = 'Nieprawidłowa suma węglowodanów';
+			}
+
+			if (status !== 'OK') {
+				return status;
+			}
+
+			const newData = {
+				carbohydrate,
+				carbohydrateSugar,
+				fat,
+				fiber,
+				monounsaturatedFat,
+				polyunsaturatedFat,
+				protein,
+				saturatedFat,
+				sodium,
+			};
+
+			try {
+				const data = await prisma.product.findFirst({
+					where: { id: productId },
+					include: { nutritionFact: true },
+				});
+
+				let factId = '';
+
+				if (data?.nutritionFact?.id) {
+					factId = data.nutritionFact.id;
+				}
+
+				await prisma.product.update({
+					where: { id: productId },
+					data: {
+						nutritionFact: {
+							upsert: {
+								where: { id: factId },
+								update: newData,
+								create: newData,
+							},
+						},
+					},
+				});
+				return 'OK';
+			} catch (error) {
+				console.log(error);
+				return 'Błąd serwera.';
+			}
+		}),
 });

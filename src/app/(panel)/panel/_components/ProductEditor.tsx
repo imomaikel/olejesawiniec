@@ -1,14 +1,7 @@
 'use client';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
 import ProductDescription from './controls/ProductDescription';
 import ProductManager from './controls/ProductManager';
+import NutritionTable from './controls/NutritionTable';
 import ProductDetails from './controls/ProductDetails';
 import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/components/providers/TRPC';
@@ -120,84 +113,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 			<Separator />
 
 			{/* Product nutrition facts */}
-			<div>
-				<div className='flex'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Wartości odżywcze</h2>
-				</div>
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Wartość odżywcza</TableHead>
-							<TableHead>w 100g produktu</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						<TableRow>
-							<TableCell>Tłuszcz</TableCell>
-							<TableCell>
-								<Input placeholder='0g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>w tym:</TableCell>
-							<TableCell></TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>kwasy tłuszczowe nasycone</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>kwasy tłuszczowe jednonienasycone</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>kwasy tłuszczowe wielonienasycone</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>Węglowodany</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>w tym cukry</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>błonnik</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>białko</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>sól</TableCell>
-							<TableCell>
-								<Input placeholder='50g' />
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>Obliczona kaloryczność</TableCell>
-							<TableCell>0kcal</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</div>
+			<NutritionTable product={product} refetch={refetchProduct} />
 		</>
 	);
 };
