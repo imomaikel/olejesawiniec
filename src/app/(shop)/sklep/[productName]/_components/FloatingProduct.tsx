@@ -1,4 +1,5 @@
 'use client';
+import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
 import ImageSwiper from '@/components/ImageSwiper';
@@ -6,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useEffect, useState } from 'react';
 import { formatPrice } from '@/lib/utils';
+
+const MAX_STARS = 6;
+const TEMP_PRODUCT_STARS = 4.5;
 
 type TProductVariant = {
 	price: number;
@@ -49,6 +53,12 @@ const FloatingProduct = ({
 		};
 	}, []);
 
+	const fullStars =
+		TEMP_PRODUCT_STARS >= MAX_STARS
+			? MAX_STARS
+			: Math.floor(TEMP_PRODUCT_STARS);
+	const notFullStars = MAX_STARS - fullStars;
+
 	return (
 		<div
 			className='max-w-sm relative'
@@ -57,6 +67,27 @@ const FloatingProduct = ({
 			{/* Title */}
 			<div className='mb-1'>
 				<h1 className='text-3xl font-bold'>{productName}</h1>
+			</div>
+			{/* Feedback */}
+			<div className='flex items-center mb-1'>
+				<div className='flex items-center mr-1'>
+					{[...Array.from(Array(fullStars).keys())].map((index) => (
+						<IoStar key={`star-${index}`} className='text-orange-400' />
+					))}
+					{[...Array.from(Array(notFullStars).keys())].map((index) => {
+						if (TEMP_PRODUCT_STARS - fullStars >= 0.5 && index == 0)
+							return <IoStarHalf className='text-orange-400' />;
+						return (
+							<IoStarOutline
+								key={`star-${index + fullStars}`}
+								className='opacity-75'
+							/>
+						);
+					})}
+				</div>
+				<p className='text-muted-foreground text-xs pt-1'>
+					na podstawie 2 ocen
+				</p>
 			</div>
 			{/* Image */}
 			<div>

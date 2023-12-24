@@ -12,6 +12,7 @@ import FloatingProduct from './_components/FloatingProduct';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
 import { IoWarning } from 'react-icons/io5';
+import Opinion from './_components/Opinion';
 import { formatPrice } from '@/lib/utils';
 import { useState } from 'react';
 
@@ -259,6 +260,42 @@ const ProductPage = () => {
 							</TableRow>
 						</TableBody>
 					</Table>
+				</div>
+				{/* Feedback */}
+				<div className='mt-6'>
+					<h1 className='text-3xl font-bold'>Opinie</h1>
+					<p className='text-muted-foreground'>
+						Dokonaj zakupu, aby ocenić produkt i dodać opinię.
+					</p>
+					{/* Opinions */}
+					<div>
+						<h2>Najnowsze opinie</h2>
+						<div className='flex flex-col gap-y-4'>
+							<Opinion
+								authorName='Kasia'
+								date={new Date()}
+								content='Olej z dynii to dla mnie prawdziwa perełka w kuchni! Jego delikatny orzechowy smak nadaje potrawom wyjątkowego aromatu, a dodatkowo dostarcza cennych składników odżywczych. Idealny do sałatek czy makaronów, zawsze mam go w mojej spiżarni.'
+							/>
+							<Opinion
+								authorName='Basia'
+								avatarURL='https://images.unsplash.com/photo-1703319958424-bfb960c17c52?q=80&w=1934&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+								date={new Date('2023-12-23T12:00:07+0000')}
+								content='Najlepszy olej na rynku!'
+							/>
+							<Opinion
+								authorName='Asia'
+								date={new Date('2023-12-05T12:00:07+0000')}
+								content='Próbowałam różnych olejów, ale olej z dynii zaskoczył mnie swoim intensywnym smakiem. Jestem fanem kuchni kreatywnej, a ten olej świetnie komponuje się z potrawami, dodając im unikalnego charakteru. Polecam go zwłaszcza do dipów, sosów czy pesto - rewelacyjny smak gwarantowany!'
+							/>
+						</div>
+					</div>
+					{/* No opinions */}
+					<div className='mt-4'>
+						<p className='text-justify'>
+							Ten produkt jeszcze nie ma jeszcze opinii. Kup teraz i stań się
+							pierwszą osobą, która podzieli się swoją opinią.
+						</p>
+					</div>
 				</div>
 				<div className='absolute h-full w-[1px] bg-black/40 -left-24 top-0 hidden md:block' />
 			</div>
