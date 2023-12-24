@@ -105,11 +105,12 @@ export const panelRouter = router({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			let { productName } = input;
+			const { productName } = input;
+			let link = productName;
 			const { prisma } = ctx;
 
-			REPLACE_LETTERS.forEach((letter) =>
-				productName.replaceAll(letter.from, letter.to)
+			REPLACE_LETTERS.forEach(
+				(letter) => (link = link.replaceAll(letter.from, letter.to))
 			);
 
 			try {
@@ -120,7 +121,7 @@ export const panelRouter = router({
 					message = 'Nieprawidłowa nazwa produktu.';
 					status = 'error';
 				} else {
-					const link = productName
+					link = link
 						.toLowerCase()
 						.trim()
 						.replace(/\s+/g, ' ')

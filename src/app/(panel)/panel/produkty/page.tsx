@@ -27,7 +27,7 @@ const PanelProductsPage = () => {
 					? products.map((product) => (
 							<ShopProduct
 								editMode
-								image=''
+								image={product.mainPhoto}
 								label={product.label}
 								link={product.link}
 								key={product.link}

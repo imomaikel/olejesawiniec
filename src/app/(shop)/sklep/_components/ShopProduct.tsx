@@ -1,5 +1,6 @@
 'use client';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FaBottleDroplet } from 'react-icons/fa6';
 import { formatPrice } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,7 +8,7 @@ import Link from 'next/link';
 type TShopProduct = {
 	link: string;
 	label: string;
-	image: string;
+	image: string | null;
 	price?: number;
 	editMode?: boolean;
 };
@@ -18,13 +19,19 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
 		<Link href={productLink}>
 			<div className='shadow-2xl overflow-hidden bg-white rounded-xl hover:scale-105 transition-transform cursor-pointer ring-1 ring-primary/10 z-20 hover:z-10 relative'>
 				<div className='w-auto h-[300px] relative flex flex-col items-center'>
-					<Image
-						src={image}
-						alt={label}
-						loading='eager'
-						fill
-						className='object-contain object-center'
-					/>
+					{image ? (
+						<Image
+							src={image}
+							alt={label}
+							loading='eager'
+							fill
+							className='object-contain object-center'
+						/>
+					) : (
+						<div className='w-full h-full items-center justify-center flex'>
+							<FaBottleDroplet className='h-48 w-48' />
+						</div>
+					)}
 				</div>
 				<div className='py-2 px-4 text-center flex flex-col  justify-between'>
 					<span className='font-medium tracking-wide mb-1'>{label}</span>
