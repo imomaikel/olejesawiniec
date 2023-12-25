@@ -7,56 +7,107 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import FloatingProduct from './_components/FloatingProduct';
+import { useParams, useRouter } from 'next/navigation';
+import { errorToast, formatPrice } from '@/lib/utils';
+import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
-import { IoWarning } from 'react-icons/io5';
 import Opinion from './_components/Opinion';
-import { formatPrice } from '@/lib/utils';
 import { useState } from 'react';
-
-const TEMP_VARIANS = [
-	{
-		price: 20,
-		size: 100,
-		unit: 'ml',
-	},
-	{
-		price: 25,
-		size: 200,
-		unit: 'ml',
-	},
-	{
-		price: 50,
-		size: 500,
-		unit: 'ml',
-	},
-];
 
 const ProductPage = () => {
 	const [selectedVariant, setSelectedVariant] = useState({
-		price: TEMP_VARIANS[0].price,
-		size: TEMP_VARIANS[0].size,
-		unit: TEMP_VARIANS[0].unit,
+		price: -1,
+		capacity: 0,
+		unit: '',
 	});
+	const router = useRouter();
+	const { productName } = useParams<{
+		productName: string;
+	}>();
+
+	const { data: product, isLoading } = trpc.shop.getProduct.useQuery(
+		{ productName },
+		{
+			onSuccess: (response) => {
+				if (selectedVariant.price === -1)
+					setSelectedVariant({
+						price: response?.variants[0].price ?? 0,
+						capacity: response?.variants[0].price ?? 0,
+						unit: response?.variants[0].unit ?? '',
+					});
+			},
+		}
+	);
+
+	if (!product && !isLoading) {
+		errorToast('Produkt nie istnieje!');
+		router.push('/sklep');
+	}
+	if (!product) {
+		return 'Loading';
+	}
+
+	const {
+		variants,
+		tags,
+		mainPhoto,
+		extraPhotos,
+		label,
+		details,
+		nutritionFact,
+		rating,
+		ratings,
+		opinions,
+	} = product;
+
+	const ratingCount = ratings?.length ?? 0;
+
+	const photos = [];
+	if (mainPhoto) {
+		photos.push(mainPhoto);
+		extraPhotos.forEach((photo) => photos.push(photo.url));
+	}
+
+	const calcServing = (value: number, serving: number = 12) => {
+		const calculated = (value * serving) / 100;
+		return calculated;
+	};
+	const calcDietaryReference = (
+		serving: number,
+		key:
+			| 'calories'
+			| 'fat'
+			| 'saturated fat'
+			| 'carbs'
+			| 'sugar'
+			| 'protein'
+			| 'sodium'
+	) => {
+		let goal = 0;
+		if (key === 'calories') goal = 2000;
+		else if (key === 'fat') goal = 70;
+		else if (key === 'saturated fat') goal = 20;
+		else if (key === 'carbs') goal = 260;
+		else if (key === 'sugar') goal = 90;
+		else if (key === 'protein') goal = 50;
+		else if (key === 'sodium') goal = 6;
+
+		const value = Math.round((serving * 100) / goal);
+		return value;
+	};
 
 	return (
 		<div className='flex justify-center relative flex-col md:flex-row mb-24 space-y-12 md:space-y-0'>
 			<FloatingProduct
-				productName='Olej z dynii'
-				variants={TEMP_VARIANS}
 				selectedPrice={selectedVariant.price}
-				selectedSize={selectedVariant.size}
-				tags={[
-					'Na kości',
-					'Na wątrobe',
-					'Witamina A',
-					'Witamina D',
-					'Witamina E',
-					'Na skóre',
-				]}
-				imageUrls={['/oil.png', '/product1.jpg', '/product2.jpg']}
+				productName={label}
+				variants={variants}
+				imageUrls={photos}
+				tags={tags}
+				rating={rating}
+				ratingCount={ratingCount}
 			/>
 			<div className='mx-24 hidden md:block' />
 			<div className='w-full max-w-lg relative'>
@@ -65,23 +116,24 @@ const ProductPage = () => {
 					<h1 className='text-3xl font-bold'>Szczegóły produktu</h1>
 				</div>
 
+				{/* TODO */}
 				{/* No Stock */}
-				<Alert variant='destructive' className='my-2'>
+				{/* <Alert variant='destructive' className='my-2'>
 					<IoWarning className='h-8 w-8' />
 					<AlertTitle className='ml-2'>Uwaga!</AlertTitle>
 					<AlertDescription className='ml-2'>
 						Rozmiary na czerwono nie są aktualnie dostępne. Możesz dodać do
 						listy życzeń i otrzymać e-mail gdy będzie dostępny ponownie.
 					</AlertDescription>
-				</Alert>
+				</Alert> */}
 				{/* Low Stock */}
-				<Alert variant='warning' className='my-2'>
+				{/* <Alert variant='warning' className='my-2'>
 					<IoWarning className='h-8 w-8' />
 					<AlertTitle className='ml-2'>Uwaga!</AlertTitle>
 					<AlertDescription className='ml-2'>
 						Rozmiary na pomarańczowo są na wyczerpaniu.
 					</AlertDescription>
-				</Alert>
+				</Alert> */}
 
 				{/* Size */}
 				<div className='mt-2 flex md:flex-row flex-col items-center space-x-2'>
@@ -89,19 +141,19 @@ const ProductPage = () => {
 						Dostępne w pojemnościach
 					</div>
 					<div className='space-x-2'>
-						{TEMP_VARIANS.map((variant) => (
+						{variants.map((variant) => (
 							<Badge
-								key={`${variant.price}${variant.size}`}
+								key={`${variant.price}${variant.capacity}`}
 								className='cursor-pointer'
 								onClick={() =>
 									setSelectedVariant({
 										price: variant.price,
-										size: variant.size,
+										capacity: variant.capacity,
 										unit: variant.unit,
 									})
 								}
 							>
-								{`${variant.size}${variant.unit}`}
+								{`${variant.capacity}${variant.unit}`}
 							</Badge>
 						))}
 					</div>
@@ -111,7 +163,7 @@ const ProductPage = () => {
 					<div className='flex items-center space-x-2'>
 						<span className='text-2xl font-medium'>Wybrana pojemność</span>
 						<Badge>
-							{selectedVariant.size}
+							{selectedVariant.capacity}
 							{selectedVariant.unit}
 						</Badge>
 					</div>
@@ -127,34 +179,16 @@ const ProductPage = () => {
 				<div className='mt-6'>
 					<h1 className='text-3xl font-bold'>Właściwości</h1>
 					<ul className='ml-6'>
-						<li className='flex items-center'>
-							<TiChevronRight className='w-6 h-6' />
-							<span>Wspomaga zdrowie watroby</span>
-						</li>
-						<li className='flex items-center'>
-							<TiChevronRight className='w-6 h-6' />
-							<span>Reguluje poziom cukru we krwi</span>
-						</li>
-						<li className='flex items-center'>
-							<TiChevronRight className='w-6 h-6' />
-							<span>Obniża poziom cholesterolu</span>
-						</li>
-						<li className='flex items-center'>
-							<TiChevronRight className='w-6 h-6' />
-							<span>Działa przeciwnowotworowo</span>
-						</li>
-						<li className='flex items-center'>
-							<TiChevronRight className='w-6 h-6' />
-							<span>Działa przeciwzapalnie</span>
-						</li>
-						<li className='flex items-center'>
-							<TiChevronRight className='w-6 h-6' />
-							<span>Wspomaga układ odpornościowy</span>
-						</li>
+						{details.map(({ id, content }) => (
+							<li key={id} className='flex items-center'>
+								<TiChevronRight className='w-6 h-6' />
+								<span>{content}</span>
+							</li>
+						))}
 					</ul>
 				</div>
 				{/* Description */}
-				<div className='mt-6'>
+				{/* <div className='mt-6'>
 					<h1 className='text-3xl font-bold'>Opis produktu</h1>
 					<ul>
 						<li className='flex space-x-2'>
@@ -184,83 +218,143 @@ const ProductPage = () => {
 							<span className='text-muted-foreground'>lorem ipsum</span>
 						</li>
 					</ul>
-				</div>
+				</div> */}
 				{/* Nutrition facts */}
-				<div className='mt-4'>
-					<h1 className='text-3xl font-bold'>Wartości odżywcze</h1>
-					<Table className='mt-2'>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Wartość odżywcza</TableHead>
-								<TableHead>w 100g produktu</TableHead>
-								<TableHead>W porcji: 3 łyżeczki (12g)</TableHead>
-								<TableHead>%RWS* w porcji</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							<TableRow>
-								<TableCell>Tłuszcz</TableCell>
-								<TableCell>100g</TableCell>
-								<TableCell>10g</TableCell>
-								<TableCell>10%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>w tym:</TableCell>
-								<TableCell></TableCell>
-								<TableCell></TableCell>
-								<TableCell></TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>kwasy tłuszczowe nasycone</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>kwasy tłuszczowe jednonienasycone</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>kwasy tłuszczowe wielonienasycone</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>Węglowodany</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>w tym cukry</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>błonnik</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>białko</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell>sól</TableCell>
-								<TableCell>100kJ/100kcal</TableCell>
-								<TableCell>10kJ/10kcal</TableCell>
-								<TableCell>1%</TableCell>
-							</TableRow>
-						</TableBody>
-					</Table>
-				</div>
+				{nutritionFact && (
+					<div className='mt-4'>
+						<h1 className='text-3xl font-bold'>Wartości odżywcze</h1>
+						<Table className='mt-2'>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Wartość odżywcza</TableHead>
+									<TableHead>w 100g produktu</TableHead>
+									<TableHead>W porcji: 3 łyżeczki (12g)</TableHead>
+									<TableHead>%RWS* w porcji</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableRow>
+									<TableCell>Tłuszcz</TableCell>
+									<TableCell>{nutritionFact.fat}g</TableCell>
+									<TableCell>{calcServing(nutritionFact.fat)}g</TableCell>
+									<TableCell>
+										{calcDietaryReference(
+											calcServing(nutritionFact.fat ?? 0),
+											'fat'
+										)}
+										%
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>w tym:</TableCell>
+									<TableCell></TableCell>
+									<TableCell></TableCell>
+									<TableCell></TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='pl-8'>
+										kwasy tłuszczowe nasycone
+									</TableCell>
+									<TableCell>{nutritionFact.saturatedFat}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.saturatedFat ?? 0)}g
+									</TableCell>
+									<TableCell>
+										{calcDietaryReference(
+											calcServing(nutritionFact.saturatedFat ?? 0),
+											'saturated fat'
+										)}
+										%
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='pl-8'>
+										kwasy tłuszczowe jednonienasycone
+									</TableCell>
+									<TableCell>{nutritionFact.monounsaturatedFat}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.monounsaturatedFat ?? 0)}g
+									</TableCell>
+									<TableCell>-</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='pl-8'>
+										kwasy tłuszczowe wielonienasycone
+									</TableCell>
+									<TableCell>{nutritionFact.polyunsaturatedFat}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.polyunsaturatedFat ?? 0)}g
+									</TableCell>
+									<TableCell>-</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>Węglowodany</TableCell>
+									<TableCell>{nutritionFact.carbohydrate}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.carbohydrate ?? 0)}g
+									</TableCell>
+									<TableCell>
+										{calcDietaryReference(
+											calcServing(nutritionFact.carbohydrate ?? 0),
+											'carbs'
+										)}
+										%
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell className='pl-8'>w tym cukry</TableCell>
+									<TableCell>{nutritionFact.carbohydrateSugar}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.carbohydrateSugar ?? 0)}g
+									</TableCell>
+									<TableCell>
+										{calcDietaryReference(
+											calcServing(nutritionFact.carbohydrateSugar ?? 0),
+											'sugar'
+										)}
+										%
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>Błonnik</TableCell>
+									<TableCell>{nutritionFact.fiber}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.fiber ?? 0)}g
+									</TableCell>
+									<TableCell>-</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>Białko</TableCell>
+									<TableCell>{nutritionFact.protein}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.protein ?? 0)}g
+									</TableCell>
+									<TableCell>
+										{calcDietaryReference(
+											calcServing(nutritionFact.protein ?? 0),
+											'protein'
+										)}
+										%
+									</TableCell>
+								</TableRow>
+								<TableRow>
+									<TableCell>Sól</TableCell>
+									<TableCell>{nutritionFact.sodium}g</TableCell>
+									<TableCell>
+										{calcServing(nutritionFact.sodium ?? 0)}g
+									</TableCell>
+									<TableCell>
+										{calcDietaryReference(
+											calcServing(nutritionFact.sodium ?? 0),
+											'sodium'
+										)}
+										%
+									</TableCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+					</div>
+				)}
 				{/* Feedback */}
 				<div className='mt-6'>
 					<h1 className='text-3xl font-bold'>Opinie</h1>
@@ -269,32 +363,28 @@ const ProductPage = () => {
 					</p>
 					{/* Opinions */}
 					<div>
-						<h2>Najnowsze opinie</h2>
 						<div className='flex flex-col gap-y-4'>
-							<Opinion
-								authorName='Kasia'
-								date={new Date()}
-								content='Olej z dynii to dla mnie prawdziwa perełka w kuchni! Jego delikatny orzechowy smak nadaje potrawom wyjątkowego aromatu, a dodatkowo dostarcza cennych składników odżywczych. Idealny do sałatek czy makaronów, zawsze mam go w mojej spiżarni.'
-							/>
-							<Opinion
-								authorName='Basia'
-								avatarURL='https://images.unsplash.com/photo-1703319958424-bfb960c17c52?q=80&w=1934&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-								date={new Date('2023-12-23T12:00:07+0000')}
-								content='Najlepszy olej na rynku!'
-							/>
-							<Opinion
-								authorName='Asia'
-								date={new Date('2023-12-05T12:00:07+0000')}
-								content='Próbowałam różnych olejów, ale olej z dynii zaskoczył mnie swoim intensywnym smakiem. Jestem fanem kuchni kreatywnej, a ten olej świetnie komponuje się z potrawami, dodając im unikalnego charakteru. Polecam go zwłaszcza do dipów, sosów czy pesto - rewelacyjny smak gwarantowany!'
-							/>
+							{opinions.length >= 1 ? (
+								opinions.map((opinion) => {
+									// TODO Avatar
+									return (
+										<Opinion
+											authorName={opinion.author}
+											content={opinion.content}
+											date={opinion.createdAt}
+											key={opinion.id}
+										/>
+									);
+								})
+							) : (
+								<div className='mt-4'>
+									<p className='text-justify'>
+										Ten produkt jeszcze nie ma jeszcze opinii. Kup teraz i stań
+										się pierwszą osobą, która podzieli się swoją opinią.
+									</p>
+								</div>
+							)}
 						</div>
-					</div>
-					{/* No opinions */}
-					<div className='mt-4'>
-						<p className='text-justify'>
-							Ten produkt jeszcze nie ma jeszcze opinii. Kup teraz i stań się
-							pierwszą osobą, która podzieli się swoją opinią.
-						</p>
 					</div>
 				</div>
 				<div className='absolute h-full w-[1px] bg-black/40 -left-24 top-0 hidden md:block' />

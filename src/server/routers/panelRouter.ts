@@ -132,6 +132,7 @@ export const panelRouter = router({
 							data: {
 								label: productName,
 								link,
+								rating: 0,
 							},
 						});
 					} catch (error: any) {

@@ -21,6 +21,42 @@ model Product {
   tags          Tag[]
   details       ProductDetail[]
   nutritionFact NutritionFact?
+  opinions      Opinion[]
+
+  ratings Rating[]
+  rating  Float
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Rating {
+  id    String @id @default(cuid())
+  score Int    @db.TinyInt
+
+  // TODO AUTH PROFILE
+  author String
+  // 
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+
+  createdAd DateTime @default(now())
+}
+
+model Opinion {
+  id         String  @id @default(cuid())
+  showAvatar Boolean
+  content    String
+
+  // TODO AUTH PROFILE
+  author String
+  // 
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+
+  createdAt DateTime @default(now())
 }
 
 model NutritionFact {

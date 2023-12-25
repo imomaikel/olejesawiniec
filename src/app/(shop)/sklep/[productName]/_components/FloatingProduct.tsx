@@ -4,31 +4,29 @@ import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
 import ImageSwiper from '@/components/ImageSwiper';
 import { Button } from '@/components/ui/button';
+import { Tag, Variant } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
 import { useEffect, useState } from 'react';
 import { formatPrice } from '@/lib/utils';
 
 const MAX_STARS = 6;
-const TEMP_PRODUCT_STARS = 4.5;
 
-type TProductVariant = {
-	price: number;
-	size: number;
-	unit: string;
-};
 type TFloatingProduct = {
 	productName: string;
 	imageUrls: string[];
-	tags?: string[];
-	selectedSize: number;
+	tags?: Tag[];
 	selectedPrice: number;
-	variants: TProductVariant[];
+	variants: Variant[];
+	rating: number;
+	ratingCount: number;
 };
 const FloatingProduct = ({
 	imageUrls,
 	productName,
 	tags,
 	selectedPrice,
+	rating,
+	ratingCount,
 }: TFloatingProduct) => {
 	const [scrollY, setScrollY] = useState(0);
 
@@ -53,10 +51,7 @@ const FloatingProduct = ({
 		};
 	}, []);
 
-	const fullStars =
-		TEMP_PRODUCT_STARS >= MAX_STARS
-			? MAX_STARS
-			: Math.floor(TEMP_PRODUCT_STARS);
+	const fullStars = rating >= MAX_STARS ? MAX_STARS : Math.floor(rating);
 	const notFullStars = MAX_STARS - fullStars;
 
 	return (
@@ -75,27 +70,32 @@ const FloatingProduct = ({
 						<IoStar key={`star-${index}`} className='text-orange-400' />
 					))}
 					{[...Array.from(Array(notFullStars).keys())].map((index) => {
-						if (TEMP_PRODUCT_STARS - fullStars >= 0.5 && index == 0)
-							return <IoStarHalf className='text-orange-400' />;
+						if (rating - fullStars >= 0.5 && index == 0)
+							return (
+								<IoStarHalf
+									className='text-orange-400'
+									key={`start-half-${index}`}
+								/>
+							);
 						return (
 							<IoStarOutline
-								key={`star-${index + fullStars}`}
+								key={`star-empty-${index}`}
 								className='opacity-75'
 							/>
 						);
 					})}
 				</div>
 				<p className='text-muted-foreground text-xs pt-1'>
-					na podstawie 2 ocen
+					na podstawie {ratingCount} ocen
 				</p>
 			</div>
 			{/* Image */}
 			<div>
-				<ImageSwiper alt='olej' urls={imageUrls} fullSizeOnClick />
+				<ImageSwiper alt='olej' urls={imageUrls} fullSizeOnClick fitImage />
 			</div>
 			{/* Tags */}
 			<div className='flex flex-wrap gap-1 mt-3 items-center justify-center'>
-				{tags && tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}
+				{tags && tags.map(({ label }) => <Badge key={label}>{label}</Badge>)}
 			</div>
 			<Separator className='my-4' />
 			{/* Actions */}

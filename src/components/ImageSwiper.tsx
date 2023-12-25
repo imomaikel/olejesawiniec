@@ -20,6 +20,7 @@ type TImageSwiper = {
 	caption?: string;
 	captionLink?: string;
 	fullSizeOnClick?: boolean;
+	fitImage?: boolean;
 };
 const ImageSwiper = ({
 	urls,
@@ -28,6 +29,7 @@ const ImageSwiper = ({
 	caption,
 	captionLink,
 	fullSizeOnClick,
+	fitImage,
 }: TImageSwiper) => {
 	const [swiper, setSwiper] = useState<null | TSwiper>(null);
 	const [isImage, setIsImage] = useState(false);
@@ -103,7 +105,10 @@ const ImageSwiper = ({
 								loading='eager'
 								alt={alt}
 								src={url}
-								className='w-full h-full object-cover object-center rounded-lg'
+								className={cn(
+									'w-full h-full object-cover object-center rounded-lg',
+									fitImage && 'object-contain'
+								)}
 								fill
 							/>
 						</SwiperSlide>
