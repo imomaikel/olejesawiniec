@@ -167,7 +167,7 @@ const EditBox = ({ product, refetchProduct }: TEditBox) => {
 								const newValue = parseFloat(e.target.value);
 								if (selectedVariant) {
 									setSelectedVariant({ ...selectedVariant, stock: newValue });
-								} else console.log('not');
+								}
 							}}
 						/>
 					</div>

@@ -24,7 +24,6 @@ const EditPage = () => {
 	});
 
 	const updateProduct = (productId: string) => {
-		console.log('ref', productId);
 		refetchProduct({ productId });
 	};
 

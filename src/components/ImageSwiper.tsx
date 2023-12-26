@@ -1,6 +1,7 @@
 'use client';
 import { FaArrowAltCircleLeft } from 'react-icons/fa';
 import { FaArrowCircleRight } from 'react-icons/fa';
+import { Dialog, DialogContent } from './ui/dialog';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useEffect, useState } from 'react';
 import { Pagination } from 'swiper/modules';
@@ -11,7 +12,7 @@ import Link from 'next/link';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Dialog, DialogClose, DialogContent, DialogFooter } from './ui/dialog';
+import { FaBottleDroplet } from 'react-icons/fa6';
 
 type TImageSwiper = {
 	urls: string[];
@@ -113,6 +114,14 @@ const ImageSwiper = ({
 							/>
 						</SwiperSlide>
 					))}
+					{urls.length === 0 && (
+						<SwiperSlide>
+							<div className='h-full w-full flex items-center justify-center flex-col'>
+								<FaBottleDroplet className='h-48 w-48' />
+								<span className='mt-1'>Brak Zdjęcia</span>
+							</div>
+						</SwiperSlide>
+					)}
 				</Swiper>
 				{caption && (
 					<div className='text-muted-foreground mt-2 text-center'>

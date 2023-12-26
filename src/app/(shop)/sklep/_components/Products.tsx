@@ -27,7 +27,6 @@ const Products = () => {
 							variants.sort((a, b) => b.price - a.price);
 							if (!variants[0]) return;
 							const lowestPrice = variants[0].price;
-							console.log(label);
 							return (
 								<ShopProduct
 									label={label}

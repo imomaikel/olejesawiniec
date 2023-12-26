@@ -66,6 +66,14 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 				</div>
 				<Input value={product.label} disabled />
 			</div>
+			{/* Product name */}
+			<div>
+				<div className='flex mb-1'>
+					<IoOptions className='w-6 h-6 mr-2' />
+					<h2 className='font-medium text-lg'>Kategoria produktu</h2>
+				</div>
+				<Input value={product.category.label} disabled />
+			</div>
 
 			<Separator />
 

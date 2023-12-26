@@ -26,8 +26,18 @@ model Product {
   ratings Rating[]
   rating  Float
 
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+}
+
+model Category {
+  id    String @id @default(cuid())
+  label String
+
+  Product Product[]
 }
 
 model Rating {

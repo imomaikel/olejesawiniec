@@ -102,12 +102,24 @@ export const panelRouter = router({
 					.max(PRODUCT_NAME_MAX_LENGTH, {
 						message: 'Nazwa produktu jest za długa.',
 					}),
+				categoryLabel: z.string(),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const { productName } = input;
+			const { productName, categoryLabel } = input;
 			let link = productName;
 			const { prisma } = ctx;
+
+			const getCategory = await prisma.category.findFirst({
+				where: { label: categoryLabel },
+			});
+
+			if (!getCategory) {
+				return {
+					status: 'error',
+					message: 'Nieprawidłowa kategoria!',
+				};
+			}
 
 			REPLACE_LETTERS.forEach(
 				(letter) => (link = link.replaceAll(letter.from, letter.to))
@@ -133,6 +145,11 @@ export const panelRouter = router({
 								label: productName,
 								link,
 								rating: 0,
+								category: {
+									connect: {
+										id: getCategory.id,
+									},
+								},
 							},
 						});
 					} catch (error: any) {
@@ -169,6 +186,7 @@ export const panelRouter = router({
 						nutritionFact: true,
 						tags: true,
 						variants: true,
+						category: true,
 					},
 				});
 
@@ -515,8 +533,7 @@ export const panelRouter = router({
 					},
 				});
 				return 'OK';
-			} catch (error) {
-				console.log(error);
+			} catch {
 				return 'Błąd serwera.';
 			}
 		}),
@@ -532,5 +549,28 @@ export const panelRouter = router({
 			});
 
 			return product ?? null;
+		}),
+	getCategories: publicProcedure.query(async ({ ctx }) => {
+		const { prisma } = ctx;
+
+		const categories = await prisma.category.findMany();
+
+		return categories ?? null;
+	}),
+	createCategory: publicProcedure
+		.input(z.object({ label: z.string().min(1) }))
+		.mutation(async ({ ctx, input }) => {
+			const { prisma } = ctx;
+			const { label } = input;
+
+			try {
+				await prisma.category.create({
+					data: { label },
+				});
+
+				return label;
+			} catch {
+				return null;
+			}
 		}),
 });
