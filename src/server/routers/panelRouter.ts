@@ -288,6 +288,28 @@ export const panelRouter = router({
 				message,
 			} as TPanelRouterResponse;
 		}),
+	updateVariant: publicProcedure
+		.input(
+			z.object({
+				variantId: z.string(),
+				price: z.number().min(1),
+				stock: z.number().min(0),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			const { price, variantId, stock } = input;
+			const { prisma } = ctx;
+
+			try {
+				await prisma.variant.update({
+					where: { id: variantId },
+					data: { price, stock },
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		}),
 	removeVariant: publicProcedure
 		.input(
 			z.object({
@@ -313,10 +335,7 @@ export const panelRouter = router({
 		const { prisma } = ctx;
 
 		return await prisma.product.findMany({
-			select: {
-				link: true,
-				mainPhoto: true,
-				label: true,
+			include: {
 				variants: true,
 			},
 		});
@@ -500,5 +519,18 @@ export const panelRouter = router({
 				console.log(error);
 				return 'Błąd serwera.';
 			}
+		}),
+	refetchProduct: publicProcedure
+		.input(z.object({ productId: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const { productId } = input;
+			const { prisma } = ctx;
+
+			const product = await prisma.product.findFirst({
+				where: { id: productId },
+				include: { variants: true },
+			});
+
+			return product ?? null;
 		}),
 });

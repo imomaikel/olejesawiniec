@@ -48,7 +48,10 @@ const TagsPage = () => {
 					{tagList
 						? tagList
 								.filter(({ label }) =>
-									label.replace(/ /gi, '').toLowerCase().includes(filter)
+									label
+										.replace(/ /gi, '')
+										.toLowerCase()
+										.includes(filter.replace(/ /gi, '').toLowerCase())
 								)
 								.map(({ label }) => (
 									<Badge

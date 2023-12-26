@@ -1,7 +1,8 @@
 import { FaShopify, FaChartLine } from 'react-icons/fa6';
 import { BiSolidShoppingBags } from 'react-icons/bi';
-import { CiCirclePlus } from 'react-icons/ci';
 import { FaHashtag } from 'react-icons/fa';
+import { TiPlus } from 'react-icons/ti';
+import { FaEdit } from 'react-icons/fa';
 
 export const NAV_LINKS = [
 	{
@@ -65,13 +66,18 @@ export const PANEL_TABS = [
 		options: [
 			{
 				label: 'Dodaj produkt',
-				Icon: CiCirclePlus,
+				Icon: TiPlus,
 				link: '/panel/produkty/nowy',
 			},
 			{
 				label: 'Tagi',
 				Icon: FaHashtag,
 				link: '/panel/produkty/tagi',
+			},
+			{
+				label: 'Szybka edycja',
+				Icon: FaEdit,
+				link: '/panel/produkty/edycja',
 			},
 		],
 	},

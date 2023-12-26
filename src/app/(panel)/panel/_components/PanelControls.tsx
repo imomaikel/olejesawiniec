@@ -37,7 +37,10 @@ const PanelControls = () => {
 													className='w-3/4'
 													variant={isSelected ? 'default' : 'secondary'}
 												>
-													{option.label}
+													<div className='flex items-center'>
+														{<option.Icon className='w-4 h-4 mr-2 mb-0.5' />}
+														{option.label}
+													</div>
 												</Button>
 											</Link>
 										</div>
