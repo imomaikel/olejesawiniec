@@ -1,18 +1,28 @@
 'use client';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ElementRef, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 
 const Search = () => {
+	const ref = useRef<ElementRef<'input'>>(null);
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const router = useRouter();
 
+	const searchValue = searchParams.get('nazwa');
+
+	useEffect(() => {
+		if (searchValue === null) {
+			if (ref.current) ref.current.value = '';
+		}
+	}, [searchValue]);
+
 	const handleSearch = (value: string) => {
 		const params = new URLSearchParams(searchParams);
 		if (value) {
-			params.set('szukaj', value);
+			params.set('nazwa', value);
 		} else {
-			params.delete('szukaj');
+			params.delete('nazwa');
 		}
 		router.replace(`${pathname}?${params.toString()}`);
 	};
@@ -28,11 +38,12 @@ const Search = () => {
 			<div className='my-2'>
 				<Input
 					placeholder='Wpisz nazwe produktu...'
+					ref={ref}
 					onChange={(e) => handleSearch(e.target.value)}
-					defaultValue={searchParams.get('szukaj')?.toString()}
+					defaultValue={searchParams.get('nazwa')?.toString()}
 				/>
 			</div>
-			<div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' />
+			{/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' /> */}
 		</div>
 	);
 };

@@ -45,7 +45,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
 		data: tags,
 		isLoading: isTagLoading,
 		refetch: _refetchTags,
-	} = trpc.panel.getTagList.useQuery(undefined, {
+	} = trpc.getTagList.useQuery(undefined, {
 		refetchOnWindowFocus: false,
 	});
 

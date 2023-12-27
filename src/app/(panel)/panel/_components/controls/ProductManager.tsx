@@ -93,11 +93,13 @@ const ProductManager = ({ product, refetch }: TProductManager) => {
 					<ActionButton variant='destructive' onClick={() => setIsOpen(true)}>
 						Usuń produkt
 					</ActionButton>
-					<Button asChild className='min-w-[220px]' variant='link'>
-						<Link href={`/sklep/${product.link}`} target='_blank'>
-							Zobacz produkt
-						</Link>
-					</Button>
+					{product.enabled && (
+						<Button asChild className='min-w-[220px]' variant='link'>
+							<Link href={`/sklep/${product.link}`} target='_blank'>
+								Zobacz produkt
+							</Link>
+						</Button>
+					)}
 				</div>
 			</div>
 			<AlertDialog open={isOpen} onOpenChange={setIsOpen}>

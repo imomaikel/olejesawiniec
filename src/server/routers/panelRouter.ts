@@ -80,17 +80,6 @@ export const panelRouter = router({
 				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
 			}
 		}),
-	getTagList: publicProcedure.query(async ({ ctx }) => {
-		const { prisma } = ctx;
-
-		try {
-			const tags = await prisma.tag.findMany();
-
-			return tags;
-		} catch {
-			throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-		}
-	}),
 	createProduct: publicProcedure
 		.input(
 			z.object({

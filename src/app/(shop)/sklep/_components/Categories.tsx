@@ -1,17 +1,47 @@
 'use client';
-import { Checkbox } from '@/components/ui/checkbox';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
 import { trpc } from '@/components/providers/TRPC';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 const Categories = () => {
+	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	const router = useRouter();
+
+	const searchCategories = searchParams.getAll('kategoria');
+
 	const { data: categories, isLoading } = trpc.getCategories.useQuery(
 		undefined,
 		{
 			refetchOnWindowFocus: false,
 		}
 	);
+
+	const handleCheckbox = (checked: boolean | string, label: string) => {
+		if (typeof checked !== 'boolean') return;
+		const params = new URLSearchParams(searchParams);
+
+		if (searchCategories.length <= 0) {
+			categories?.forEach((category) =>
+				params.append('kategoria', category.label)
+			);
+		}
+
+		if (!checked) {
+			params.delete('kategoria', label);
+		} else {
+			params.append('kategoria', label);
+		}
+
+		if (params.getAll('kategoria').length === categories?.length) {
+			params.delete('kategoria');
+		}
+
+		router.replace(`${pathname}?${params}`);
+	};
 
 	const categoriesExist = !isLoading && categories && categories.length >= 1;
 
@@ -31,19 +61,30 @@ const Categories = () => {
 				<div className='border flex-1 mx-2' />
 			</div>
 			<div className='space-y-2 mt-2'>
-				{categories?.map(({ id, label }) => (
-					<div className='flex items-center justify-between' key={id}>
-						<div className='flex items-center space-x-3'>
-							<Checkbox className='w-6 h-6' id='key1' />
-							<Label>{label}</Label>
+				{categories
+					?.filter((category) => category._count.Product)
+					.map(({ id, label, _count }) => (
+						<div className='flex items-center justify-between' key={id}>
+							<div className='flex items-center space-x-3'>
+								<Checkbox
+									className='w-6 h-6'
+									id={id}
+									checked={
+										searchCategories.length >= 1
+											? searchCategories.includes(label)
+											: true
+									}
+									onCheckedChange={(checked) => handleCheckbox(checked, label)}
+								/>
+								<Label htmlFor={id}>{label}</Label>
+							</div>
+							<div>
+								<span>({_count.Product})</span>
+							</div>
 						</div>
-						<div>
-							<span>(???)</span>
-						</div>
-					</div>
-				))}
+					))}
 			</div>
-			<div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' />
+			{/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' /> */}
 		</div>
 	);
 };
@@ -77,7 +118,7 @@ Categories.Skeleton = function ShowSkeleton() {
 					</div>
 				</div>
 			</div>
-			<div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' />
+			{/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' /> */}
 		</div>
 	);
 };

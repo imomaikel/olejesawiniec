@@ -15,7 +15,7 @@ const TagsPage = () => {
 		data: tagList,
 		isLoading: isTagListLoading,
 		refetch,
-	} = trpc.panel.getTagList.useQuery(undefined, {
+	} = trpc.getTagList.useQuery(undefined, {
 		refetchOnWindowFocus: false,
 	});
 

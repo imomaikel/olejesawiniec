@@ -9,7 +9,21 @@ import SuperJSON from 'superjson';
 export const trpc = createTRPCReact<AppRouter>();
 
 export function TRPCProvider({ children }: { children: ReactNode }) {
-	const [queryClient] = useState(() => new QueryClient());
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						networkMode:
+							process.env.NODE_ENV === 'development' ? 'always' : 'online',
+					},
+					mutations: {
+						networkMode:
+							process.env.NODE_ENV === 'development' ? 'always' : 'online',
+					},
+				},
+			})
+	);
 	const [trpcClient] = useState(() =>
 		trpc.createClient({
 			transformer: SuperJSON,

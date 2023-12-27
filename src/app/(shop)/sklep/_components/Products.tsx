@@ -8,7 +8,9 @@ import ShopProduct from './ShopProduct';
 const Products = () => {
 	const searchParams = useSearchParams();
 
-	const filterValue = searchParams.get('szukaj');
+	const categories = searchParams.getAll('kategoria');
+	const filterValue = searchParams.get('nazwa');
+	const tags = searchParams.getAll('tag');
 
 	let filter = filterValue?.replace(/ /gi, '');
 	if (filter) {
@@ -38,12 +40,26 @@ const Products = () => {
 				{products &&
 					products?.length >= 1 &&
 					products
-						.filter((product) =>
-							product.link
+						.filter(({ link }) =>
+							link
 								.toLowerCase()
 								.replace(/-/gi, '')
 								.includes(filter ?? '')
 						)
+						.filter((product) => {
+							if (tags.length <= 0) return true;
+							if (!product.tags) return false;
+
+							if (product.tags.some((entry) => tags.includes(entry.label)))
+								return true;
+							return false;
+						})
+						.filter((product) => {
+							if (categories.length <= 0) return true;
+
+							if (categories.includes(product.category.label)) return true;
+							return false;
+						})
 						.map((product) => {
 							const { label, link, mainPhoto, variants } = product;
 							variants.sort((a, b) => b.price - a.price);
