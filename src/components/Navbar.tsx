@@ -68,6 +68,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 							}
 							className='object-contain object-center'
 							width={271}
+							priority={true}
 							loading='eager'
 							height={107}
 							alt='podpis'
