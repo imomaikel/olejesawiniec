@@ -550,13 +550,6 @@ export const panelRouter = router({
 
 			return product ?? null;
 		}),
-	getCategories: publicProcedure.query(async ({ ctx }) => {
-		const { prisma } = ctx;
-
-		const categories = await prisma.category.findMany();
-
-		return categories ?? null;
-	}),
 	createCategory: publicProcedure
 		.input(z.object({ label: z.string().min(1) }))
 		.mutation(async ({ ctx, input }) => {

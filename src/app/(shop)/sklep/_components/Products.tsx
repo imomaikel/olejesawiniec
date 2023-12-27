@@ -1,11 +1,23 @@
 'use client';
 import { trpc } from '@/components/providers/TRPC';
+import { REPLACE_LETTERS } from '@/utils/constans';
+import { useSearchParams } from 'next/navigation';
 import SortProducts from './SortProducts';
 import ShopProduct from './ShopProduct';
 
 const Products = () => {
-	// TODO Change router
-	const { data: products, isLoading } = trpc.panel.getAllProducts.useQuery(
+	const searchParams = useSearchParams();
+
+	const filterValue = searchParams.get('szukaj');
+
+	let filter = filterValue?.replace(/ /gi, '');
+	if (filter) {
+		REPLACE_LETTERS.forEach(
+			(letter) => (filter = filter!.replaceAll(letter.from, letter.to))
+		);
+	}
+
+	const { data: products, isLoading } = trpc.shop.getEnabledProducts.useQuery(
 		undefined,
 		{
 			refetchOnWindowFocus: false,
@@ -19,10 +31,20 @@ const Products = () => {
 				<SortProducts />
 			</div>
 			<div className='grid gap-5 2xl:gap-10 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 '>
-				{isLoading
-					? 'Ładowanie'
-					: products
-					? products.map((product) => {
+				{isLoading &&
+					[...Array.from(Array(9).keys())].map((index) => (
+						<ShopProduct.Skeleton key={`skeleton-${index}`} />
+					))}
+				{products &&
+					products?.length >= 1 &&
+					products
+						.filter((product) =>
+							product.link
+								.toLowerCase()
+								.replace(/-/gi, '')
+								.includes(filter ?? '')
+						)
+						.map((product) => {
 							const { label, link, mainPhoto, variants } = product;
 							variants.sort((a, b) => b.price - a.price);
 							if (!variants[0]) return;
@@ -36,8 +58,10 @@ const Products = () => {
 									price={lowestPrice}
 								/>
 							);
-					  })
-					: 'Brak produktów'}
+						})}
+				{!isLoading &&
+					(!products || products.length <= 0) &&
+					'Brak dostępnych produktów'}
 			</div>
 		</div>
 	);

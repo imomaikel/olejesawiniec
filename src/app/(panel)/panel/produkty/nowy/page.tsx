@@ -44,7 +44,7 @@ const NewProductPage = () => {
 		data: categories,
 		isLoading,
 		refetch,
-	} = trpc.panel.getCategories.useQuery(undefined, {
+	} = trpc.getCategories.useQuery(undefined, {
 		refetchOnWindowFocus: false,
 	});
 

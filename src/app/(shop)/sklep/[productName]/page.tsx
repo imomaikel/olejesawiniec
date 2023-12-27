@@ -8,8 +8,8 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import FloatingProduct from './_components/FloatingProduct';
+import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
-import { errorToast, formatPrice } from '@/lib/utils';
 import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +31,11 @@ const ProductPage = () => {
 		{ productName },
 		{
 			onSuccess: (response) => {
+				if (response && response?.variants.length <= 0) {
+					errorToast('Aktualnie nie ma możliwości kupienia tego produktu.');
+					router.push('/sklep');
+					return;
+				}
 				if (selectedVariant.price === -1)
 					setSelectedVariant({
 						price: response?.variants[0].price ?? 0,
@@ -122,7 +127,7 @@ const ProductPage = () => {
 					<IoWarning className='h-8 w-8' />
 					<AlertTitle className='ml-2'>Uwaga!</AlertTitle>
 					<AlertDescription className='ml-2'>
-						Rozmiary na czerwono nie są aktualnie dostępne. Możesz dodać do
+						Pojemności na czerwono nie są aktualnie dostępne. Możesz dodać do
 						listy życzeń i otrzymać e-mail gdy będzie dostępny ponownie.
 					</AlertDescription>
 				</Alert> */}
@@ -131,7 +136,7 @@ const ProductPage = () => {
 					<IoWarning className='h-8 w-8' />
 					<AlertTitle className='ml-2'>Uwaga!</AlertTitle>
 					<AlertDescription className='ml-2'>
-						Rozmiary na pomarańczowo są na wyczerpaniu.
+						Pojemności na pomarańczowo są na wyczerpaniu.
 					</AlertDescription>
 				</Alert> */}
 
@@ -176,7 +181,7 @@ const ProductPage = () => {
 					</div>
 				</div>
 				{/* Detailed informations */}
-				<div className='mt-6'>
+				<div className={cn('mt-6', product.details.length <= 0 && 'hidden')}>
 					<h1 className='text-3xl font-bold'>Właściwości</h1>
 					<ul className='ml-6'>
 						{details.map(({ id, content }) => (
@@ -188,9 +193,10 @@ const ProductPage = () => {
 					</ul>
 				</div>
 				{/* Description */}
-				{/* <div className='mt-6'>
+				<div className={cn('mt-6', !product.description && 'hidden')}>
 					<h1 className='text-3xl font-bold'>Opis produktu</h1>
-					<ul>
+					<p>{product.description}</p>
+					{/* <ul>
 						<li className='flex space-x-2'>
 							<span className='font-medium'>Zastosowanie:</span>
 							<span className='text-muted-foreground'>lorem ipsum</span>
@@ -217,8 +223,8 @@ const ProductPage = () => {
 							<span className='font-medium'>Producent:</span>
 							<span className='text-muted-foreground'>lorem ipsum</span>
 						</li>
-					</ul>
-				</div> */}
+					</ul> */}
+				</div>
 				{/* Nutrition facts */}
 				{nutritionFact && (
 					<div className='mt-4'>

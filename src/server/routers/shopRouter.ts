@@ -27,4 +27,15 @@ export const shopRouter = router({
 
 			return product ?? null;
 		}),
+	getEnabledProducts: publicProcedure.query(async ({ ctx }) => {
+		const { prisma } = ctx;
+
+		const products = await prisma.product.findMany({
+			where: { enabled: true },
+			include: {
+				variants: true,
+			},
+		});
+		return products ?? null;
+	}),
 });
