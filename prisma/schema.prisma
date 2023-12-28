@@ -18,6 +18,7 @@ model Product {
   mainPhoto     String?
   extraPhotos   ExtraPhoto[]
   variants      Variant[]
+  lowestPrice   Float?
   tags          Tag[]
   details       ProductDetail[]
   nutritionFact NutritionFact?

@@ -281,6 +281,20 @@ export const panelRouter = router({
 						},
 					},
 				});
+				await prisma.product
+					.update({
+						where: {
+							id: productId,
+							OR: [
+								{ lowestPrice: { gt: price } },
+								{ lowestPrice: { equals: null } },
+							],
+						},
+						data: {
+							lowestPrice: price,
+						},
+					})
+					.catch(() => {});
 				status = 'success';
 				message = `Dodano opcję "${capacity}${unit}"`;
 			} catch (error: any) {
@@ -288,6 +302,8 @@ export const panelRouter = router({
 				const translateError = handlePrismaError(error);
 				if (translateError === 'Object already exists') {
 					message = `Opcja "${capacity}${unit}" już istnieje`;
+				} else {
+					message = translateError;
 				}
 			}
 			return {
@@ -308,10 +324,27 @@ export const panelRouter = router({
 			const { prisma } = ctx;
 
 			try {
-				await prisma.variant.update({
+				const variant = await prisma.variant.update({
 					where: { id: variantId },
 					data: { price, stock },
+					include: {
+						Product: {
+							include: {
+								variants: true,
+							},
+						},
+					},
 				});
+
+				const lowestPrice =
+					variant.Product?.variants.sort((a, b) => a.price - b.price)[0]
+						?.price ?? null;
+
+				await prisma.product.updateMany({
+					where: { id: variant.Product?.id },
+					data: { lowestPrice },
+				});
+
 				return true;
 			} catch {
 				return false;
@@ -326,13 +359,32 @@ export const panelRouter = router({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
-			const { capacityUnit, variantId } = input;
+			const { capacityUnit, variantId, productId } = input;
 			const { prisma } = ctx;
 
 			try {
-				await prisma.variant.delete({
-					where: { id: variantId },
+				const product = await prisma.product.update({
+					where: { id: productId },
+					data: {
+						variants: {
+							delete: {
+								id: variantId,
+							},
+						},
+					},
+					include: {
+						variants: true,
+					},
 				});
+
+				const lowestPrice =
+					product.variants.sort((a, b) => a.price - b.price)[0]?.price ?? null;
+
+				await prisma.product.update({
+					where: { id: productId },
+					data: { lowestPrice },
+				});
+
 				return `Opcja "${capacityUnit}" została usunięta`;
 			} catch (err) {
 				throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });

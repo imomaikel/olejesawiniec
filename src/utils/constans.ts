@@ -183,3 +183,31 @@ export const REPLACE_LETTERS = [
 		to: 'x',
 	},
 ];
+
+export const SORT_OPTIONS = [
+	{
+		label: 'Popularność',
+		id: 'popularność',
+	},
+	{
+		label: 'Alfabetycznie',
+		id: 'alfabetycznie',
+	},
+	{
+		label: 'Cena rosnąco',
+		id: 'cena_rosnąco',
+	},
+	{
+		label: 'Cena malejąco',
+		id: 'cena_malejąco',
+	},
+	{
+		label: 'Nowości',
+		id: 'nowości',
+	},
+	{
+		label: 'Opinie',
+		id: 'opinie',
+	},
+] as const;
+export type SORT_OPTIONS = (typeof SORT_OPTIONS)[number]['id'];

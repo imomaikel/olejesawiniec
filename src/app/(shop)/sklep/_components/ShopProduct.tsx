@@ -28,8 +28,9 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
 							className='object-contain object-center'
 						/>
 					) : (
-						<div className='w-full h-full items-center justify-center flex'>
+						<div className='w-full h-full items-center justify-center flex flex-col'>
 							<FaBottleDroplet className='h-48 w-48' />
+							<span className='mt-1'>Brak Zdjęcia</span>
 						</div>
 					)}
 				</div>
