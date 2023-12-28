@@ -1,11 +1,10 @@
 'use client';
-import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { useMobileNav } from '@/hooks/use-mobile-nav';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
-import { useCart } from '@/hooks/use-cart';
 import { motion } from 'framer-motion';
+import CartButton from './CartButton';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -18,7 +17,6 @@ type TNavbar = {
 };
 const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 	const { onOpen: onMobileNavOpen } = useMobileNav();
-	const { onOpen: onCartOpen } = useCart();
 	const pathname = usePathname();
 
 	const signatureImageUrl = pathname.startsWith('/sklep/')
@@ -100,15 +98,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 							</motion.li>
 						))}
 					</ul>
-					<div
-						className='ml-6 flex h-min items-center space-x-2 rounded-full border py-2 px-6 tracking-wide font-medium cursor-pointer transition-colors hover:border-primary'
-						onClick={onCartOpen}
-						role='button'
-					>
-						<div className='mt-1'>Koszyk</div>
-						<div className='mt-1'>0</div>
-						<HiOutlineShoppingBag className='h-6 w-6' />
-					</div>
+					<CartButton />
 				</div>
 			</motion.div>
 		</div>

@@ -21,6 +21,7 @@ const ProductPage = () => {
 		price: -1,
 		capacity: 0,
 		unit: '',
+		id: '',
 	});
 	const router = useRouter();
 	const { productName } = useParams<{
@@ -41,6 +42,7 @@ const ProductPage = () => {
 						price: response?.variants[0].price ?? 0,
 						capacity: response?.variants[0].price ?? 0,
 						unit: response?.variants[0].unit ?? '',
+						id: response?.variants[0].id ?? '',
 					});
 			},
 		}
@@ -65,6 +67,7 @@ const ProductPage = () => {
 		rating,
 		ratings,
 		opinions,
+		link,
 	} = product;
 
 	const ratingCount = ratings?.length ?? 0;
@@ -108,11 +111,14 @@ const ProductPage = () => {
 			<FloatingProduct
 				selectedPrice={selectedVariant.price}
 				productName={label}
-				variants={variants}
 				imageUrls={photos}
 				tags={tags}
 				rating={rating}
 				ratingCount={ratingCount}
+				link={link}
+				variantCapacity={selectedVariant.capacity}
+				variantId={selectedVariant.id}
+				variantUnit={selectedVariant.unit}
 			/>
 			<div className='mx-24 hidden md:block' />
 			<div className='w-full max-w-lg relative'>
@@ -155,6 +161,7 @@ const ProductPage = () => {
 										price: variant.price,
 										capacity: variant.capacity,
 										unit: variant.unit,
+										id: variant.id,
 									})
 								}
 							>

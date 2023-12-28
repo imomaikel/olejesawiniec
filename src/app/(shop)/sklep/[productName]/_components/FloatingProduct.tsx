@@ -2,11 +2,12 @@
 import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
+import { useEffect, useRef, useState } from 'react';
 import ImageSwiper from '@/components/ImageSwiper';
 import { Button } from '@/components/ui/button';
 import { Tag, Variant } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
-import { useEffect, useRef, useState } from 'react';
+import { useCart } from '@/hooks/use-cart';
 import { formatPrice } from '@/lib/utils';
 
 const MAX_STARS = 6;
@@ -16,9 +17,12 @@ type TFloatingProduct = {
 	imageUrls: string[];
 	tags?: Tag[];
 	selectedPrice: number;
-	variants: Variant[];
 	rating: number;
 	ratingCount: number;
+	link: string;
+	variantCapacity: number;
+	variantId: string;
+	variantUnit: string;
 };
 const FloatingProduct = ({
 	imageUrls,
@@ -27,9 +31,14 @@ const FloatingProduct = ({
 	selectedPrice,
 	rating,
 	ratingCount,
+	link,
+	variantCapacity,
+	variantId,
+	variantUnit,
 }: TFloatingProduct) => {
 	const scrollMax = useRef<null | number>(null);
 	const [scrollY, setScrollY] = useState(0);
+	const { addProduct } = useCart();
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -64,6 +73,19 @@ const FloatingProduct = ({
 			window.removeEventListener('scroll', handleScroll);
 		};
 	}, [scrollY]);
+
+	const onAdd = () => {
+		addProduct({
+			image: imageUrls[0] ?? null,
+			productLabel: productName,
+			quantity: 1,
+			variantPrice: selectedPrice,
+			productLink: link,
+			variantCapacity,
+			variantId,
+			variantUnit,
+		});
+	};
 
 	const fullStars = rating >= MAX_STARS ? MAX_STARS : Math.floor(rating);
 	const notFullStars = MAX_STARS - fullStars;
@@ -115,6 +137,7 @@ const FloatingProduct = ({
 					<Button
 						size='xl'
 						className='w-full rounded-full font-bold transition-transform hover:scale-110'
+						onClick={onAdd}
 					>
 						<FaCartPlus className='h-8 w-8 mr-4' />
 						Dodaj do koszyka ({formatPrice(selectedPrice)})

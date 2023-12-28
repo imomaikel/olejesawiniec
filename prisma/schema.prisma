@@ -27,7 +27,7 @@ model Product {
   ratings Rating[]
   rating  Float
 
-  category   Category @relation(fields: [categoryId], references: [id])
+  Category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
   updatedAt DateTime @updatedAt
