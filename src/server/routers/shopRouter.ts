@@ -35,7 +35,7 @@ export const shopRouter = router({
 			include: {
 				variants: true,
 				tags: true,
-				category: true,
+				Category: true,
 			},
 		});
 		return products ?? null;

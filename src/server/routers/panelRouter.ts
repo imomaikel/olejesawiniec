@@ -134,7 +134,7 @@ export const panelRouter = router({
 								label: productName,
 								link,
 								rating: 0,
-								category: {
+								Category: {
 									connect: {
 										id: getCategory.id,
 									},
@@ -175,7 +175,7 @@ export const panelRouter = router({
 						nutritionFact: true,
 						tags: true,
 						variants: true,
-						category: true,
+						Category: true,
 					},
 				});
 
