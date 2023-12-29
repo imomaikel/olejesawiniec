@@ -10,49 +10,49 @@ import Quote from './_components/Quote';
 import Hero from './_components/Hero';
 
 export default function Home() {
-	return (
-		<>
-			<header>
-				<nav>
-					<Navbar className='px-8 md:px-12' />
-				</nav>
-			</header>
+  return (
+    <>
+      <header>
+        <nav>
+          <Navbar className="px-8 md:px-12" />
+        </nav>
+      </header>
 
-			<main>
-				<section>
-					<Hero />
-				</section>
+      <main>
+        <section>
+          <Hero />
+        </section>
 
-				<section>
-					<ProductPhotos />
-				</section>
+        <section>
+          <ProductPhotos />
+        </section>
 
-				<section>
-					<ProductsPreview />
-				</section>
+        <section>
+          <ProductsPreview />
+        </section>
 
-				<section>
-					<About />
-				</section>
+        <section>
+          <About />
+        </section>
 
-				<section>
-					<FindUs />
-				</section>
+        <section>
+          <FindUs />
+        </section>
 
-				<section>
-					<Quote />
-				</section>
+        <section>
+          <Quote />
+        </section>
 
-				<section>
-					<Newsletter />
-				</section>
-			</main>
+        <section>
+          <Newsletter />
+        </section>
+      </main>
 
-			<footer>
-				<Footer />
-			</footer>
+      <footer>
+        <Footer />
+      </footer>
 
-			<ScrollButton trackElementIdOrHeight='zdjecia' />
-		</>
-	);
+      <ScrollButton trackElementIdOrHeight="zdjecia" />
+    </>
+  );
 }

@@ -5,25 +5,25 @@ import Products from './_components/Products';
 import { Suspense } from 'react';
 
 const ShopPage = () => {
-	return (
-		<>
-			<div className='flex space-x-0 md:space-x-12 mb-24'>
-				<div className='hidden md:flex flex-col space-y-6'>
-					{/* TODO */}
-					<Suspense fallback='loading'>
-						<ProductControls />
-					</Suspense>
-				</div>
-				<div className='flex w-full'>
-					{/* TODO */}
-					<Suspense fallback='loading'>
-						<Products />
-					</Suspense>
-				</div>
-			</div>
-			<ScrollButton trackElementIdOrHeight={200} />
-		</>
-	);
+  return (
+    <>
+      <div className="flex space-x-0 md:space-x-12 mb-24">
+        <div className="hidden md:flex flex-col space-y-6">
+          {/* TODO */}
+          <Suspense fallback="loading">
+            <ProductControls />
+          </Suspense>
+        </div>
+        <div className="flex w-full">
+          {/* TODO */}
+          <Suspense fallback="loading">
+            <Products />
+          </Suspense>
+        </div>
+      </div>
+      <ScrollButton trackElementIdOrHeight={200} />
+    </>
+  );
 };
 
 export default ShopPage;

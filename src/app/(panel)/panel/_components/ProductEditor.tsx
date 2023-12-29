@@ -15,115 +15,115 @@ import { IoOptions } from 'react-icons/io5';
 import { errorToast } from '@/lib/utils';
 
 type TProductEditor = {
-	productLink: string;
+  productLink: string;
 };
 const ProductEditor = ({ productLink }: TProductEditor) => {
-	const router = useRouter();
+  const router = useRouter();
 
-	const {
-		data: product,
-		isLoading: isProductLoading,
-		refetch: _refetchProduct,
-	} = trpc.panel.getProductInfo.useQuery(
-		{ productLink },
-		{
-			onSuccess: (data) => {
-				if (!data) {
-					errorToast('Nie znaleziono produktu!');
-					router.push('/panel/produkty');
-				}
-			},
-			onError: () => {
-				errorToast();
-				router.push('/panel/produkty');
-			},
-			refetchOnWindowFocus: false,
-		}
-	);
+  const {
+    data: product,
+    isLoading: isProductLoading,
+    refetch: _refetchProduct,
+  } = trpc.panel.getProductInfo.useQuery(
+    { productLink },
+    {
+      onSuccess: (data) => {
+        if (!data) {
+          errorToast('Nie znaleziono produktu!');
+          router.push('/panel/produkty');
+        }
+      },
+      onError: () => {
+        errorToast();
+        router.push('/panel/produkty');
+      },
+      refetchOnWindowFocus: false,
+    },
+  );
 
-	const {
-		data: tags,
-		isLoading: isTagLoading,
-		refetch: _refetchTags,
-	} = trpc.getTagList.useQuery(undefined, {
-		refetchOnWindowFocus: false,
-	});
+  const {
+    data: tags,
+    isLoading: isTagLoading,
+    refetch: _refetchTags,
+  } = trpc.getTagList.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
-	const refetchProduct = () => _refetchProduct();
-	const refetchTags = () => _refetchTags();
+  const refetchProduct = () => _refetchProduct();
+  const refetchTags = () => _refetchTags();
 
-	if (isProductLoading || isTagLoading || !product || !tags) {
-		return 'Loading...';
-	}
+  if (isProductLoading || isTagLoading || !product || !tags) {
+    return 'Loading...';
+  }
 
-	return (
-		<>
-			{/* Product name */}
-			<div>
-				<div className='flex mb-1'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Nazwa produktu</h2>
-				</div>
-				<Input value={product.label} disabled />
-			</div>
-			{/* Product name */}
-			<div>
-				<div className='flex mb-1'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Kategoria produktu</h2>
-				</div>
-				<Input value={product.Category.label} disabled />
-			</div>
+  return (
+    <>
+      {/* Product name */}
+      <div>
+        <div className="flex mb-1">
+          <IoOptions className="w-6 h-6 mr-2" />
+          <h2 className="font-medium text-lg">Nazwa produktu</h2>
+        </div>
+        <Input value={product.label} disabled />
+      </div>
+      {/* Product name */}
+      <div>
+        <div className="flex mb-1">
+          <IoOptions className="w-6 h-6 mr-2" />
+          <h2 className="font-medium text-lg">Kategoria produktu</h2>
+        </div>
+        <Input value={product.Category.label} disabled />
+      </div>
 
-			<Separator />
+      <Separator />
 
-			{/* Product Controls */}
-			<ProductManager product={product} refetch={refetchProduct} />
+      {/* Product Controls */}
+      <ProductManager product={product} refetch={refetchProduct} />
 
-			<Separator />
+      <Separator />
 
-			{/* Product tags */}
-			<TagControl
-				allTags={tags}
-				productTags={product.tags}
-				productId={product.id}
-				refetchTag={refetchTags}
-				refetchProduct={refetchProduct}
-			/>
+      {/* Product tags */}
+      <TagControl
+        allTags={tags}
+        productTags={product.tags}
+        productId={product.id}
+        refetchTag={refetchTags}
+        refetchProduct={refetchProduct}
+      />
 
-			<Separator />
+      <Separator />
 
-			{/* Product variants */}
-			<div>
-				<div className='flex'>
-					<IoOptions className='w-6 h-6 mr-2' />
-					<h2 className='font-medium text-lg'>Opcje produktu</h2>
-				</div>
-				<VariantList refetchProduct={refetchProduct} product={product} />
-				<NewVariant productId={product.id} refetchProduct={refetchProduct} />
-			</div>
+      {/* Product variants */}
+      <div>
+        <div className="flex">
+          <IoOptions className="w-6 h-6 mr-2" />
+          <h2 className="font-medium text-lg">Opcje produktu</h2>
+        </div>
+        <VariantList refetchProduct={refetchProduct} product={product} />
+        <NewVariant productId={product.id} refetchProduct={refetchProduct} />
+      </div>
 
-			<Separator />
+      <Separator />
 
-			{/* Product images */}
-			<PhotoManager product={product} refetch={refetchProduct} />
+      {/* Product images */}
+      <PhotoManager product={product} refetch={refetchProduct} />
 
-			<Separator />
+      <Separator />
 
-			{/* Product details  */}
-			<ProductDetails product={product} refetch={refetchProduct} />
+      {/* Product details  */}
+      <ProductDetails product={product} refetch={refetchProduct} />
 
-			<Separator />
+      <Separator />
 
-			{/* Product description */}
-			<ProductDescription product={product} refetch={refetchProduct} />
+      {/* Product description */}
+      <ProductDescription product={product} refetch={refetchProduct} />
 
-			<Separator />
+      <Separator />
 
-			{/* Product nutrition facts */}
-			<NutritionTable product={product} refetch={refetchProduct} />
-		</>
-	);
+      {/* Product nutrition facts */}
+      <NutritionTable product={product} refetch={refetchProduct} />
+    </>
+  );
 };
 
 export default ProductEditor;

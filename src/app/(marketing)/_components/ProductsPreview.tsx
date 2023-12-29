@@ -8,65 +8,52 @@ import { motion } from 'framer-motion';
 import Product from './Product';
 
 const ProductsPreview = () => {
-	const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-	useEffect(() => setIsMounted(true), []);
+  useEffect(() => setIsMounted(true), []);
 
-	const vpWidth = isMounted ? window.innerWidth : null;
+  const vpWidth = isMounted ? window.innerWidth : null;
 
-	return (
-		<ContentWrapper className='bg-gray-100'>
-			<div className='w-full flex justify-center flex-col items-center'>
-				<SectionInfo
-					smallTitle='Nasze Produkty'
-					bigTitle='Oleje Zimnotłoczone'
-					className='mb-12'
-				/>
-				<div className='grid gap-x-8 gap-y-16 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'>
-					{[
-						...TEMP_PRODUCTS,
-						...TEMP_PRODUCTS,
-						...TEMP_PRODUCTS,
-						...TEMP_PRODUCTS.slice(2),
-					].map((product, index) => (
-						<motion.div
-							initial={{
-								x: 100,
-								opacity: 0,
-							}}
-							whileInView={{
-								x: 0,
-								opacity: 1,
-							}}
-							transition={{
-								delay: vpWidth
-									? vpWidth <= 1000
-										? 0.1
-										: 0.1 * index
-									: 0.15 * index,
-								damping: 30,
-							}}
-							viewport={{ once: true, amount: 0.25 }}
-							key={product.label}
-						>
-							<Product
-								id={product.label}
-								description={product.description}
-								image={product.image}
-								label={product.label}
-								price={product.price}
-							/>
-						</motion.div>
-					))}
-				</div>
-				<div className='mt-12'>
-					<Button size='2xl' className='rounded-full shadow-md shadow-primary'>
-						Zobacz Wszystkie Produkty
-					</Button>
-				</div>
-			</div>
-		</ContentWrapper>
-	);
+  return (
+    <ContentWrapper className="bg-gray-100">
+      <div className="w-full flex justify-center flex-col items-center">
+        <SectionInfo smallTitle="Nasze Produkty" bigTitle="Oleje Zimnotłoczone" className="mb-12" />
+        <div className="grid gap-x-8 gap-y-16 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {[...TEMP_PRODUCTS, ...TEMP_PRODUCTS, ...TEMP_PRODUCTS, ...TEMP_PRODUCTS.slice(2)].map((product, index) => (
+            <motion.div
+              initial={{
+                x: 100,
+                opacity: 0,
+              }}
+              whileInView={{
+                x: 0,
+                opacity: 1,
+              }}
+              transition={{
+                delay: vpWidth ? (vpWidth <= 1000 ? 0.1 : 0.1 * index) : 0.15 * index,
+                damping: 30,
+              }}
+              viewport={{ once: true, amount: 0.25 }}
+              key={product.label}
+            >
+              <Product
+                id={product.label}
+                description={product.description}
+                image={product.image}
+                label={product.label}
+                price={product.price}
+              />
+            </motion.div>
+          ))}
+        </div>
+        <div className="mt-12">
+          <Button size="2xl" className="rounded-full shadow-md shadow-primary">
+            Zobacz Wszystkie Produkty
+          </Button>
+        </div>
+      </div>
+    </ContentWrapper>
+  );
 };
 
 export default ProductsPreview;

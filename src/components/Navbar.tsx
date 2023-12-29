@@ -11,98 +11,85 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 type TNavbar = {
-	className?: string;
-	textColor?: 'white' | 'black';
-	topPadding?: number;
+  className?: string;
+  textColor?: 'white' | 'black';
+  topPadding?: number;
 };
 const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
-	const { onOpen: onMobileNavOpen } = useMobileNav();
-	const pathname = usePathname();
+  const { onOpen: onMobileNavOpen } = useMobileNav();
+  const pathname = usePathname();
 
-	const signatureImageUrl = pathname.startsWith('/sklep/')
-		? '/sklep'
-		: pathname.startsWith('/panel')
-		? '/panel'
-		: '/';
+  const signatureImageUrl = pathname.startsWith('/sklep/') ? '/sklep' : pathname.startsWith('/panel') ? '/panel' : '/';
 
-	return (
-		<div className={cn('w-full absolute z-20', className)}>
-			<motion.div
-				initial={{
-					y: -200,
-					opacity: 0,
-				}}
-				animate={{
-					opacity: 1,
-					y: 0,
-				}}
-				transition={{
-					duration: 0.5,
-					type: 'tween',
-				}}
-				viewport={{ once: true }}
-				className={cn(
-					'w-full min-h-fit max-w-7xl mx-auto flex justify-between lg:px-20',
-					topPadding !== undefined ? `pt-${topPadding}` : 'pt-6'
-				)}
-			>
-				<div
-					className='flex md:hidden items-center'
-					role='button'
-					onClick={onMobileNavOpen}
-				>
-					<GiHamburgerMenu
-						className={cn(
-							'w-12 h-12 cursor-pointer hover:text-primary transition-colors',
-							textColor === 'black' ? 'text-black' : 'text-white'
-						)}
-					/>
-				</div>
-				<div className='relative'>
-					<Link href={signatureImageUrl}>
-						<Image
-							src={
-								textColor === 'black' ? '/signatureBlack.png' : '/signature.png'
-							}
-							className='object-contain object-center'
-							width={271}
-							priority={true}
-							loading='eager'
-							height={107}
-							alt='podpis'
-						/>
-					</Link>
-				</div>
-				<div
-					className={cn(
-						'items-center text-white hidden md:flex',
-						textColor === 'black' ? 'text-black' : 'text-white'
-					)}
-				>
-					<ul className='flex space-x-5'>
-						{NAV_LINKS.map((entry) => (
-							<motion.li
-								initial={{
-									x: -100,
-									opacity: 0,
-								}}
-								animate={{
-									x: 0,
-									opacity: 1,
-								}}
-								key={entry.label}
-							>
-								<Button variant='ghost' asChild>
-									<Link href={entry.path}>{entry.label}</Link>
-								</Button>
-							</motion.li>
-						))}
-					</ul>
-					<CartButton />
-				</div>
-			</motion.div>
-		</div>
-	);
+  return (
+    <div className={cn('w-full absolute z-20', className)}>
+      <motion.div
+        initial={{
+          y: -200,
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.5,
+          type: 'tween',
+        }}
+        viewport={{ once: true }}
+        className={cn(
+          'w-full min-h-fit max-w-7xl mx-auto flex justify-between lg:px-20',
+          topPadding !== undefined ? `pt-${topPadding}` : 'pt-6',
+        )}
+      >
+        <div className="flex md:hidden items-center" role="button" onClick={onMobileNavOpen}>
+          <GiHamburgerMenu
+            className={cn(
+              'w-12 h-12 cursor-pointer hover:text-primary transition-colors',
+              textColor === 'black' ? 'text-black' : 'text-white',
+            )}
+          />
+        </div>
+        <div className="relative">
+          <Link href={signatureImageUrl}>
+            <Image
+              src={textColor === 'black' ? '/signatureBlack.png' : '/signature.png'}
+              className="object-contain object-center"
+              width={271}
+              priority={true}
+              loading="eager"
+              height={107}
+              alt="podpis"
+            />
+          </Link>
+        </div>
+        <div
+          className={cn('items-center text-white hidden md:flex', textColor === 'black' ? 'text-black' : 'text-white')}
+        >
+          <ul className="flex space-x-5">
+            {NAV_LINKS.map((entry) => (
+              <motion.li
+                initial={{
+                  x: -100,
+                  opacity: 0,
+                }}
+                animate={{
+                  x: 0,
+                  opacity: 1,
+                }}
+                key={entry.label}
+              >
+                <Button variant="ghost" asChild>
+                  <Link href={entry.path}>{entry.label}</Link>
+                </Button>
+              </motion.li>
+            ))}
+          </ul>
+          <CartButton />
+        </div>
+      </motion.div>
+    </div>
+  );
 };
 
 export default Navbar;

@@ -7,24 +7,20 @@ import Search from './Search';
 import Tags from './Tags';
 
 const ProductControls = () => {
-	const pathname = usePathname();
-	const router = useRouter();
+  const pathname = usePathname();
+  const router = useRouter();
 
-	return (
-		<>
-			<Search />
-			<Categories />
-			<Tags />
-			<Separator />
-			<Button
-				variant='ghost'
-				className='w-full'
-				onClick={() => router.replace(pathname)}
-			>
-				Wyczyść filtry
-			</Button>
-		</>
-	);
+  return (
+    <>
+      <Search />
+      <Categories />
+      <Tags />
+      <Separator />
+      <Button variant="ghost" className="w-full" onClick={() => router.replace(pathname)}>
+        Wyczyść filtry
+      </Button>
+    </>
+  );
 };
 
 export default ProductControls;

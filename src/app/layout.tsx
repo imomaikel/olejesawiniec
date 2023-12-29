@@ -10,29 +10,23 @@ import './globals.css';
 const epilogue = Epilogue({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-	title: 'Oleje Sawiniec',
-	description: 'Olejarnia w zgodzie z naturą',
+  title: 'Oleje Sawiniec',
+  description: 'Olejarnia w zgodzie z naturą',
 };
 
-export default function RootLayout({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
-	return (
-		<html lang='pl' className='h-full scroll-smooth'>
-			<body className={cn('h-full relative', epilogue.className)}>
-				<TRPCProvider>
-					<main className='relative flex flex-col min-h-screen'>
-						<div className='flex-1 flex-grow overflow-hidden relative'>
-							{children}
-						</div>
-					</main>
-					<ShoppingCart />
-					<MobileNavbar />
-				</TRPCProvider>
-				<Toaster richColors position='top-center' />
-			</body>
-		</html>
-	);
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pl" className="h-full scroll-smooth">
+      <body className={cn('h-full relative', epilogue.className)}>
+        <TRPCProvider>
+          <main className="relative flex flex-col min-h-screen">
+            <div className="flex-1 flex-grow overflow-hidden relative">{children}</div>
+          </main>
+          <ShoppingCart />
+          <MobileNavbar />
+        </TRPCProvider>
+        <Toaster richColors position="top-center" />
+      </body>
+    </html>
+  );
 }
