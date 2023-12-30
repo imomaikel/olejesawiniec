@@ -6,13 +6,16 @@ import Categories from './Categories';
 import Search from './Search';
 import Tags from './Tags';
 
-const ProductControls = () => {
+type TProductControls = {
+  mobileVersion?: boolean;
+};
+const ProductControls = ({ mobileVersion }: TProductControls) => {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
     <>
-      <Search />
+      <Search mobileVersion={mobileVersion} />
       <Categories />
       <Tags />
       <Separator />

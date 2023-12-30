@@ -50,7 +50,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
             )}
           />
         </div>
-        <div className="relative">
+        <div className="relative hidden md:block">
           <Link href={signatureImageUrl}>
             <Image
               src={textColor === 'black' ? '/signatureBlack.png' : '/signature.png'}
@@ -63,10 +63,8 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
             />
           </Link>
         </div>
-        <div
-          className={cn('items-center text-white hidden md:flex', textColor === 'black' ? 'text-black' : 'text-white')}
-        >
-          <ul className="flex space-x-5">
+        <div className={cn('items-center text-white flex', textColor === 'black' ? 'text-black' : 'text-white')}>
+          <ul className="space-x-5 hidden md:flex">
             {NAV_LINKS.map((entry) => (
               <motion.li
                 initial={{

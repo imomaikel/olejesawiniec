@@ -132,9 +132,8 @@ const FloatingProduct = ({
           <Button
             size="xl"
             className="w-full rounded-full font-bold transition-transform hover:scale-110 relative"
-            onClick={() => {
-              if (!isLoading) verifyCartItem({ variantId, currentQuantity });
-            }}
+            onClick={() => verifyCartItem({ variantId, currentQuantity })}
+            disabled={isLoading}
           >
             <FaCartPlus className="h-8 w-8 mr-4" />
             <span>Dodaj do koszyka ({formatPrice(selectedPrice)})</span>

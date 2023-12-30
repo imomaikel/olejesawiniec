@@ -7,9 +7,9 @@ import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
 import { useEffect, useState } from 'react';
 import { Separator } from './ui/separator';
-import CartButton from './CartButton';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const MobileNavbar = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -22,6 +22,7 @@ const MobileNavbar = () => {
   const showPanelNav = pathname.startsWith('/panel');
 
   if (!isMounted) return null;
+  const signatureImageUrl = pathname.startsWith('/sklep/') ? '/sklep' : pathname.startsWith('/panel') ? '/panel' : '/';
 
   return (
     <Sheet onOpenChange={onOpenChange} open={isOpen}>
@@ -30,7 +31,19 @@ const MobileNavbar = () => {
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <div>
-          <CartButton mobileVersion />
+          <div className="relative mt-4">
+            <Link href={signatureImageUrl}>
+              <Image
+                src={'/signatureBlack.png'}
+                className="object-contain object-center"
+                width={271}
+                priority={true}
+                loading="eager"
+                height={107}
+                alt="podpis"
+              />
+            </Link>
+          </div>
 
           <Separator className="my-4" />
 
@@ -49,7 +62,7 @@ const MobileNavbar = () => {
           <Separator className="my-4" />
 
           <div className="flex flex-col space-y-6">
-            {showShopNav && <ProductControls />}
+            {showShopNav && <ProductControls mobileVersion />}
             {showPanelNav && <PanelControls />}
           </div>
         </div>

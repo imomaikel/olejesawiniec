@@ -3,7 +3,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ElementRef, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 
-const Search = () => {
+type TSearch = {
+  mobileVersion?: boolean;
+};
+const Search = ({ mobileVersion }: TSearch) => {
   const ref = useRef<ElementRef<'input'>>(null);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -41,6 +44,7 @@ const Search = () => {
           ref={ref}
           onChange={(e) => handleSearch(e.target.value)}
           defaultValue={searchParams.get('nazwa')?.toString()}
+          tabIndex={mobileVersion ? -1 : undefined}
         />
       </div>
       {/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px]' /> */}
