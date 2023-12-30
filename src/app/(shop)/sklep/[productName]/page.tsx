@@ -1,21 +1,14 @@
 'use client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import FloatingProduct from './_components/FloatingProduct';
-import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
+import { cn, errorToast } from '@/lib/utils';
 import Opinion from './_components/Opinion';
-import { useState } from 'react';
 
 const ProductPage = () => {
-  const [selectedVariant, setSelectedVariant] = useState({
-    price: -1,
-    capacity: 0,
-    unit: '',
-    id: '',
-  });
   const router = useRouter();
   const { productName } = useParams<{
     productName: string;
@@ -30,13 +23,6 @@ const ProductPage = () => {
           router.push('/sklep');
           return;
         }
-        if (selectedVariant.price === -1)
-          setSelectedVariant({
-            price: response?.variants[0].price ?? 0,
-            capacity: response?.variants[0].price ?? 0,
-            unit: response?.variants[0].unit ?? '',
-            id: response?.variants[0].id ?? '',
-          });
       },
     },
   );
@@ -84,16 +70,13 @@ const ProductPage = () => {
   return (
     <div className="flex justify-center relative flex-col md:flex-row mb-24 space-y-12 md:space-y-0">
       <FloatingProduct
-        selectedPrice={selectedVariant.price}
         productName={label}
         imageUrls={photos}
         tags={tags}
         rating={rating}
         ratingCount={ratingCount}
         link={link}
-        variantCapacity={selectedVariant.capacity}
-        variantId={selectedVariant.id}
-        variantUnit={selectedVariant.unit}
+        variants={variants}
       />
       <div className="mx-24 hidden md:block" />
       <div className="w-full max-w-lg relative">
@@ -129,33 +112,12 @@ Pojemności na pomarańczowo są na wyczerpaniu.
               <Badge
                 key={`${variant.price}${variant.capacity}`}
                 className="cursor-pointer"
-                onClick={() =>
-                  setSelectedVariant({
-                    price: variant.price,
-                    capacity: variant.capacity,
-                    unit: variant.unit,
-                    id: variant.id,
-                  })
-                }
+                // TODO stock colors
               >
-                {`${variant.capacity}${variant.unit}`}
+                {variant.capacity}
+                {variant.unit}
               </Badge>
             ))}
-          </div>
-        </div>
-        {/* Price */}
-        <div className="mt-4 relative">
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-medium">Wybrana pojemność</span>
-            <Badge>
-              {selectedVariant.capacity}
-              {selectedVariant.unit}
-            </Badge>
-          </div>
-          <div className="relative flex items-center space-x-2">
-            <span className="text-2xl font-medium">Cena</span>
-            <span className="font-bold text-2xl text-primary">{formatPrice(selectedVariant.price)}</span>
-            <div className="absolute h-1/2 inset-0 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 w-3/5 blur-[35px] -z-10" />
           </div>
         </div>
         {/* Detailed informations */}
@@ -174,6 +136,7 @@ Pojemności na pomarańczowo są na wyczerpaniu.
         <div className={cn('mt-6', !product.description && 'hidden')}>
           <h1 className="text-3xl font-bold">Opis produktu</h1>
           <p>{product.description}</p>
+          {/* TODO */}
           {/* <ul>
 <li className='flex space-x-2'>
 <span className='font-medium'>Zastosowanie:</span>

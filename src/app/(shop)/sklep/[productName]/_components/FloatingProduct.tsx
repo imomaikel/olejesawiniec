@@ -1,16 +1,18 @@
 'use client';
 import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
-import { useEffect, useRef, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
 import ImageSwiper from '@/components/ImageSwiper';
 import { Button } from '@/components/ui/button';
+import { Tag, Variant } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
 import { ImSpinner9 } from 'react-icons/im';
+import VariantPicker from './VariantPicker';
 import { useCart } from '@/hooks/use-cart';
-import { Tag } from '@prisma/client';
+import { useAnimate } from 'framer-motion';
 import { toast } from 'sonner';
 
 const MAX_STARS = 6;
@@ -19,29 +21,25 @@ type TFloatingProduct = {
   productName: string;
   imageUrls: string[];
   tags?: Tag[];
-  selectedPrice: number;
   rating: number;
   ratingCount: number;
   link: string;
-  variantCapacity: number;
-  variantId: string;
-  variantUnit: string;
+  variants: Variant[];
 };
-const FloatingProduct = ({
-  imageUrls,
-  productName,
-  tags,
-  selectedPrice,
-  rating,
-  ratingCount,
-  link,
-  variantCapacity,
-  variantId,
-  variantUnit,
-}: TFloatingProduct) => {
+const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, link, variants }: TFloatingProduct) => {
+  const { addProduct, onOpen, cartData } = useCart();
   const scrollMax = useRef<null | number>(null);
   const [scrollY, setScrollY] = useState(0);
-  const { addProduct, onOpen, cartData } = useCart();
+  const [scope, animate] = useAnimate();
+
+  const firstVariant = useMemo(() => variants[0], [variants]);
+
+  const [selectedVariant, setSelectedVariant] = useState({
+    price: firstVariant.price,
+    capacity: firstVariant.capacity,
+    unit: firstVariant.unit,
+    id: firstVariant.id,
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,11 +75,11 @@ const FloatingProduct = ({
           image: imageUrls[0] ?? null,
           productLabel: productName,
           quantity: 1,
-          variantPrice: selectedPrice,
+          variantPrice: selectedVariant.price,
           productLink: link,
-          variantCapacity,
-          variantId,
-          variantUnit,
+          variantCapacity: selectedVariant.capacity,
+          variantId: selectedVariant.id,
+          variantUnit: selectedVariant.unit,
         });
         toast.success(`Dodano "${productName}" do koszyka!`);
         onOpen();
@@ -95,10 +93,19 @@ const FloatingProduct = ({
   const fullStars = rating >= MAX_STARS ? MAX_STARS : Math.floor(rating);
   const notFullStars = MAX_STARS - fullStars;
 
-  const currentQuantity = cartData.find((entry) => entry.variantId === variantId)?.quantity ?? 0;
+  const currentQuantity = cartData.find((entry) => entry.variantId === selectedVariant.id)?.quantity ?? 0;
+
+  const changeVariant = (variant: Variant) => {
+    setSelectedVariant({
+      price: variant.price,
+      capacity: variant.capacity,
+      unit: variant.unit,
+      id: variant.id,
+    });
+  };
 
   return (
-    <div id="productBox" className="max-w-sm relative">
+    <div id="productBox" className="max-w-sm w-full relative">
       <div id="product" style={{ transform: `translateY(${scrollY}px)` }}>
         {/* Title */}
         <div className="mb-1">
@@ -128,19 +135,39 @@ const FloatingProduct = ({
         </div>
         <Separator className="my-4" />
         {/* Actions */}
-        <div className="space-y-3">
+        <div>
           <Button
             size="xl"
-            className="w-full rounded-full font-bold transition-transform hover:scale-110 relative"
-            onClick={() => verifyCartItem({ variantId, currentQuantity })}
+            className="w-full rounded-full font-bold transition-transform hover:scale-110 relative scale-100"
+            onClick={() => verifyCartItem({ variantId: selectedVariant.id, currentQuantity })}
             disabled={isLoading}
+            ref={scope}
           >
             <FaCartPlus className="h-8 w-8 mr-4" />
-            <span>Dodaj do koszyka ({formatPrice(selectedPrice)})</span>
+            <span>Dodaj do koszyka ({formatPrice(selectedVariant.price)})</span>
             <div className={cn('absolute right-4 hidden', isLoading && 'block')}>
               <ImSpinner9 className="w-6 h-6 animate-spin" />
             </div>
           </Button>
+          <div className="flex flex-col justify-center items-center mb-3 mt-2">
+            <p className="text-muted-foreground">Kliknij aby wybrać pojemność</p>
+            <div className="grid grid-cols-3 gap-4">
+              {variants.map((variant) => (
+                <VariantPicker
+                  key={variant.id}
+                  variant={variant}
+                  onSelect={() => {
+                    animate([
+                      [scope.current, { transform: 'scale(110%)' }, { duration: 0.1 }],
+                      [scope.current, { transform: 'scale(100%)' }, { duration: 0.1, delay: 0.1 }],
+                    ]);
+                    changeVariant(variant);
+                  }}
+                  isSelected={selectedVariant.id === variant.id}
+                />
+              ))}
+            </div>
+          </div>
           <Button size="lg" className="w-full rounded-full font-bold" variant="pink">
             <FaHeart className="h-6 w-6 mr-4" />
             Dodaj do listy życzeń
