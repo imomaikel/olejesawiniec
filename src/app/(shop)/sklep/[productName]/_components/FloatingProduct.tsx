@@ -1,14 +1,17 @@
 'use client';
 import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
+import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
+import { trpc } from '@/components/providers/TRPC';
 import ImageSwiper from '@/components/ImageSwiper';
 import { Button } from '@/components/ui/button';
-import { Tag, Variant } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
+import { ImSpinner9 } from 'react-icons/im';
 import { useCart } from '@/hooks/use-cart';
-import { formatPrice } from '@/lib/utils';
+import { Tag } from '@prisma/client';
+import { toast } from 'sonner';
 
 const MAX_STARS = 6;
 
@@ -38,7 +41,7 @@ const FloatingProduct = ({
 }: TFloatingProduct) => {
   const scrollMax = useRef<null | number>(null);
   const [scrollY, setScrollY] = useState(0);
-  const { addProduct } = useCart();
+  const { addProduct, onOpen, cartData } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,21 +70,32 @@ const FloatingProduct = ({
     };
   }, [scrollY]);
 
-  const onAdd = () => {
-    addProduct({
-      image: imageUrls[0] ?? null,
-      productLabel: productName,
-      quantity: 1,
-      variantPrice: selectedPrice,
-      productLink: link,
-      variantCapacity,
-      variantId,
-      variantUnit,
-    });
-  };
+  const { mutate: verifyCartItem, isLoading } = trpc.verifyCartItem.useMutation({
+    onSuccess: (response) => {
+      if (response === true) {
+        addProduct({
+          image: imageUrls[0] ?? null,
+          productLabel: productName,
+          quantity: 1,
+          variantPrice: selectedPrice,
+          productLink: link,
+          variantCapacity,
+          variantId,
+          variantUnit,
+        });
+        toast.success(`Dodano "${productName}" do koszyka!`);
+        onOpen();
+      } else {
+        toast.error(response);
+      }
+    },
+    onError: () => errorToast(),
+  });
 
   const fullStars = rating >= MAX_STARS ? MAX_STARS : Math.floor(rating);
   const notFullStars = MAX_STARS - fullStars;
+
+  const currentQuantity = cartData.find((entry) => entry.variantId === variantId)?.quantity ?? 0;
 
   return (
     <div id="productBox" className="max-w-sm relative">
@@ -117,11 +131,16 @@ const FloatingProduct = ({
         <div className="space-y-3">
           <Button
             size="xl"
-            className="w-full rounded-full font-bold transition-transform hover:scale-110"
-            onClick={onAdd}
+            className="w-full rounded-full font-bold transition-transform hover:scale-110 relative"
+            onClick={() => {
+              if (!isLoading) verifyCartItem({ variantId, currentQuantity });
+            }}
           >
             <FaCartPlus className="h-8 w-8 mr-4" />
-            Dodaj do koszyka ({formatPrice(selectedPrice)})
+            <span>Dodaj do koszyka ({formatPrice(selectedPrice)})</span>
+            <div className={cn('absolute right-4 hidden', isLoading && 'block')}>
+              <ImSpinner9 className="w-6 h-6 animate-spin" />
+            </div>
           </Button>
           <Button size="lg" className="w-full rounded-full font-bold" variant="pink">
             <FaHeart className="h-6 w-6 mr-4" />

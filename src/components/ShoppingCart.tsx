@@ -17,9 +17,12 @@ const ShoppingCart = () => {
 
   if (!isMounted) return null;
 
+  const cartItems = cartData.reduce((acc, curr) => (acc += curr.quantity), 0);
+  const cartItemsPrice = cartData.reduce((acc, curr) => (acc += curr.quantity * curr.variantPrice), 0);
+
   return (
     <Sheet onOpenChange={onOpenChange} open={isOpen}>
-      <SheetContent className="overflow-y-auto">
+      <SheetContent className="overflow-y-auto min-w-[330px]">
         <SheetHeader>
           <SheetTitle>Koszyk</SheetTitle>
           <SheetDescription>Produkty, które zostały dodane do koszyka</SheetDescription>
@@ -41,21 +44,21 @@ const ShoppingCart = () => {
         ) : (
           <>
             <div className="mt-4">
-              <div className="font-medium text-2xl">Podsumowanie koszyka</div>
+              <div className="font-medium text-xl md:text-2xl">Podsumowanie koszyka</div>
               <div className="mt-2 mb-4 space-y-1">
                 <div className="relative flex justify-between items-center">
                   <span>Ilość produktów</span>
                   <div className="h-0.5 bg-gray-300 flex flex-1 mx-4" />
-                  <span>2 szt.</span>
+                  <span>{cartItems} szt.</span>
                 </div>
                 <div className="relative flex justify-between items-center">
                   <span>Cena produktów</span>
                   <div className="h-0.5 bg-gray-300 flex flex-1 mx-4" />
-                  <span>{formatPrice(20)}</span>
+                  <span>{formatPrice(cartItemsPrice)}</span>
                 </div>
-                <div className="relative flex justify-between items-center">
+                <div className="relative flex justify-between items-center flex-col md:flex-row">
                   <span>Cena przesyłki</span>
-                  <div className="h-0.5 bg-gray-300 flex flex-1 mx-4" />
+                  <div className="h-0.5 bg-gray-300 flex-1 mx-4 hidden md:flex" />
                   <span>W następnym kroku</span>
                 </div>
               </div>

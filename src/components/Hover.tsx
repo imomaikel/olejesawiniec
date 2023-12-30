@@ -12,7 +12,7 @@ const Hover = ({ children, content, closeDelay = 200, openDelay = 100, className
   return (
     <HoverCard closeDelay={closeDelay} openDelay={openDelay}>
       <HoverCardTrigger>{children}</HoverCardTrigger>
-      <HoverCardContent className={cn('max-w-[125px] text-xs', className)}>{content}</HoverCardContent>
+      <HoverCardContent className={cn('max-w-[125px] text-xs p-1', className)}>{content}</HoverCardContent>
     </HoverCard>
   );
 };
