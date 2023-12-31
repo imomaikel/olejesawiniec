@@ -28,7 +28,7 @@ const VariantPicker = ({ variant, onSelect, outOfStock, lowStock, isSelected }: 
       <div className="tracking-wide font-medium">{formatPrice(price)}</div>
       <div className={cn('absolute -right-4 -top-2 text-black hidden', isSelected && 'block')}>
         <div className="relative">
-          <IoCheckmarkCircle className="w-8 h-8 rotate-[25deg] absolute top-0 right-0 z-10" />
+          <IoCheckmarkCircle className="w-8 h-8 rotate-[15deg] absolute top-0 right-0 z-10" />
           <div className="absolute top-1 right-1 bg-primary w-6 h-6 rounded-full" />
         </div>
       </div>

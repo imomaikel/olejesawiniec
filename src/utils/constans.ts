@@ -17,6 +17,10 @@ export const NAV_LINKS = [
     label: 'Kontakt',
     path: '#',
   },
+  {
+    label: 'Logowanie',
+    path: '/logowanie',
+  },
 ];
 
 export const FOOTER_LINKS = [
