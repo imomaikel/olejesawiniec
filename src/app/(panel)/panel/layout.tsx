@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 const PanelLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col min-h-screen justify-between">
-      <div className="w-full max-w-screen-2xl mx-auto flex flex-col relative px-8 md:px-12">
+      <div className="w-full max-w-screen-2xl mx-auto flex flex-col relative px-4 md:px-12">
         <Navbar className="relative mt-4" textColor="black" topPadding={0} />
 
         <Separator className="my-4" />
