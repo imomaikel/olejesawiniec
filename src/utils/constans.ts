@@ -4,6 +4,15 @@ import { FaHashtag } from 'react-icons/fa';
 import { TiPlus } from 'react-icons/ti';
 import { FaEdit } from 'react-icons/fa';
 
+export const TStatuses = [
+  { value: 'Submitted', label: 'Złożone', color: 'black' },
+  { value: 'In progress', label: 'W realizacji', color: '#3c40c6' },
+  { value: 'Shipped', label: 'Wysłane', color: '#8e44ad' },
+  { value: 'Awaiting pickup', label: 'Oczekuje na odbiór', color: '#8e44ad' },
+  { value: 'Fulfilled', label: 'Zrealizowane', color: 'hsl(var(--primary))' },
+] as const;
+export type TOrderStatus = (typeof TStatuses)[number]['value'];
+
 export const NAV_LINKS = [
   {
     label: 'Sklep',
