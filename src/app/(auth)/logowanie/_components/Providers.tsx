@@ -1,5 +1,7 @@
 'use client';
-import { FaFacebook, FaGoogle } from 'react-icons/fa';
+import { FaApple, FaFacebook, FaGoogle } from 'react-icons/fa';
+import { slideIn } from '@/utils/motion';
+import { motion } from 'framer-motion';
 
 const Providers = () => {
   return (
@@ -9,12 +11,36 @@ const Providers = () => {
         <div className="absolute bg-white px-3 text-sm text-muted-foreground">albo za pomocą</div>
       </div>
       <div className="mt-6 flex w-full items-center justify-center gap-x-4">
-        <div role="button" className="group">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={slideIn('bottom', 'spring', 0, 0.4, 20)}
+          viewport={{ once: false }}
+          role="button"
+          className="group"
+        >
           <FaGoogle className="w-8 h-8 group-hover:text-primary transition-colors" />
-        </div>
-        <div role="button" className="group">
+        </motion.div>
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={slideIn('bottom', 'spring', 0.1, 0.4, 20)}
+          viewport={{ once: false }}
+          role="button"
+          className="group"
+        >
+          <FaApple className="w-8 h-8 group-hover:text-primary transition-colors" />
+        </motion.div>
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={slideIn('bottom', 'spring', 0.2, 0.4, 20)}
+          viewport={{ once: false }}
+          role="button"
+          className="group"
+        >
           <FaFacebook className="w-8 h-8 group-hover:text-primary transition-colors" />
-        </div>
+        </motion.div>
       </div>
     </div>
   );

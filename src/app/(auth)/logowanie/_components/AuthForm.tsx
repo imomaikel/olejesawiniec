@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
+import { motion } from 'framer-motion';
 
 type TAuthForm = {
   method: 'signIn' | 'signUp';
@@ -53,9 +54,20 @@ const AuthForm = ({ method }: TAuthForm) => {
             )}
           />
         </div>
-        <Button type="submit" size="lg" className="w-full rounded-full mt-4">
-          {method === 'signIn' ? 'Zaloguj się' : 'Załóż konto'}
-        </Button>
+        <motion.div
+          animate={{
+            x: [10, -10, 0],
+          }}
+          transition={{
+            duration: 0.35,
+            stiffness: 30,
+          }}
+          viewport={{ once: false }}
+        >
+          <Button type="submit" size="lg" className="w-full rounded-full mt-4">
+            {method === 'signIn' ? 'Zaloguj się' : 'Załóż konto'}
+          </Button>
+        </motion.div>
       </form>
     </Form>
   );
