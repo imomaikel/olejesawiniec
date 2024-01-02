@@ -19,9 +19,7 @@ const AuthForm = ({ method }: TAuthForm) => {
     },
   });
 
-  const onSubmit = ({ email, password }: TAuthValidator) => {
-    alert(email);
-  };
+  const onSubmit = ({ email, password }: TAuthValidator) => {};
 
   return (
     <Form {...form}>

@@ -1,10 +1,23 @@
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Providers from './Providers';
 import AuthForm from './AuthForm';
+import { useEffect } from 'react';
 
 const SignIn = () => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    params.delete('metoda');
+    router.replace(`${pathname}?${params}`);
+  }, [pathname, router, searchParams]);
+
   return (
     <Card>
       <CardHeader>
