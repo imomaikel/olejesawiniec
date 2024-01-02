@@ -2,7 +2,10 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AuthValidator, TAuthValidator } from '@/lib/validators/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { trpc } from '@/components/providers/TRPC';
+import FormSuccess from '@/components/FormSuccess';
 import { Button } from '@/components/ui/button';
+import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
@@ -19,7 +22,9 @@ const AuthForm = ({ method }: TAuthForm) => {
     },
   });
 
-  const onSubmit = ({ email, password }: TAuthValidator) => {};
+  const { mutate: signUp, isLoading, data: signUpResponse } = trpc.auth.signUp.useMutation();
+
+  const onSubmit = ({ email, password }: TAuthValidator) => signUp({ email, password });
 
   return (
     <Form {...form}>
@@ -32,7 +37,7 @@ const AuthForm = ({ method }: TAuthForm) => {
               <FormItem>
                 <FormLabel>Adres e-mail</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Wpisz tutaj swój adres e-mail" {...field} />
+                  <Input type="text" placeholder="Wpisz tutaj swój adres e-mail" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -45,7 +50,7 @@ const AuthForm = ({ method }: TAuthForm) => {
               <FormItem>
                 <FormLabel>Hasło</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Wpisz tutaj swoje hasło" {...field} />
+                  <Input type="password" placeholder="Wpisz tutaj swoje hasło" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -62,10 +67,13 @@ const AuthForm = ({ method }: TAuthForm) => {
           }}
           viewport={{ once: false }}
         >
-          <Button type="submit" size="lg" className="w-full rounded-full mt-4">
+          <Button type="submit" size="lg" className="w-full rounded-full mt-4" disabled={isLoading}>
             {method === 'signIn' ? 'Zaloguj się' : 'Załóż konto'}
           </Button>
         </motion.div>
+        <FormSuccess description="Konto założone" />
+        {signUpResponse?.error && <FormError description={signUpResponse.error} />}
+        {signUpResponse?.success && <FormSuccess description={signUpResponse.success} />}
       </form>
     </Form>
   );
