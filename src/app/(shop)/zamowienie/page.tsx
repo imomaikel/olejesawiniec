@@ -4,6 +4,7 @@ import { trpc } from '@/components/providers/TRPC';
 import { Button } from '@/components/ui/button';
 import CartItems from './_components/CartItems';
 import { useCart } from '@/hooks/use-cart';
+import InPost from './_components/InPost';
 import { useEffect } from 'react';
 
 const OrderPage = () => {
@@ -25,7 +26,7 @@ const OrderPage = () => {
       <CartItems items={cartData} />
       <Separator className="my-6" />
       <h1 className="text-2xl font-bold">Dostawa</h1>
-      {/* TODO InPost */}
+      <InPost />
       <Separator className="my-6" />
       <h1 className="text-2xl font-bold">Płatność</h1>
       <Button size="2xl" className="rounded-full">
