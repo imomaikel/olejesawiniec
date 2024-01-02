@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { LuArrowUpDown } from 'react-icons/lu';
 import { Input } from '@/components/ui/input';
 import { TStatuses } from '@/utils/constans';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, relativeDate } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -116,7 +116,12 @@ const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const date = row.getValue('date') as Date;
 
-      return format(date, 'dd/MM HH:mm');
+      return (
+        <div className="flex flex-col">
+          <span>{format(date, 'dd/MM HH:mm')}</span>
+          <span className="text-muted-foreground text-xs">{relativeDate(date)}</span>
+        </div>
+      );
     },
     footer: 'Data',
   },

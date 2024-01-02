@@ -1,8 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FaUserCircle } from 'react-icons/fa';
-import { formatRelative } from 'date-fns';
+import { relativeDate } from '@/lib/utils';
 import { BsDot } from 'react-icons/bs';
-import { pl } from 'date-fns/locale';
 
 type TOpinion = {
   authorName: string;
@@ -31,7 +30,7 @@ const Opinion = ({ authorName, content, date, avatarURL }: TOpinion) => {
         <div className="flex space-x-1 items-center">
           <div className="font-medium">{authorName}</div>
           <BsDot />
-          <div className="text-xs text-muted-foreground">{formatRelative(date, new Date(), { locale: { ...pl } })}</div>
+          <div className="text-xs text-muted-foreground">{relativeDate(date)}</div>
         </div>
         {/* Content */}
         <div className="text-sm text-justify">{content}</div>
