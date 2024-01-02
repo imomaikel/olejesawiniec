@@ -1,3 +1,4 @@
+import { TCartItem } from '@/hooks/use-cart';
 import { publicProcedure, router } from '../trpc';
 import { z } from 'zod';
 
@@ -38,4 +39,74 @@ export const shopRouter = router({
     });
     return products ?? null;
   }),
+  verifyCartItem: publicProcedure
+    .input(
+      z.object({
+        currentQuantity: z.number(),
+        variantId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { currentQuantity, variantId } = input;
+      const { prisma } = ctx;
+
+      const variant = await prisma.variant.findFirst({
+        where: { id: variantId },
+      });
+
+      if (!variant) return 'Nieprawidłowy produkt.';
+
+      const newQuantity = currentQuantity + 1;
+
+      if (newQuantity <= variant.stock) {
+        return true;
+      }
+      return 'Brak danej pojemności na magazynie';
+    }),
+  verifyCart: publicProcedure
+    .input(
+      z.object({
+        cart: z.custom<TCartItem[]>(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+      const { cart } = input;
+
+      const ids = cart.map(({ variantId }) => variantId);
+
+      const variants = await prisma.variant.findMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+        include: {
+          Product: true,
+        },
+      });
+
+      const updatedProducts: TCartItem[] = [];
+
+      cart.forEach((item) => {
+        const variant = variants.find((entry) => entry.id === item.variantId);
+        if (!variant) return;
+
+        if (!variant.Product?.enabled) return;
+
+        // No stock
+        if (variant.stock < item.quantity) {
+          item.quantity = variant.stock;
+        }
+
+        // Price
+        if (variant.price !== item.variantPrice) {
+          item.variantPrice = variant.price;
+        }
+
+        updatedProducts.push(item);
+      });
+
+      return updatedProducts;
+    }),
 });

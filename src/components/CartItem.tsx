@@ -25,7 +25,7 @@ const CartItem = ({
 }: TCartItem) => {
   const { removeProduct, increaseQuantity, decreaseQuantity, cartData } = useCart();
 
-  const { mutate: verifyIncrease, isLoading } = trpc.verifyCartItem.useMutation({
+  const { mutate: verifyIncrease, isLoading } = trpc.shop.verifyCartItem.useMutation({
     onSuccess: (response) => {
       if (response === true) {
         increaseQuantity(variantId);

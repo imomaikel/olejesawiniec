@@ -8,6 +8,7 @@ import { formatPrice } from '@/lib/utils';
 import { Button } from './ui/button';
 import CartItem from './CartItem';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const ShoppingCart = () => {
   const { isOpen, onOpenChange, cartData } = useCart();
@@ -63,9 +64,11 @@ const ShoppingCart = () => {
                 </div>
               </div>
               <div>
-                <Button className="w-full rounded-full text-xl tracking-wider" size="lg">
-                  Przejdź dalej
-                  <FiChevronsRight className="w-7 h-7 ml-2" />
+                <Button className="w-full rounded-full text-xl tracking-wider" size="lg" asChild>
+                  <Link href="/zamowienie">
+                    Przejdź dalej
+                    <FiChevronsRight className="w-7 h-7 ml-2" />
+                  </Link>
                 </Button>
               </div>
             </div>

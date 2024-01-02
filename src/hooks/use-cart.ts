@@ -21,6 +21,8 @@ type TUseCart = {
   addProduct: (variantData: TCartItem) => void;
   removeProduct: (variantId: string) => void;
 
+  setCart: (cart: TCartItem[]) => void;
+
   increaseQuantity: (variantId: string) => void;
   decreaseQuantity: (variantId: string) => void;
 };
@@ -57,6 +59,11 @@ export const useCart = create<TUseCart>()(
       removeProduct: (variantId) =>
         set((state) => ({
           cartData: state.cartData.filter((entry) => entry.variantId !== variantId),
+        })),
+
+      setCart: (cart) =>
+        set(() => ({
+          cartData: cart,
         })),
 
       increaseQuantity: (variantId) =>

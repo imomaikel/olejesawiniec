@@ -68,7 +68,7 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
     };
   }, [scrollY]);
 
-  const { mutate: verifyCartItem, isLoading } = trpc.verifyCartItem.useMutation({
+  const { mutate: verifyCartItem, isLoading } = trpc.shop.verifyCartItem.useMutation({
     onSuccess: (response) => {
       if (response === true) {
         addProduct({
