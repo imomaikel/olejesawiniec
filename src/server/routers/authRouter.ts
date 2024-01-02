@@ -1,9 +1,10 @@
-import { AuthValidator } from '@/lib/validators/auth';
+import { SignInSchema, SignUpSchema } from '@/lib/validators/auth';
 import { publicProcedure, router } from '../trpc';
+import { loginUser } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
 export const authRouter = router({
-  signUp: publicProcedure.input(AuthValidator).mutation(async ({ ctx, input }) => {
+  signUp: publicProcedure.input(SignUpSchema).mutation(async ({ ctx, input }) => {
     const { email, password } = input;
     const { prisma } = ctx;
 
@@ -17,15 +18,39 @@ export const authRouter = router({
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
-    });
+    try {
+      await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+        },
+      });
+    } catch {
+      return { error: 'Wystąpił błąd' };
+    }
+
+    try {
+      const status = await loginUser({ email, password });
+      if (status?.error) {
+        return { error: status.error };
+      } else {
+        return { status: 'Konto założone', redirect: true };
+      }
+    } catch {}
 
     return { success: 'Konto założone!' };
+  }),
+  signIn: publicProcedure.input(SignInSchema).mutation(async ({ input }) => {
+    const { email, password } = input;
 
-    // TODO verification mail with token
+    const response = await loginUser({ email, password });
+
+    if (response?.error) {
+      return { error: response.error };
+    }
+
+    return { success: true };
   }),
 });
+
+// TODO email verification & redirect

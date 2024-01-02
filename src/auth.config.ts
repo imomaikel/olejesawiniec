@@ -1,8 +1,11 @@
 import Credentials from 'next-auth/providers/credentials';
+import { SignInSchema } from './lib/validators/auth';
 import Facebook from 'next-auth/providers/facebook';
 import Google from 'next-auth/providers/google';
 import type { NextAuthConfig } from 'next-auth';
 import Apple from 'next-auth/providers/apple';
+import { getUserByEmail } from './lib/auth';
+import bcrypt from 'bcryptjs';
 
 export default {
   providers: [
@@ -20,7 +23,17 @@ export default {
     }),
     Credentials({
       async authorize(credentials) {
-        // TODO
+        const parseFields = SignInSchema.safeParse(credentials);
+        if (!parseFields.success) return null;
+
+        const { email, password } = parseFields.data;
+
+        const user = await getUserByEmail(email);
+        if (!user || !user.password) return null;
+
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (validPassword) return user;
+
         return null;
       },
     }),

@@ -2,8 +2,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import SignInForm from './SignInForm';
 import Providers from './Providers';
-import AuthForm from './AuthForm';
 import { useEffect } from 'react';
 
 const SignIn = () => {
@@ -51,7 +51,7 @@ const SignIn = () => {
         </motion.div>
       </CardHeader>
       <CardContent>
-        <AuthForm method="signIn" />
+        <SignInForm />
         <Providers />
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
 'use client';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { AuthValidator, TAuthValidator } from '@/lib/validators/auth';
+import { SignInSchema, TSignInSchema } from '@/lib/validators/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '@/components/providers/TRPC';
 import FormSuccess from '@/components/FormSuccess';
@@ -10,21 +10,18 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 
-type TAuthForm = {
-  method: 'signIn' | 'signUp';
-};
-const AuthForm = ({ method }: TAuthForm) => {
-  const form = useForm<TAuthValidator>({
-    resolver: zodResolver(AuthValidator),
+const SignInForm = () => {
+  const form = useForm<TSignInSchema>({
+    resolver: zodResolver(SignInSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  const { mutate: signUp, isLoading, data: signUpResponse } = trpc.auth.signUp.useMutation();
+  const { mutate: signIn, isLoading, data: signInResponse } = trpc.auth.signIn.useMutation();
 
-  const onSubmit = ({ email, password }: TAuthValidator) => signUp({ email, password });
+  const onSubmit = ({ email, password }: TSignInSchema) => signIn({ email, password });
 
   return (
     <Form {...form}>
@@ -68,15 +65,14 @@ const AuthForm = ({ method }: TAuthForm) => {
           viewport={{ once: false }}
         >
           <Button type="submit" size="lg" className="w-full rounded-full mt-4" disabled={isLoading}>
-            {method === 'signIn' ? 'Zaloguj się' : 'Załóż konto'}
+            Zaloguj się
           </Button>
         </motion.div>
-        <FormSuccess description="Konto założone" />
-        {signUpResponse?.error && <FormError description={signUpResponse.error} />}
-        {signUpResponse?.success && <FormSuccess description={signUpResponse.success} />}
+        {signInResponse?.error && <FormError description={signInResponse.error} />}
+        {signInResponse?.success && <FormSuccess description="Sukces!" />}
       </form>
     </Form>
   );
 };
 
-export default AuthForm;
+export default SignInForm;
