@@ -1,6 +1,7 @@
 import { TRPCProvider } from '@/components/providers/TRPC';
 import ShoppingCart from '@/components/ShoppingCart';
 import MobileNavbar from '@/components/MobileNavbar';
+import { SessionProvider } from 'next-auth/react';
 import { Epilogue } from 'next/font/google';
 import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
@@ -14,19 +15,21 @@ export const metadata: Metadata = {
   description: 'Olejarnia w zgodzie z naturą',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl" className="h-full scroll-smooth">
-      <body className={cn('h-full relative', epilogue.className)}>
-        <TRPCProvider>
-          <main className="relative flex flex-col min-h-screen">
-            <div className="flex-1 flex-grow overflow-hidden relative">{children}</div>
-          </main>
-          <ShoppingCart />
-          <MobileNavbar />
-        </TRPCProvider>
-        <Toaster richColors position="top-center" />
-      </body>
-    </html>
+    <SessionProvider>
+      <html lang="pl" className="h-full scroll-smooth">
+        <body className={cn('h-full relative', epilogue.className)}>
+          <TRPCProvider>
+            <main className="relative flex flex-col min-h-screen">
+              <div className="flex-1 flex-grow overflow-hidden relative">{children}</div>
+            </main>
+            <ShoppingCart />
+            <MobileNavbar />
+          </TRPCProvider>
+          <Toaster richColors position="top-center" />
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

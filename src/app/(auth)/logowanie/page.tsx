@@ -5,6 +5,7 @@ import SignIn from './_components/SignIn';
 import SignUp from './_components/SignUp';
 import Error from './_components/Error';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const AuthPage = () => {
   const searchParams = useSearchParams();
@@ -19,7 +20,9 @@ const AuthPage = () => {
   return (
     <div className="w-full md:h-screen flex items-center mt-16 md:mt-0 justify-start md:justify-center relative flex-col">
       <div className="relative w-[350px] md:w-[400px] flex justify-center">
-        <Image src="/signatureBlack.png" width={300} height={120} alt="podpis" className="object-center" />
+        <Link href="/sklep">
+          <Image src="/signatureBlack.png" width={300} height={120} alt="podpis" className="object-center" />
+        </Link>
       </div>
       <p className="text-xs text-muted-foreground">Wybierz metodę</p>
       <Tabs defaultValue={method} className="w-[350px] md:w-[400px]">

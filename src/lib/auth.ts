@@ -1,3 +1,4 @@
+'use server';
 import { SignInSchema, TSignInSchema } from './validators/auth';
 import { AuthError } from 'next-auth';
 import { signIn } from '@/auth';
@@ -15,6 +16,17 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
+export const getUserById = async (id: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
 export const loginUser = async (credentials: TSignInSchema, redirectTo?: string | null) => {
   const parseFields = SignInSchema.safeParse(credentials);
 
