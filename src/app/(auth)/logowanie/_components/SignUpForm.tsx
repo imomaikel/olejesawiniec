@@ -2,19 +2,17 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SignUpSchema, TSignUpSchema } from '@/lib/validators/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { trpc } from '@/components/providers/TRPC';
+import { signInUser, signUpUser } from '@/lib/auth';
 import FormSuccess from '@/components/FormSuccess';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 
 const SignUpForm = () => {
-  const router = useRouter();
-
+  const [isLoading, setIsStransition] = useTransition();
   const form = useForm<TSignUpSchema>({
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
@@ -22,21 +20,27 @@ const SignUpForm = () => {
       password: '',
     },
   });
+  const [success, setSuccess] = useState<null | string>();
+  const [error, setError] = useState<null | string>();
 
-  const {
-    mutate: signUp,
-    isLoading,
-    data: signUpResponse,
-  } = trpc.auth.signUp.useMutation({
-    onSuccess: (data) => {
-      if (data.redirect) {
-        toast.success('Konto założone, za chwilę nastąpi przekierowanie...');
-        // TODO ROUTER PUSH
-      }
-    },
-  });
+  const onSubmit = ({ email, password }: TSignUpSchema) => {
+    setSuccess('');
+    setError('');
 
-  const onSubmit = ({ email, password }: TSignUpSchema) => signUp({ email, password });
+    setIsStransition(() => {
+      signUpUser({ email, password })
+        .then((response) => {
+          if (response.error) {
+            setError(response.error);
+          }
+          if (response.success) {
+            setSuccess(response.success);
+            signInUser({ email, password });
+          }
+        })
+        .catch(() => setError('Wystąpił błąd!'));
+    });
+  };
 
   return (
     <Form {...form}>
@@ -83,8 +87,8 @@ const SignUpForm = () => {
             Załóż konto
           </Button>
         </motion.div>
-        {signUpResponse?.error && <FormError description={signUpResponse.error} />}
-        {signUpResponse?.success && <FormSuccess description={signUpResponse.success} />}
+        {error && <FormError description={error} />}
+        {success && <FormSuccess description={success} />}
       </form>
     </Form>
   );

@@ -8,10 +8,14 @@ import {
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { usePathname } from 'next/navigation';
 import { FaUserCircle } from 'react-icons/fa';
 import { signOut } from 'next-auth/react';
+import { FaUser } from 'react-icons/fa';
+import { cn } from '@/lib/utils';
 
 const UserProfile = () => {
+  const pathname = usePathname();
   const user = useCurrentUser();
   if (!user) return null;
 
@@ -20,13 +24,18 @@ const UserProfile = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <div className="flex bg-gray-100 rounded-lg px-4 ml-1 py-0.5 items-center">
+      <DropdownMenuTrigger className={cn(pathname === '/' && 'rounded-full ml-1')}>
+        <div
+          className={cn(
+            'flex bg-gray-100 rounded-lg px-4 ml-1 py-0.5 items-center',
+            pathname === '/' && 'bg-transparent ring-1 ring-white rounded-full ml-0',
+          )}
+        >
           <span className="truncate hidden md:block mr-2 max-w-[120px]">{username}</span>
           <Avatar>
             <AvatarImage src={image ?? undefined} />
-            <AvatarFallback>
-              <FaUserCircle className="h-full w-full" />
+            <AvatarFallback className={cn(pathname === '/' && 'bg-transparent')}>
+              {pathname === '/' ? <FaUser className="h-3/4 w-3/4" /> : <FaUserCircle className="h-full w-full" />}
             </AvatarFallback>
           </Avatar>
         </div>

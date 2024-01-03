@@ -90,7 +90,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
                   key={entry.label}
                 >
                   <Button variant="ghost" asChild>
-                    {entry.path === '/logowanie' ? (
+                    {entry.path === '/logowanie' && pathname.length >= 2 ? (
                       <Link href={`${entry.path}?powrót=${pathname}`}>{entry.label}</Link>
                     ) : (
                       <Link href={entry.path}>{entry.label}</Link>

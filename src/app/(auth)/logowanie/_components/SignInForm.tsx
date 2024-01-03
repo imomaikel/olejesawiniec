@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
+import { signInUser } from '@/lib/auth';
 import { motion } from 'framer-motion';
-import { loginUser } from '@/lib/auth';
 
 const SignInForm = () => {
   const [isLoading, setIsStransition] = useTransition();
@@ -32,7 +32,7 @@ const SignInForm = () => {
     setError('');
 
     setIsStransition(() => {
-      loginUser({ email, password }, redirectTo)
+      signInUser({ email, password }, redirectTo)
         .then((response) => {
           if (response?.error) {
             setError(response.error);

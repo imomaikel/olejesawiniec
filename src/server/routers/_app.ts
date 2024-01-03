@@ -1,12 +1,10 @@
 import { publicProcedure, router } from '../trpc';
 import { panelRouter } from './panelRouter';
-import { authRouter } from './authRouter';
 import { shopRouter } from './shopRouter';
 
 export const appRouter = router({
   panel: panelRouter,
   shop: shopRouter,
-  auth: authRouter,
 
   getCategories: publicProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
