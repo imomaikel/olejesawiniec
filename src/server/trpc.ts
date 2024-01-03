@@ -1,8 +1,9 @@
-import { initTRPC } from '@trpc/server';
+import { TRPCError, initTRPC } from '@trpc/server';
 import { Context } from './context';
 import prisma from '../lib/prisma';
 import SuperJSON from 'superjson';
 import { ZodError } from 'zod';
+import { auth } from '@/auth';
 
 const t = initTRPC.context<Context>().create({
   transformer: SuperJSON,
@@ -29,5 +30,21 @@ const prismaContext = middleware(({ next }) => {
   });
 });
 
+const panelAuth = middleware(async ({ next }) => {
+  const session = await auth();
+  const role = session?.user.role;
+
+  if (!(role === 'ADMIN' || role === 'SUPPORT')) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  return next({
+    ctx: {
+      prisma,
+    },
+  });
+});
+
 export const router = t.router;
 export const publicProcedure = t.procedure.use(prismaContext);
+export const panelProcedure = t.procedure.use(panelAuth);

@@ -1,9 +1,15 @@
-'use client';
 import PanelControls from './_components/PanelControls';
 import { Separator } from '@/components/ui/separator';
+import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { auth } from '@/auth';
 
-const PanelLayout = ({ children }: { children: React.ReactNode }) => {
+const PanelLayout = async ({ children }: { children: React.ReactNode }) => {
+  const session = await auth();
+  const role = session?.user.role;
+
+  if (!(role === 'ADMIN' || role === 'SUPPORT')) redirect('/logowanie');
+
   return (
     <div className="flex flex-col min-h-screen justify-between">
       <div className="w-full max-w-screen-2xl mx-auto flex flex-col relative px-4 md:px-12">

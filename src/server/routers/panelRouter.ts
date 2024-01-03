@@ -1,6 +1,6 @@
 import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS } from '@/utils/constans';
 import { PanelVariantProductValidator } from '@/lib/validators/panel';
-import { publicProcedure, router } from '../trpc';
+import { panelProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -22,7 +22,7 @@ const TAG_MIN_LENGTH = 2;
 const TAG_MAX_LENGTH = 25;
 
 export const panelRouter = router({
-  createTag: publicProcedure
+  createTag: panelProcedure
     .input(
       z.object({
         tagName: z
@@ -56,7 +56,7 @@ export const panelRouter = router({
         status,
       } as TPanelRouterResponse;
     }),
-  removeTag: publicProcedure
+  removeTag: panelProcedure
     .input(z.object({ tagName: z.string().min(TAG_MIN_LENGTH).max(TAG_MAX_LENGTH) }))
     .mutation(async ({ ctx, input }) => {
       const { tagName } = input;
@@ -73,7 +73,7 @@ export const panelRouter = router({
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
       }
     }),
-  createProduct: publicProcedure
+  createProduct: panelProcedure
     .input(
       z.object({
         productName: z
@@ -146,7 +146,7 @@ export const panelRouter = router({
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
       }
     }),
-  getProductInfo: publicProcedure.input(z.object({ productLink: z.string() })).query(async ({ ctx, input }) => {
+  getProductInfo: panelProcedure.input(z.object({ productLink: z.string() })).query(async ({ ctx, input }) => {
     const { productLink } = input;
     const { prisma } = ctx;
 
@@ -168,7 +168,7 @@ export const panelRouter = router({
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
     }
   }),
-  appendTag: publicProcedure
+  appendTag: panelProcedure
     .input(
       z.object({
         productId: z.string(),
@@ -215,7 +215,7 @@ export const panelRouter = router({
         message,
       } as TPanelRouterResponse;
     }),
-  detachTag: publicProcedure
+  detachTag: panelProcedure
     .input(
       z.object({
         productId: z.string(),
@@ -241,7 +241,7 @@ export const panelRouter = router({
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
       }
     }),
-  createVariant: publicProcedure.input(PanelVariantProductValidator).mutation(async ({ ctx, input }) => {
+  createVariant: panelProcedure.input(PanelVariantProductValidator).mutation(async ({ ctx, input }) => {
     const { options, productId } = input;
     const { capacity, price, stock, unit } = options;
     const { prisma } = ctx;
@@ -290,7 +290,7 @@ export const panelRouter = router({
       message,
     } as TPanelRouterResponse;
   }),
-  updateVariant: publicProcedure
+  updateVariant: panelProcedure
     .input(
       z.object({
         variantId: z.string(),
@@ -327,7 +327,7 @@ export const panelRouter = router({
         return false;
       }
     }),
-  removeVariant: publicProcedure
+  removeVariant: panelProcedure
     .input(
       z.object({
         variantId: z.string(),
@@ -366,7 +366,7 @@ export const panelRouter = router({
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
       }
     }),
-  getAllProducts: publicProcedure.query(async ({ ctx }) => {
+  getAllProducts: panelProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
     return await prisma.product.findMany({
@@ -375,7 +375,7 @@ export const panelRouter = router({
       },
     });
   }),
-  productState: publicProcedure
+  productState: panelProcedure
     .input(
       z.object({
         productId: z.string(),
@@ -396,7 +396,7 @@ export const panelRouter = router({
         return false;
       }
     }),
-  deleteProduct: publicProcedure.input(z.object({ productId: z.string() })).mutation(async ({ ctx, input }) => {
+  deleteProduct: panelProcedure.input(z.object({ productId: z.string() })).mutation(async ({ ctx, input }) => {
     const { productId } = input;
     const { prisma } = ctx;
 
@@ -409,7 +409,7 @@ export const panelRouter = router({
       return false;
     }
   }),
-  addDetail: publicProcedure
+  addDetail: panelProcedure
     .input(z.object({ detail: z.string(), productId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { detail, productId } = input;
@@ -431,7 +431,7 @@ export const panelRouter = router({
         return false;
       }
     }),
-  removeDetail: publicProcedure.input(z.object({ detailId: z.string() })).mutation(async ({ ctx, input }) => {
+  removeDetail: panelProcedure.input(z.object({ detailId: z.string() })).mutation(async ({ ctx, input }) => {
     const { detailId } = input;
     const { prisma } = ctx;
 
@@ -444,7 +444,7 @@ export const panelRouter = router({
       return false;
     }
   }),
-  updateDescription: publicProcedure
+  updateDescription: panelProcedure
     .input(z.object({ description: z.string(), productId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { description, productId } = input;
@@ -460,7 +460,7 @@ export const panelRouter = router({
         return false;
       }
     }),
-  updateCalories: publicProcedure
+  updateCalories: panelProcedure
     .input(
       z.object({
         fat: z.number().min(0).max(100),
@@ -545,7 +545,7 @@ export const panelRouter = router({
         return 'Błąd serwera.';
       }
     }),
-  refetchProduct: publicProcedure.input(z.object({ productId: z.string() })).mutation(async ({ ctx, input }) => {
+  refetchProduct: panelProcedure.input(z.object({ productId: z.string() })).mutation(async ({ ctx, input }) => {
     const { productId } = input;
     const { prisma } = ctx;
 
@@ -556,7 +556,7 @@ export const panelRouter = router({
 
     return product ?? null;
   }),
-  createCategory: publicProcedure.input(z.object({ label: z.string().min(1) })).mutation(async ({ ctx, input }) => {
+  createCategory: panelProcedure.input(z.object({ label: z.string().min(1) })).mutation(async ({ ctx, input }) => {
     const { prisma } = ctx;
     const { label } = input;
 
