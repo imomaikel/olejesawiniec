@@ -1,9 +1,10 @@
 'use client';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SignUpSchema, TSignUpSchema } from '@/lib/validators/auth';
+import { signInUser, signUpUser } from '@/lib/authenticate';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signInUser, signUpUser } from '@/lib/auth';
 import FormSuccess from '@/components/FormSuccess';
+import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/FormError';
@@ -22,6 +23,8 @@ const SignUpForm = () => {
   });
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('powrót');
 
   const onSubmit = ({ email, password }: TSignUpSchema) => {
     setSuccess('');
@@ -35,7 +38,7 @@ const SignUpForm = () => {
           }
           if (response.success) {
             setSuccess(response.success);
-            signInUser({ email, password });
+            signInUser({ email, password }, redirectTo);
           }
         })
         .catch(() => setError('Wystąpił błąd!'));

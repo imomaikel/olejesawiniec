@@ -6,10 +6,10 @@ import FormSuccess from '@/components/FormSuccess';
 import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
+import { signInUser } from '@/lib/authenticate';
 import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
-import { signInUser } from '@/lib/auth';
 import { motion } from 'framer-motion';
 
 const SignInForm = () => {
@@ -24,7 +24,6 @@ const SignInForm = () => {
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
   const searchParams = useSearchParams();
-
   const redirectTo = searchParams.get('powrót');
 
   const onSubmit = ({ email, password }: TSignInSchema) => {

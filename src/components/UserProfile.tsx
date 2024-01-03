@@ -27,8 +27,8 @@ const UserProfile = () => {
       <DropdownMenuTrigger className={cn(pathname === '/' && 'rounded-full ml-1')}>
         <div
           className={cn(
-            'flex bg-gray-100 rounded-lg px-4 ml-1 py-0.5 items-center',
-            pathname === '/' && 'bg-transparent ring-1 ring-white rounded-full ml-0',
+            'flex border rounded-full px-4 ml-1 py-0.5 items-center transition-colors hover:border-primary',
+            pathname === '/' && 'border-white ml-0',
           )}
         >
           <span className="truncate hidden md:block mr-2 max-w-[120px]">{username}</span>

@@ -1,33 +1,10 @@
 'use server';
 import { SignInSchema, TSignInSchema, TSignUpSchema } from './validators/auth';
+import { getUserByEmail } from './data';
 import { AuthError } from 'next-auth';
 import { signIn } from '@/auth';
 import prisma from './prisma';
 import bcrypt from 'bcryptjs';
-
-export const getUserByEmail = async (email: string) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
-
-export const getUserById = async (id: string) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    return user;
-  } catch {
-    return null;
-  }
-};
 
 export const signInUser = async (credentials: TSignInSchema, redirectTo?: string | null) => {
   const parseFields = SignInSchema.safeParse(credentials);
@@ -83,13 +60,6 @@ export const signUpUser = async (credentials: TSignUpSchema) => {
   } catch {
     return { error: 'Wystąpił błąd' };
   }
-
-  try {
-    const status = await signInUser({ email, password });
-    if (status?.error) {
-      return { error: status.error };
-    }
-  } catch {}
 
   return { success: 'Konto założone!' };
 };

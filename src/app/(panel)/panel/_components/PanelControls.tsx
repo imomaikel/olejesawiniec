@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { PANEL_TABS } from '@/utils/constans';
 import { usePathname } from 'next/navigation';
