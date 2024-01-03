@@ -2,26 +2,48 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SignInSchema, TSignInSchema } from '@/lib/validators/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { trpc } from '@/components/providers/TRPC';
 import FormSuccess from '@/components/FormSuccess';
+import { useSearchParams } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { loginUser } from '@/lib/auth';
 
 const SignInForm = () => {
+  const [isLoading, setIsStransition] = useTransition();
   const form = useForm<TSignInSchema>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
-      email: '',
       password: '',
+      email: '',
     },
   });
+  const [success, setSuccess] = useState<null | string>();
+  const [error, setError] = useState<null | string>();
+  const searchParams = useSearchParams();
 
-  const { mutate: signIn, isLoading, data: signInResponse } = trpc.auth.signIn.useMutation();
+  const redirectTo = searchParams.get('powrót');
 
-  const onSubmit = ({ email, password }: TSignInSchema) => signIn({ email, password });
+  const onSubmit = ({ email, password }: TSignInSchema) => {
+    setSuccess('');
+    setError('');
+
+    setIsStransition(() => {
+      loginUser({ email, password }, redirectTo)
+        .then((response) => {
+          if (response?.error) {
+            setError(response.error);
+          } else {
+            // TODO
+            setSuccess('Suckes!');
+          }
+        })
+        .catch(() => setError('Wystąpił błąd!'));
+    });
+  };
 
   return (
     <Form {...form}>
@@ -68,8 +90,8 @@ const SignInForm = () => {
             Zaloguj się
           </Button>
         </motion.div>
-        {signInResponse?.error && <FormError description={signInResponse.error} />}
-        {signInResponse?.success && <FormSuccess description="Sukces!" />}
+        {error && <FormError description={error} />}
+        {success && <FormSuccess description={success} />}
       </form>
     </Form>
   );

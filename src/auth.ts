@@ -32,6 +32,10 @@ export const {
       const user = await getUserById(token.sub);
       if (!user) return token;
 
+      token.role = user.role;
+      token.name = user.name;
+      token.email = user.email;
+
       return token;
     },
   },

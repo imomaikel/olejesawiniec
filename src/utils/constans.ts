@@ -23,10 +23,6 @@ export const NAV_LINKS = [
     path: '/panel',
   },
   {
-    label: 'Kontakt',
-    path: '#',
-  },
-  {
     label: 'Logowanie',
     path: '/logowanie',
   },

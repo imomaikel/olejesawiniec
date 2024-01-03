@@ -1,4 +1,4 @@
-import { SignInSchema, SignUpSchema } from '@/lib/validators/auth';
+import { SignUpSchema } from '@/lib/validators/auth';
 import { publicProcedure, router } from '../trpc';
 import { loginUser } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
@@ -39,17 +39,6 @@ export const authRouter = router({
     } catch {}
 
     return { success: 'Konto założone!' };
-  }),
-  signIn: publicProcedure.input(SignInSchema).mutation(async ({ input }) => {
-    const { email, password } = input;
-
-    const response = await loginUser({ email, password });
-
-    if (response?.error) {
-      return { error: response.error };
-    }
-
-    return { success: true };
   }),
 });
 

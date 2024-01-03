@@ -1,8 +1,10 @@
 'use client';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { useMobileNav } from '@/hooks/use-mobile-nav';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
+import UserProfile from './UserProfile';
 import { motion } from 'framer-motion';
 import CartButton from './CartButton';
 import { Button } from './ui/button';
@@ -18,6 +20,7 @@ type TNavbar = {
 const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
   const { onOpen: onMobileNavOpen } = useMobileNav();
   const pathname = usePathname();
+  const user = useCurrentUser();
 
   const signatureImageUrl = pathname.startsWith('/sklep/') ? '/sklep' : pathname.startsWith('/panel') ? '/panel' : '/';
 
@@ -65,24 +68,39 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
         </div>
         <div className={cn('items-center text-white flex', textColor === 'black' ? 'text-black' : 'text-white')}>
           <ul className="space-x-5 hidden md:flex">
-            {NAV_LINKS.map((entry) => (
-              <motion.li
-                initial={{
-                  x: -100,
-                  opacity: 0,
-                }}
-                animate={{
-                  x: 0,
-                  opacity: 1,
-                }}
-                key={entry.label}
-              >
-                <Button variant="ghost" asChild>
-                  <Link href={entry.path}>{entry.label}</Link>
-                </Button>
-              </motion.li>
-            ))}
+            {NAV_LINKS.map((entry) => {
+              if (entry.path === '/logowanie') {
+                if (user?.id) return null;
+              }
+              if (entry.path === '/panel') {
+                if (!(user?.role === 'ADMIN' || user?.role === 'SUPPORT')) return null;
+              }
+              if (pathname === entry.path) return null;
+
+              return (
+                <motion.li
+                  initial={{
+                    x: -100,
+                    opacity: 0,
+                  }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                  }}
+                  key={entry.label}
+                >
+                  <Button variant="ghost" asChild>
+                    {entry.path === '/logowanie' ? (
+                      <Link href={`${entry.path}?powrót=${pathname}`}>{entry.label}</Link>
+                    ) : (
+                      <Link href={entry.path}>{entry.label}</Link>
+                    )}
+                  </Button>
+                </motion.li>
+              );
+            })}
           </ul>
+          <UserProfile />
           <CartButton />
         </div>
       </motion.div>

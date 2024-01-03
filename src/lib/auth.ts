@@ -41,7 +41,7 @@ export const loginUser = async (credentials: TSignInSchema, redirectTo?: string 
     await signIn('credentials', {
       email,
       password,
-      redirectTo: redirectTo ?? undefined,
+      redirectTo: redirectTo ?? '/sklep',
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -52,5 +52,6 @@ export const loginUser = async (credentials: TSignInSchema, redirectTo?: string 
         return { error: 'Wystąpił błąd!' };
       }
     }
+    throw error;
   }
 };
