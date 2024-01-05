@@ -1,8 +1,9 @@
-import { UserRole } from '@prisma/client';
 import { DefaultSession } from 'next-auth';
+import { UserRole } from '@prisma/client';
 
 export type AugmentedUser = {
   role: UserRole;
+  wishList: string[];
 } & DefaultSession['user'];
 
 declare module 'next-auth' {

@@ -1,7 +1,8 @@
 'use client';
+import { cn, errorToast, formatPrice, successToast } from '@/lib/utils';
 import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { cn, errorToast, formatPrice } from '@/lib/utils';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
 import { trpc } from '@/components/providers/TRPC';
@@ -9,6 +10,7 @@ import ImageSwiper from '@/components/ImageSwiper';
 import { Button } from '@/components/ui/button';
 import { Tag, Variant } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
+import { useSession } from 'next-auth/react';
 import { ImSpinner9 } from 'react-icons/im';
 import VariantPicker from './VariantPicker';
 import { useCart } from '@/hooks/use-cart';
@@ -31,6 +33,10 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
   const scrollMax = useRef<null | number>(null);
   const [scrollY, setScrollY] = useState(0);
   const [scope, animate] = useAnimate();
+  const user = useCurrentUser();
+  const { update } = useSession();
+
+  const variantIds = user?.wishList ?? [];
 
   const firstVariant = useMemo(() => variants[0], [variants]);
 
@@ -67,6 +73,18 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
       window.removeEventListener('scroll', handleScroll);
     };
   }, [scrollY]);
+
+  const { mutate: addToWishList } = trpc.shop.addToWishList.useMutation({
+    onSuccess: ({ error, success }) => {
+      if (error) {
+        errorToast();
+      } else if (success) {
+        successToast('Dodano do listy życzeń!');
+        update();
+      }
+    },
+    onError: () => errorToast(),
+  });
 
   const { mutate: verifyCartItem, isLoading } = trpc.shop.verifyCartItem.useMutation({
     onSuccess: (response) => {
@@ -151,9 +169,10 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
           </Button>
           <div className="flex flex-col justify-center items-center mb-3 mt-2">
             <p className="text-muted-foreground">Kliknij aby wybrać pojemność</p>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-5">
               {variants.map((variant) => (
                 <VariantPicker
+                  isInWishList={variantIds.some((entry) => entry === variant.id)}
                   key={variant.id}
                   variant={variant}
                   onSelect={() => {
@@ -168,7 +187,12 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
               ))}
             </div>
           </div>
-          <Button size="lg" className="w-full rounded-full font-bold" variant="pink">
+          <Button
+            size="lg"
+            className="w-full rounded-full font-bold"
+            variant="pink"
+            onClick={() => addToWishList({ variantId: selectedVariant.id })}
+          >
             <FaHeart className="h-6 w-6 mr-4" />
             Dodaj do listy życzeń
           </Button>

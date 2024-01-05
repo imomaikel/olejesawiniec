@@ -1,5 +1,6 @@
 import { IoCheckmarkCircle } from 'react-icons/io5';
 import { cn, formatPrice } from '@/lib/utils';
+import { FaHeart } from 'react-icons/fa';
 import { Variant } from '@prisma/client';
 
 type TVariantPicker = {
@@ -7,9 +8,10 @@ type TVariantPicker = {
   outOfStock?: boolean;
   lowStock?: boolean;
   isSelected?: boolean;
+  isInWishList?: boolean;
   onSelect: () => void;
 };
-const VariantPicker = ({ variant, onSelect, outOfStock, lowStock, isSelected }: TVariantPicker) => {
+const VariantPicker = ({ variant, onSelect, outOfStock, lowStock, isSelected, isInWishList }: TVariantPicker) => {
   const { capacity, unit, price } = variant;
 
   return (
@@ -32,6 +34,11 @@ const VariantPicker = ({ variant, onSelect, outOfStock, lowStock, isSelected }: 
           <div className="absolute top-1 right-1 bg-primary w-6 h-6 rounded-full" />
         </div>
       </div>
+      {isInWishList && (
+        <div className="absolute -right-3 bottom-4">
+          <FaHeart className="w-6 h-6 rotate-[15deg] absolute top-0 right-0 z-10 text-rose-600" />
+        </div>
+      )}
     </div>
   );
 };

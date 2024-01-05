@@ -1,5 +1,5 @@
+import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { TCartItem } from '@/hooks/use-cart';
-import { publicProcedure, router } from '../trpc';
 import { z } from 'zod';
 
 export const shopRouter = router({
@@ -108,5 +108,103 @@ export const shopRouter = router({
       });
 
       return updatedProducts;
+    }),
+  addToWishList: loggedInProcedure
+    .input(
+      z.object({
+        variantId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+      const { variantId } = input;
+
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            wishList: {
+              update: {
+                variant: {
+                  connect: {
+                    id: variantId,
+                  },
+                },
+              },
+            },
+          },
+        });
+        return { success: true };
+      } catch (error) {
+        return { error: true };
+      }
+    }),
+  getWishList: loggedInProcedure
+    .input(
+      z.object({
+        variantIds: z.string().array(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { variantIds } = input;
+      const { prisma } = ctx;
+
+      try {
+        const data = await prisma.variant.findMany({
+          where: {
+            id: {
+              in: variantIds,
+            },
+          },
+          select: {
+            Product: {
+              select: {
+                label: true,
+                link: true,
+                mainPhoto: true,
+              },
+            },
+            capacity: true,
+            price: true,
+            stock: true,
+            unit: true,
+            id: true,
+          },
+        });
+
+        return { success: data };
+      } catch {}
+      return { error: true };
+    }),
+  removeFromWishList: loggedInProcedure
+    .input(
+      z.object({
+        variantId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+      const { variantId } = input;
+
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            wishList: {
+              update: {
+                variant: {
+                  disconnect: {
+                    id: variantId,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        return { success: true };
+      } catch {}
+
+      return { error: true };
     }),
 });

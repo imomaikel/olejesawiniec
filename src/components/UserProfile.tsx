@@ -13,6 +13,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { signOut } from 'next-auth/react';
 import { FaUser } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const UserProfile = () => {
   const pathname = usePathname();
@@ -24,7 +25,7 @@ const UserProfile = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={cn(pathname === '/' && 'rounded-full ml-1')}>
+      <DropdownMenuTrigger className={cn('rounded-full', pathname === '/' && 'ml-1')}>
         <div
           className={cn(
             'flex border rounded-full px-4 ml-1 py-0.5 items-center transition-colors hover:border-primary',
@@ -42,6 +43,10 @@ const UserProfile = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>{name ?? email}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/lista-zyczen">Lista życzeń</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>Wyloguj się</DropdownMenuItem>
       </DropdownMenuContent>

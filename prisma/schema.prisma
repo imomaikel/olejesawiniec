@@ -24,6 +24,8 @@ model Product {
   nutritionFact NutritionFact?
   opinions      Opinion[]
 
+  WishList WishList[]
+
   ratings Rating[]
   rating  Float
 
@@ -34,9 +36,21 @@ model Product {
   createdAt DateTime @default(now())
 }
 
+model WishList {
+  id   String @id @default(cuid())
+  User User[]
+
+  variant Variant[]
+
+  createdAt DateTime @default(now())
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+}
+
 model Category {
   id    String @id @default(cuid())
-  label String
+  label String @unique
 
   Product Product[]
 }
@@ -111,8 +125,9 @@ model Variant {
   stock    Int
   parentId String
 
-  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Product   Product?   @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId String?
+  WishList  WishList[]
 
   @@unique([capacity, unit, parentId])
 }
@@ -160,6 +175,9 @@ model User {
   password      String?
   role          UserRole  @default(USER)
   accounts      Account[]
+
+  wishList   WishList @relation(fields: [wishListId], references: [id])
+  wishListId String
 }
 
 model VerificationToken {

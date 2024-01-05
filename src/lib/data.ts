@@ -17,6 +17,13 @@ export const getUserById = async (id: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
+      include: {
+        wishList: {
+          include: {
+            variant: true,
+          },
+        },
+      },
     });
 
     return user;

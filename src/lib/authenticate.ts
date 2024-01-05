@@ -55,6 +55,9 @@ export const signUpUser = async (credentials: TSignUpSchema) => {
       data: {
         email,
         password: hashedPassword,
+        wishList: {
+          create: {},
+        },
       },
     });
   } catch {

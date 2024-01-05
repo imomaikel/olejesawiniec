@@ -45,6 +45,22 @@ const panelAuth = middleware(async ({ next }) => {
   });
 });
 
+const loggedIn = middleware(async ({ next }) => {
+  const session = await auth();
+
+  if (!session?.user.id) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  return next({
+    ctx: {
+      prisma,
+      user: session.user,
+    },
+  });
+});
+
 export const router = t.router;
 export const publicProcedure = t.procedure.use(prismaContext);
 export const panelProcedure = t.procedure.use(panelAuth);
+export const loggedInProcedure = t.procedure.use(loggedIn);

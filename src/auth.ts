@@ -22,6 +22,7 @@ export const {
         session.user.role = (token.role as UserRole) ?? undefined;
         session.user.name = token.name;
         session.user.email = token.email;
+        session.user.wishList = token.wishList as string[];
       }
 
       return session;
@@ -35,6 +36,7 @@ export const {
       token.role = user.role;
       token.name = user.name;
       token.email = user.email;
+      token.wishList = user.wishList.variant.map(({ id }) => id);
 
       return token;
     },
