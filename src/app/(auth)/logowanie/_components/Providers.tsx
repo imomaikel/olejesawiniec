@@ -1,9 +1,13 @@
 'use client';
 import { FaApple, FaFacebook, FaGoogle } from 'react-icons/fa';
+import { signIn } from 'next-auth/react';
 import { slideIn } from '@/utils/motion';
 import { motion } from 'framer-motion';
 
-const Providers = () => {
+type TProviders = {
+  redirectTo: string | null;
+};
+const Providers = ({ redirectTo }: TProviders) => {
   return (
     <div className="mt-6">
       <div className="relative flex items-center justify-center">
@@ -18,6 +22,11 @@ const Providers = () => {
           viewport={{ once: false }}
           role="button"
           className="group"
+          onClick={() =>
+            signIn('google', {
+              callbackUrl: redirectTo ?? '/sklep',
+            })
+          }
         >
           <FaGoogle className="w-8 h-8 group-hover:text-primary transition-colors" />
         </motion.div>
@@ -28,6 +37,11 @@ const Providers = () => {
           viewport={{ once: false }}
           role="button"
           className="group"
+          onClick={() =>
+            signIn('apple', {
+              callbackUrl: redirectTo ?? '/sklep',
+            })
+          }
         >
           <FaApple className="w-8 h-8 group-hover:text-primary transition-colors" />
         </motion.div>
@@ -38,6 +52,11 @@ const Providers = () => {
           viewport={{ once: false }}
           role="button"
           className="group"
+          onClick={() =>
+            signIn('facebook', {
+              callbackUrl: redirectTo ?? '/sklep',
+            })
+          }
         >
           <FaFacebook className="w-8 h-8 group-hover:text-primary transition-colors" />
         </motion.div>

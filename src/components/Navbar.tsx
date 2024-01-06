@@ -22,7 +22,12 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
   const pathname = usePathname();
   const user = useCurrentUser();
 
-  const signatureImageUrl = pathname.startsWith('/sklep/') ? '/sklep' : pathname.startsWith('/panel') ? '/panel' : '/';
+  const signatureImageUrl =
+    pathname.startsWith('/sklep/') || pathname.startsWith('/lista-zyczen')
+      ? '/sklep'
+      : pathname.startsWith('/panel')
+      ? '/panel'
+      : '/';
 
   return (
     <div className={cn('w-full absolute z-20', className)}>

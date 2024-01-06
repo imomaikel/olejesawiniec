@@ -3,7 +3,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { SignInSchema, TSignInSchema } from '@/lib/validators/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormSuccess from '@/components/FormSuccess';
-import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { signInUser } from '@/lib/authenticate';
@@ -12,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 
-const SignInForm = () => {
+type TSignInForm = {
+  redirectTo: string | null;
+};
+const SignInForm = ({ redirectTo }: TSignInForm) => {
   const [isLoading, setIsStransition] = useTransition();
   const form = useForm<TSignInSchema>({
     resolver: zodResolver(SignInSchema),
@@ -23,9 +25,6 @@ const SignInForm = () => {
   });
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('powrót');
-
   const onSubmit = ({ email, password }: TSignInSchema) => {
     setSuccess('');
     setError('');

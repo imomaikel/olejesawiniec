@@ -4,7 +4,6 @@ import { SignUpSchema, TSignUpSchema } from '@/lib/validators/auth';
 import { signInUser, signUpUser } from '@/lib/authenticate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormSuccess from '@/components/FormSuccess';
-import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/FormError';
@@ -12,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 
-const SignUpForm = () => {
+type TSignUpForm = {
+  redirectTo: string | null;
+};
+const SignUpForm = ({ redirectTo }: TSignUpForm) => {
   const [isLoading, setIsStransition] = useTransition();
   const form = useForm<TSignUpSchema>({
     resolver: zodResolver(SignUpSchema),
@@ -23,8 +25,6 @@ const SignUpForm = () => {
   });
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('powrót');
 
   const onSubmit = ({ email, password }: TSignUpSchema) => {
     setSuccess('');

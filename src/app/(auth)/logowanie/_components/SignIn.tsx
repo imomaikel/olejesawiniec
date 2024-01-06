@@ -11,6 +11,8 @@ const SignIn = () => {
   const pathname = usePathname();
   const router = useRouter();
 
+  const redirectTo = searchParams.get('powrót');
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
 
@@ -51,8 +53,8 @@ const SignIn = () => {
         </motion.div>
       </CardHeader>
       <CardContent>
-        <SignInForm />
-        <Providers />
+        <SignInForm redirectTo={redirectTo} />
+        <Providers redirectTo={redirectTo} />
       </CardContent>
     </Card>
   );

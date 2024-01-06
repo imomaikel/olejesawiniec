@@ -176,8 +176,8 @@ model User {
   role          UserRole  @default(USER)
   accounts      Account[]
 
-  wishList   WishList @relation(fields: [wishListId], references: [id])
-  wishListId String
+  wishList   WishList? @relation(fields: [wishListId], references: [id])
+  wishListId String?
 }
 
 model VerificationToken {
