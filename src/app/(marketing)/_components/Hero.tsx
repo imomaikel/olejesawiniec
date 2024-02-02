@@ -28,10 +28,10 @@ const Hero = () => {
       >
         <div className="text-center">
           <h1 className="text-5xl md:text-7xl font-bold uppercase text-white mb-10">Oleje Sawiniec</h1>
-          <p className="text-white text-center text-xl md:text-2xl font-medium leading-9">
+          <h2 className="text-white text-center text-xl md:text-2xl font-medium leading-9">
             Odkryj moc natury w naszych olejach zimnotłoczonych - wyjątkowe eliksiry zdrowia, pełne cennych składników
             odżywczych, które wspierają kondycję mózgu, skóry i układu krążenia.
-          </p>
+          </h2>
         </div>
         <div className="md:space-x-6 flex items-center flex-col md:flex-row md:space-y-0 space-y-6 relative">
           <motion.div
@@ -42,7 +42,7 @@ const Hero = () => {
             className="absolute w-full z-20 -bottom-[50%] lg:-bottom-[200%] left-0"
           >
             <div className="h-full mx-auto flex items-center justify-center relative">
-              <Link href="#zdjecia" className="relative group" scroll>
+              <Link href="#zdjecia" className="relative group" aria-label="Dowiedz się więcej" scroll>
                 <FaArrowCircleDown className="h-12 w-12 text-white transition-colors hover:text-primary z-10 relative" />
                 <div className="absolute inset-0 h-12 w-12 mx-auto z-0 bg-gradient-to-r from-emerald-500 to-lime-600 blur-[30px] group-hover:blur-[20px] transition-all" />
               </Link>

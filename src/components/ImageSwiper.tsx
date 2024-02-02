@@ -58,6 +58,7 @@ const ImageSwiper = ({ urls, alt, className, caption, captionLink, fullSizeOnCli
             controls.isFirst && 'hidden',
           )}
           role="button"
+          aria-label="poprzednie zdjęcie"
           onClick={() => swiper?.slidePrev()}
         >
           <FaArrowAltCircleLeft className="h-8 w-8" />
@@ -69,6 +70,7 @@ const ImageSwiper = ({ urls, alt, className, caption, captionLink, fullSizeOnCli
             controls.isLast && 'hidden',
           )}
           role="button"
+          aria-label="następne zdjęcie"
           onClick={() => swiper?.slideNext()}
         >
           <FaArrowCircleRight className="h-8 w-8" />

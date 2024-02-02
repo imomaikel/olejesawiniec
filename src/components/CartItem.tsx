@@ -70,6 +70,7 @@ const CartItem = ({
               <div
                 className="transition-colors hover:text-primary cursor-pointer"
                 role="button"
+                aria-label="dodaj jedną sztuke"
                 onClick={() => {
                   if (!isLoading && currentQuantity && currentQuantity >= 1)
                     verifyIncrease({ variantId, currentQuantity });
@@ -81,6 +82,7 @@ const CartItem = ({
             <Hover content="Usuń jedną sztukę">
               <div
                 className="transition-colors hover:text-primary cursor-pointer"
+                aria-label="usuń jedną sztuke"
                 role="button"
                 onClick={() => !isLoading && decreaseQuantity(variantId)}
               >

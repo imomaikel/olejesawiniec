@@ -16,9 +16,11 @@ const Newsletter = () => {
                 placeholder="Podaj swój adres e-mail"
               />
             </div>
-            <Button className="h-full w-2/5 rounded-full shadow-md shadow-primary hidden lg:block">Zapisz</Button>
+            <Button className="h-full w-2/5 rounded-full shadow-md shadow-primary hidden lg:block text-black">
+              Zapisz
+            </Button>
           </div>
-          <Button className="rounded-full shadow-md shadow-primary lg:hidden" size="2xl">
+          <Button className="rounded-full shadow-md shadow-primary lg:hidden text-black" size="2xl">
             Zapisz
           </Button>
         </div>

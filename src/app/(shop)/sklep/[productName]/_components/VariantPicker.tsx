@@ -2,6 +2,7 @@ import { IoCheckmarkCircle } from 'react-icons/io5';
 import { cn, formatPrice } from '@/lib/utils';
 import { FaHeart } from 'react-icons/fa';
 import { Variant } from '@prisma/client';
+import { motion } from 'framer-motion';
 
 type TVariantPicker = {
   variant: Variant;
@@ -35,9 +36,14 @@ const VariantPicker = ({ variant, onSelect, outOfStock, lowStock, isSelected, is
         </div>
       </div>
       {isInWishList && (
-        <div className="absolute -right-3 bottom-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="absolute -right-3 bottom-4"
+        >
           <FaHeart className="w-6 h-6 rotate-[15deg] absolute top-0 right-0 z-10 text-rose-600" />
-        </div>
+        </motion.div>
       )}
     </div>
   );

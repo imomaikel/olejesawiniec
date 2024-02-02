@@ -27,7 +27,7 @@ const Footer = () => {
               className="w-full md:w-auto flex flex-col md:block items-center mb-6 md:mb-0 text-center md:text-left"
               key={entry.header}
             >
-              <motion.h5
+              <motion.h3
                 variants={slideIn('top', 'spring', 0.2, 1)}
                 initial="hidden"
                 whileInView="show"
@@ -35,7 +35,7 @@ const Footer = () => {
                 className="font-bold text-xl mb-4 capitalize"
               >
                 {entry.header}
-              </motion.h5>
+              </motion.h3>
               <ul className="leading-8">
                 {entry.options.map((option, index) => (
                   <motion.li

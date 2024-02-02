@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { auth } from '@/auth';
 
-// TODO: auth
 const handler = async (req: Request) => {
   try {
+    const session = await auth();
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ status: 'error', message: 'Brak uprawnień' });
+    }
+
     const formData = await req.formData();
 
     const fileId = formData.get('fileId')?.toString();

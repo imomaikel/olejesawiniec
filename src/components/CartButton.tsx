@@ -30,6 +30,7 @@ const CartButton = ({ mobileVersion }: TCartButton) => {
         onCartOpen();
       }}
       role="button"
+      aria-label="otwórz koszyk"
     >
       <div className="flex">
         <div className="mt-1 mr-2">Koszyk</div>

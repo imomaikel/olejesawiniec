@@ -50,7 +50,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
           topPadding !== undefined ? `pt-${topPadding}` : 'pt-6',
         )}
       >
-        <div className="flex md:hidden items-center" role="button" onClick={onMobileNavOpen}>
+        <div className="flex md:hidden items-center" role="button" onClick={onMobileNavOpen} aria-label="wysuń menu">
           <GiHamburgerMenu
             className={cn(
               'w-12 h-12 cursor-pointer hover:text-primary transition-colors',

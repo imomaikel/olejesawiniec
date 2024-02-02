@@ -47,7 +47,7 @@ const ProductsPreview = () => {
           ))}
         </div>
         <div className="mt-12">
-          <Button size="2xl" className="rounded-full shadow-md shadow-primary">
+          <Button size="2xl" className="rounded-full shadow-md shadow-primary text-black">
             Zobacz Wszystkie Produkty
           </Button>
         </div>

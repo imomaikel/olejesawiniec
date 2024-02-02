@@ -21,6 +21,7 @@ const Providers = ({ redirectTo }: TProviders) => {
           variants={slideIn('bottom', 'spring', 0, 0.4, 20)}
           viewport={{ once: false }}
           role="button"
+          aria-label="google login"
           className="group"
           onClick={() =>
             signIn('google', {
@@ -36,6 +37,7 @@ const Providers = ({ redirectTo }: TProviders) => {
           variants={slideIn('bottom', 'spring', 0.1, 0.4, 20)}
           viewport={{ once: false }}
           role="button"
+          aria-label="apple login"
           className="group"
           onClick={() =>
             signIn('apple', {
@@ -51,6 +53,7 @@ const Providers = ({ redirectTo }: TProviders) => {
           variants={slideIn('bottom', 'spring', 0.2, 0.4, 20)}
           viewport={{ once: false }}
           role="button"
+          aria-label="facebook login"
           className="group"
           onClick={() =>
             signIn('facebook', {

@@ -47,6 +47,7 @@ const VariantList = ({ product, refetchProduct }: TVariantList) => {
                   <TableCell>
                     <div
                       role="button"
+                      aria-label="usuń wariant"
                       onClick={() => {
                         if (removeLoading) return;
                         removeVariant({

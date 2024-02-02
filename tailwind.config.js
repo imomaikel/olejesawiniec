@@ -17,8 +17,8 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        'hero': 'url("/hero.jpg")',
-        'footer': 'url("/bg.jpg")',
+        'hero': 'url("/hero.webp")',
+        'footer': 'url("/bg.webp")',
       },
       colors: {
         border: "hsl(var(--border))",
