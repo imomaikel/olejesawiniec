@@ -12,11 +12,13 @@ const Hero = () => {
 
   useEffect(() => setIsMounted(true), []);
 
-  const vpHeight = isMounted ? (window.innerHeight >= 850 ? window.innerHeight : 850) : null;
+  const vpHeight = isMounted ? window.innerHeight : null;
 
   return (
     <div
-      className={cn('bg-hero bg-no-repeat bg-cover bg-center flex items-center justify-center relative px-[35px]')}
+      className={cn(
+        'bg-hero bg-no-repeat bg-cover bg-center flex items-center justify-center relative px-[35px] !pt-4 md:pt-0',
+      )}
       style={{ height: vpHeight ?? '100vh' }}
     >
       <motion.div
@@ -27,8 +29,8 @@ const Hero = () => {
         className="w-full flex items-center justify-center flex-col max-w-2xl z-10 space-y-6"
       >
         <div className="text-center">
-          <h1 className="text-5xl md:text-7xl font-bold uppercase text-white mb-10">Oleje Sawiniec</h1>
-          <h2 className="text-white text-center text-xl md:text-2xl font-medium leading-9">
+          <h1 className="text-4xl md:text-7xl font-bold uppercase text-white mb-10">Oleje Sawiniec</h1>
+          <h2 className="text-white text-center text-lg md:text-2xl font-medium leading-9">
             Odkryj moc natury w naszych olejach zimnotłoczonych - wyjątkowe eliksiry zdrowia, pełne cennych składników
             odżywczych, które wspierają kondycję mózgu, skóry i układu krążenia.
           </h2>

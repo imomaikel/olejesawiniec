@@ -15,7 +15,7 @@ const ProductsPreview = () => {
   const vpWidth = isMounted ? window.innerWidth : null;
 
   return (
-    <ContentWrapper className="bg-gray-100">
+    <ContentWrapper className="bg-gray-100 relative">
       <div className="w-full flex justify-center flex-col items-center">
         <SectionInfo smallTitle="Nasze Produkty" bigTitle="Oleje Zimnotłoczone" className="mb-12" />
         <div className="grid gap-x-8 gap-y-16 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
@@ -51,6 +51,7 @@ const ProductsPreview = () => {
             Zobacz Wszystkie Produkty
           </Button>
         </div>
+        <div className="absolute w-screen h-full bg-gray-100 -z-10" />
       </div>
     </ContentWrapper>
   );

@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 const FindUs = () => {
   return (
-    <ContentWrapper className="flex-col lg:flex-row justify-center md:space-x-6 bg-gray-100">
+    <ContentWrapper className="flex-col lg:flex-row justify-center md:space-x-6 bg-gray-100 relative">
       <motion.div
         initial="hidden"
         whileInView="show"
@@ -41,6 +41,7 @@ Zapraszamy do zakupów, gdziekolwiek jest Ci wygodniej"
           captionLink="https://maps.app.goo.gl/YKn2FDUXzxjFHfMJA"
         />
       </motion.div>
+      <div className="absolute w-screen top-0 h-full bg-gray-100 -z-10" />
     </ContentWrapper>
   );
 };

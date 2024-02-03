@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 const Quote = () => {
   return (
-    <ContentWrapper className="bg-black text-white flex flex-col items-center justify-center" moreSpace>
+    <ContentWrapper className="bg-black text-white flex flex-col items-center justify-center relative" moreSpace>
       <div className="max-w-6xl">
         <motion.h3
           variants={slideIn('top', 'spring', 0.25, 1)}
@@ -36,6 +36,7 @@ const Quote = () => {
       >
         szef kuchni i aktywista kulinarnej świadomości
       </motion.p>
+      <div className="absolute w-screen h-full bg-black -z-10" />
     </ContentWrapper>
   );
 };
