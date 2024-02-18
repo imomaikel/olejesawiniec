@@ -33,9 +33,9 @@ const WishListPage = () => {
             <WishListItem
               capacity={variant.capacity}
               price={variant.price}
-              productImage={variant.Product?.mainPhoto}
-              productLabel={variant.Product?.label ?? 'Produkt'}
-              productLink={variant.Product?.link ?? ''}
+              productImage={variant.product?.mainPhoto}
+              productLabel={variant.product?.label ?? 'Produkt'}
+              productLink={variant.product?.link ?? ''}
               stock={variant.stock}
               unit={variant.unit}
               key={variant.id}

@@ -1,25 +1,37 @@
 'use client';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { FiChevronsRight } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { Separator } from './ui/separator';
 import { formatPrice } from '@/lib/utils';
+import { trpc } from './providers/TRPC';
 import { Button } from './ui/button';
 import CartItem from './CartItem';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const ShoppingCart = () => {
-  const { isOpen, onOpenChange, cartData } = useCart();
+  const { isOpen, onOpenChange, cartData: _cartData } = useCart();
   const [isMounted, setIsMounted] = useState(false);
+  const user = useCurrentUser();
 
   useEffect(() => setIsMounted(true), []);
+
+  let { data: cartData } = trpc.basket.get.useQuery(undefined, {
+    enabled: !!user && isMounted,
+    retry: 1,
+  });
+  if (!!user === false) {
+    cartData = _cartData;
+  }
+  if (!cartData) cartData = [];
 
   if (!isMounted) return null;
 
   const cartItems = cartData.reduce((acc, curr) => (acc += curr.quantity), 0);
-  const cartItemsPrice = cartData.reduce((acc, curr) => (acc += curr.quantity * curr.variantPrice), 0);
+  const cartItemsPrice = cartData.reduce((acc, curr) => (acc += curr.quantity * curr.variant.price), 0);
 
   return (
     <Sheet onOpenChange={onOpenChange} open={isOpen}>
@@ -76,15 +88,15 @@ const ShoppingCart = () => {
             <div className="mt-4 flex flex-col gap-y-4">
               {cartData.map((item) => (
                 <CartItem
-                  key={item.variantId}
-                  productLabel={item.productLabel}
+                  key={item.variant.id}
+                  variant={{
+                    capacity: item.variant.capacity,
+                    id: item.variant.id,
+                    price: item.variant.price,
+                    product: item.variant.product,
+                    unit: item.variant.unit,
+                  }}
                   quantity={item.quantity}
-                  variantCapacity={item.variantCapacity}
-                  variantUnit={item.variantUnit}
-                  variantPrice={item.variantPrice}
-                  image={item.image}
-                  productLink={item.productLink}
-                  variantId={item.variantId}
                 />
               ))}
             </div>

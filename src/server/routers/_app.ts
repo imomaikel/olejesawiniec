@@ -1,10 +1,12 @@
 import { publicProcedure, router } from '../trpc';
+import { basketRouter } from './basketRouter';
 import { panelRouter } from './panelRouter';
 import { shopRouter } from './shopRouter';
 
 export const appRouter = router({
   panel: panelRouter,
   shop: shopRouter,
+  basket: basketRouter,
 
   getCategories: publicProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
@@ -15,7 +17,7 @@ export const appRouter = router({
         id: true,
         _count: {
           select: {
-            Product: {
+            product: {
               where: {
                 enabled: true,
               },

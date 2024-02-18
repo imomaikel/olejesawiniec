@@ -52,7 +52,7 @@ const Categories = () => {
       </div>
       <div className="space-y-2 mt-2">
         {categories
-          ?.filter((category) => category._count.Product)
+          ?.filter((category) => category._count.product)
           .map(({ id, label, _count }) => (
             <div className="flex items-center justify-between" key={id}>
               <div className="flex items-center space-x-3">
@@ -65,7 +65,7 @@ const Categories = () => {
                 <Label htmlFor={id}>{label}</Label>
               </div>
               <div>
-                <span>({_count.Product})</span>
+                <span>({_count.product})</span>
               </div>
             </div>
           ))}

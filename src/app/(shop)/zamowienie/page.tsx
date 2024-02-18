@@ -1,4 +1,5 @@
 'use client';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/components/providers/TRPC';
 import { Button } from '@/components/ui/button';
@@ -8,9 +9,21 @@ import InPost from './_components/InPost';
 import { useEffect } from 'react';
 
 const OrderPage = () => {
-  const { onOpenChange: closeCart, cartData, setCart } = useCart();
+  const { onOpenChange: closeCart, cartData: _cartData, setCart } = useCart();
+  const user = useCurrentUser();
+
   useEffect(() => closeCart(), [closeCart]);
 
+  let { data: cartData } = trpc.basket.get.useQuery(undefined, {
+    enabled: !!user,
+    retry: 1,
+  });
+  if (!!user === false) {
+    cartData = _cartData;
+  }
+  if (!cartData) cartData = [];
+
+  // TODO
   const { data: updatedCart, isLoading } = trpc.shop.verifyCart.useQuery({ cart: cartData });
 
   useEffect(() => {

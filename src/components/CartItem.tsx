@@ -1,10 +1,12 @@
 'use client';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { errorToast, formatPrice } from '@/lib/utils';
-import { TCartItem, useCart } from '@/hooks/use-cart';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { FaBottleDroplet } from 'react-icons/fa6';
+import { TBasketVariant } from '@/lib/types';
 import { BsCartDash } from 'react-icons/bs';
+import { useCart } from '@/hooks/use-cart';
 import { trpc } from './providers/TRPC';
 import { BsDot } from 'react-icons/bs';
 import { Button } from './ui/button';
@@ -13,22 +15,88 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Hover from './Hover';
 
-const CartItem = ({
-  image,
-  productLabel,
-  productLink,
-  quantity,
-  variantCapacity,
-  variantUnit,
-  variantPrice,
-  variantId,
-}: TCartItem) => {
-  const { removeProduct, increaseQuantity, decreaseQuantity, cartData } = useCart();
+const CartItem = ({ quantity, variant }: TBasketVariant) => {
+  const user = useCurrentUser();
+  const {
+    removeProduct: _removeProduct,
+    increaseQuantity: _increaseQuantity,
+    decreaseQuantity: _decreaseQuantity,
+    cartData: _cartData,
+  } = useCart();
+
+  const { mutate: serverAddToBasket } = trpc.basket.add.useMutation();
+  const { mutate: serverRemoveFromBasket } = trpc.basket.remove.useMutation();
+  const { mutate: serverSetProductQuantity } = trpc.basket.setQuantity.useMutation();
+
+  const addToBasket = () => {
+    if (!!user) {
+      serverAddToBasket(
+        { variantId: variantId },
+        {
+          onSuccess: ({ message, error, success }) => {
+            if (success) {
+              toast.success(message);
+              refetch();
+            } else if (error) {
+              errorToast(message);
+            }
+          },
+          onError: () => errorToast(),
+        },
+      );
+    } else {
+      if (!isLoading && currentQuantity && currentQuantity >= 1) verifyIncrease({ variantId, currentQuantity });
+    }
+  };
+  const removeOneFromBasket = () => {
+    if (!!user) {
+      serverRemoveFromBasket(
+        { variantId: variantId },
+        {
+          onSuccess: ({ message, error, success }) => {
+            if (success) {
+              toast.success(message);
+              refetch();
+            } else if (error) {
+              errorToast(message);
+            }
+          },
+          onError: () => errorToast(),
+        },
+      );
+    } else {
+      if (!isLoading) {
+        _decreaseQuantity(variantId);
+      }
+    }
+  };
+  const removeProductFromBasket = () => {
+    if (!!user) {
+      serverSetProductQuantity(
+        { variantId: variantId, newQuantity: 0 },
+        {
+          onSuccess: ({ message, error, success }) => {
+            if (success) {
+              toast.success(message);
+              refetch();
+            } else if (error) {
+              errorToast(message);
+            }
+          },
+          onError: () => errorToast(),
+        },
+      );
+    } else {
+      if (!isLoading) {
+        _removeProduct(variantId);
+      }
+    }
+  };
 
   const { mutate: verifyIncrease, isLoading } = trpc.shop.verifyCartItem.useMutation({
     onSuccess: (response) => {
       if (response === true) {
-        increaseQuantity(variantId);
+        _increaseQuantity(variant.id);
       } else {
         toast.error(response);
       }
@@ -36,10 +104,27 @@ const CartItem = ({
     onError: () => errorToast(),
   });
 
-  const currentQuantity = cartData.find((entry) => entry.variantId === variantId)?.quantity;
+  let { data: cartData, refetch } = trpc.basket.get.useQuery(undefined, {
+    enabled: !!user,
+    retry: 1,
+  });
+  if (!!user === false) {
+    cartData = _cartData;
+  }
+  if (!cartData) cartData = [];
+
+  const currentQuantity = cartData.find((entry) => entry.variant.id === variant.id)?.quantity;
+
+  const image = variant.product?.mainPhoto;
+  const productLabel = variant.product?.label;
+  const productLink = variant.product?.link;
+  const variantCapacity = variant.capacity;
+  const variantUnit = variant.unit;
+  const variantPrice = variant.price;
+  const variantId = variant.id;
 
   return (
-    <div className="px-1 py-2 flex bg-gray-100 rounded-md relative space-x-1 group">
+    <div className="px-1 py-2 flex bg-gray-100 rounded-md relative space-x-3 group">
       <div className="flex items-center justify-center overflow-hidden">
         {image ? (
           <Image
@@ -71,10 +156,7 @@ const CartItem = ({
                 className="transition-colors hover:text-primary cursor-pointer"
                 role="button"
                 aria-label="dodaj jedną sztuke"
-                onClick={() => {
-                  if (!isLoading && currentQuantity && currentQuantity >= 1)
-                    verifyIncrease({ variantId, currentQuantity });
-                }}
+                onClick={addToBasket}
               >
                 <AiOutlinePlus className="mb-1 w-5 h-5" />
               </div>
@@ -84,7 +166,7 @@ const CartItem = ({
                 className="transition-colors hover:text-primary cursor-pointer"
                 aria-label="usuń jedną sztuke"
                 role="button"
-                onClick={() => !isLoading && decreaseQuantity(variantId)}
+                onClick={removeOneFromBasket}
               >
                 <AiOutlineMinus className="mb-1 w-5 h-5" />
               </div>
@@ -92,7 +174,7 @@ const CartItem = ({
           </div>
           <div className="select-none">
             <Button asChild size="sm" variant="ghost" className="px-0 py-0 mt-0.5">
-              <Link href={productLink}>
+              <Link href={productLink ?? '/sklep'}>
                 Zobacz produkt
                 <FaExternalLinkAlt className="ml-1 h-3 w-3 mb-1" />
               </Link>
@@ -103,7 +185,7 @@ const CartItem = ({
       <Hover content="Usuń z koszyka">
         <div
           className="bg-destructive/75 absolute right-0 top-0 h-full w-10 flex items-center justify-center rounded-tr-md rounded-br-md transition-colors hover:bg-destructive cursor-pointer"
-          onClick={() => removeProduct(variantId)}
+          onClick={removeProductFromBasket}
         >
           <BsCartDash className="h-6 w-6" />
         </div>

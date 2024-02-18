@@ -23,6 +23,7 @@ export const getUserById = async (id: string) => {
             variant: true,
           },
         },
+        basket: true,
       },
     });
 

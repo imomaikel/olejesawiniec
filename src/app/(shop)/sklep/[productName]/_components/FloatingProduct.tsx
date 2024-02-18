@@ -34,7 +34,7 @@ type TFloatingProduct = {
   variants: Variant[];
 };
 const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, link, variants }: TFloatingProduct) => {
-  const { addProduct, onOpen, cartData } = useCart();
+  const { addProduct: _addProduct, onOpen, cartData: _cartData } = useCart();
   const productRef = useRef<ElementRef<'div'>>(null);
   const floatBorder = useRef<null | number>(null);
   const [scope, animate] = useAnimate();
@@ -103,18 +103,46 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
     onError: () => errorToast(),
   });
 
+  const { mutate: serverAddToBasket } = trpc.basket.add.useMutation();
+
+  const addToBasket = () => {
+    if (!!user) {
+      serverAddToBasket(
+        { variantId: selectedVariant.id },
+        {
+          onSuccess: ({ message, error, success }) => {
+            if (success) {
+              toast.success(message);
+              onOpen();
+              refetch();
+            } else if (error) {
+              errorToast(message);
+            }
+          },
+          onError: () => errorToast(),
+        },
+      );
+    } else {
+      verifyCartItem({ variantId: selectedVariant.id, currentQuantity });
+    }
+  };
+
   const { mutate: verifyCartItem, isLoading } = trpc.shop.verifyCartItem.useMutation({
     onSuccess: (response) => {
       if (response === true) {
-        addProduct({
-          image: imageUrls[0] ?? null,
-          productLabel: productName,
+        _addProduct({
+          variant: {
+            product: {
+              mainPhoto: imageUrls[0] ?? null,
+              label: productName,
+              link,
+            },
+            capacity: selectedVariant.capacity,
+            id: selectedVariant.id,
+            price: selectedVariant.price,
+            unit: selectedVariant.unit,
+          },
           quantity: 1,
-          variantPrice: selectedVariant.price,
-          productLink: link,
-          variantCapacity: selectedVariant.capacity,
-          variantId: selectedVariant.id,
-          variantUnit: selectedVariant.unit,
         });
         toast.success(`Dodano "${productName}" do koszyka!`);
         onOpen();
@@ -128,7 +156,16 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
   const fullStars = rating >= MAX_STARS ? MAX_STARS : Math.floor(rating);
   const notFullStars = MAX_STARS - fullStars;
 
-  const currentQuantity = cartData.find((entry) => entry.variantId === selectedVariant.id)?.quantity ?? 0;
+  let { data: cartData, refetch } = trpc.basket.get.useQuery(undefined, {
+    enabled: !!user,
+    retry: 1,
+  });
+  if (!!user === false) {
+    cartData = _cartData;
+  }
+  if (!cartData) cartData = [];
+
+  const currentQuantity = cartData.find((entry) => entry.variant.id === selectedVariant.id)?.quantity ?? 0;
 
   const changeVariant = (variant: Variant) => {
     setSelectedVariant({
@@ -174,7 +211,7 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
           <Button
             size="xl"
             className="w-full rounded-full font-bold transition-transform hover:scale-110 relative scale-100"
-            onClick={() => verifyCartItem({ variantId: selectedVariant.id, currentQuantity })}
+            onClick={addToBasket}
             disabled={isLoading}
             ref={scope}
           >

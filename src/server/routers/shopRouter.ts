@@ -1,5 +1,5 @@
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
-import { TCartItem } from '@/hooks/use-cart';
+import { TBasketVariant } from '@/lib/types';
 import { z } from 'zod';
 
 export const shopRouter = router({
@@ -34,7 +34,7 @@ export const shopRouter = router({
       include: {
         variants: true,
         tags: true,
-        Category: true,
+        category: true,
       },
     });
     return products ?? null;
@@ -66,14 +66,14 @@ export const shopRouter = router({
   verifyCart: publicProcedure
     .input(
       z.object({
-        cart: z.custom<TCartItem[]>(),
+        cart: z.custom<TBasketVariant[]>(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
       const { cart } = input;
 
-      const ids = cart.map(({ variantId }) => variantId);
+      const ids = cart.map(({ variant }) => variant.id);
 
       const variants = await prisma.variant.findMany({
         where: {
@@ -82,17 +82,17 @@ export const shopRouter = router({
           },
         },
         include: {
-          Product: true,
+          product: true,
         },
       });
 
-      const updatedProducts: TCartItem[] = [];
+      const updatedProducts: TBasketVariant[] = [];
 
       cart.forEach((item) => {
-        const variant = variants.find((entry) => entry.id === item.variantId);
+        const variant = variants.find((entry) => entry.id === item.variant.id);
         if (!variant) return;
 
-        if (!variant.Product?.enabled) return;
+        if (!variant.product?.enabled) return;
 
         // No stock
         if (variant.stock < item.quantity) {
@@ -100,8 +100,8 @@ export const shopRouter = router({
         }
 
         // Price
-        if (variant.price !== item.variantPrice) {
-          item.variantPrice = variant.price;
+        if (variant.price !== item.variant.price) {
+          item.variant.price = variant.price;
         }
 
         updatedProducts.push(item);
@@ -157,7 +157,7 @@ export const shopRouter = router({
             },
           },
           select: {
-            Product: {
+            product: {
               select: {
                 label: true,
                 link: true,

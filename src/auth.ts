@@ -58,6 +58,16 @@ export const {
           },
         });
       }
+      if (!user.basket) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            basket: {
+              create: {},
+            },
+          },
+        });
+      }
 
       token.role = user.role;
       token.name = user.name;

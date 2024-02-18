@@ -24,12 +24,12 @@ model Product {
   nutritionFact NutritionFact?
   opinions      Opinion[]
 
-  WishList WishList[]
+  wishList WishList[]
 
   ratings Rating[]
   rating  Float
 
-  Category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
   updatedAt DateTime @updatedAt
@@ -38,13 +38,13 @@ model Product {
 
 model WishList {
   id   String @id @default(cuid())
-  User User[]
+  user User[]
 
   variant Variant[]
 
   createdAt DateTime @default(now())
 
-  Product   Product? @relation(fields: [productId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
   productId String?
 }
 
@@ -52,7 +52,7 @@ model Category {
   id    String @id @default(cuid())
   label String @unique
 
-  Product Product[]
+  product Product[]
 }
 
 model Rating {
@@ -63,7 +63,7 @@ model Rating {
   author String
   // 
 
-  Product   Product? @relation(fields: [productId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
   productId String?
 
   createdAd DateTime @default(now())
@@ -78,7 +78,7 @@ model Opinion {
   author String
   // 
 
-  Product   Product? @relation(fields: [productId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
   productId String?
 
   createdAt DateTime @default(now())
@@ -96,7 +96,7 @@ model NutritionFact {
   fiber              Float?
   sodium             Float?
 
-  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String  @unique
 }
 
@@ -104,7 +104,7 @@ model ProductDetail {
   id      String @id @default(cuid())
   content String
 
-  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId String?
 }
 
@@ -113,7 +113,7 @@ model ExtraPhoto {
   url  String
   path String
 
-  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId String?
 }
 
@@ -125,9 +125,11 @@ model Variant {
   stock    Int
   parentId String
 
-  Product   Product?   @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId String?
-  WishList  WishList[]
+
+  wishList       WishList[]
+  basketVariants BasketVariants[]
 
   @@unique([capacity, unit, parentId])
 }
@@ -136,11 +138,33 @@ model Tag {
   id    Int    @id @default(autoincrement())
   label String @unique
 
-  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId String?
 }
 
-// Auth
+model Basket {
+  id       String           @id @default(cuid())
+  variants BasketVariants[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model BasketVariants {
+  id String @id @default(cuid())
+
+  quantity Int @default(1)
+
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  variantId String
+
+  basket   Basket? @relation(fields: [basketId], references: [id], onDelete: Cascade)
+  basketId String?
+
+  createdAt DateTime @default(now())
+}
+
+// [ ====== AUTH MODELS ====== ]
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -175,6 +199,7 @@ model User {
   password      String?
   role          UserRole  @default(USER)
   accounts      Account[]
+  basket        Basket?
 
   wishList   WishList? @relation(fields: [wishListId], references: [id])
   wishListId String?

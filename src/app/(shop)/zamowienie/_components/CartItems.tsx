@@ -1,23 +1,20 @@
 import CartItem from '@/components/CartItem';
-import { TCartItem } from '@/hooks/use-cart';
+import { TBasketVariant } from '@/lib/types';
 
-type TCartItems = {
-  items: TCartItem[];
-};
-const CartItems = ({ items }: TCartItems) => {
+const CartItems = ({ items }: { items: TBasketVariant[] }) => {
   return (
     <div className="max-w-sm space-y-2">
       {items.map((item) => (
         <CartItem
-          key={item.variantId}
-          image={item.image}
-          productLabel={item.productLabel}
-          productLink={item.productLink}
           quantity={item.quantity}
-          variantCapacity={item.variantCapacity}
-          variantId={item.variantId}
-          variantPrice={item.variantPrice}
-          variantUnit={item.variantUnit}
+          variant={{
+            capacity: item.variant.capacity,
+            id: item.variant.id,
+            price: item.variant.price,
+            product: item.variant.product,
+            unit: item.variant.unit,
+          }}
+          key={item.variant.id}
         />
       ))}
     </div>

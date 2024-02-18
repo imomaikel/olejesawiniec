@@ -121,7 +121,7 @@ export const panelRouter = router({
                 label: productName,
                 link,
                 rating: 0,
-                Category: {
+                category: {
                   connect: {
                     id: getCategory.id,
                   },
@@ -159,7 +159,7 @@ export const panelRouter = router({
           nutritionFact: true,
           tags: true,
           variants: true,
-          Category: true,
+          category: true,
         },
       });
 
@@ -307,7 +307,7 @@ export const panelRouter = router({
           where: { id: variantId },
           data: { price, stock },
           include: {
-            Product: {
+            product: {
               include: {
                 variants: true,
               },
@@ -315,10 +315,10 @@ export const panelRouter = router({
           },
         });
 
-        const lowestPrice = variant.Product?.variants.sort((a, b) => a.price - b.price)[0]?.price ?? null;
+        const lowestPrice = variant.product?.variants.sort((a, b) => a.price - b.price)[0]?.price ?? null;
 
         await prisma.product.updateMany({
-          where: { id: variant.Product?.id },
+          where: { id: variant.product?.id },
           data: { lowestPrice },
         });
 

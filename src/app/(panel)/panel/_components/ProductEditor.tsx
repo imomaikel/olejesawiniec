@@ -72,7 +72,7 @@ const ProductEditor = ({ productLink }: TProductEditor) => {
           <IoOptions className="w-6 h-6 mr-2" />
           <h2 className="font-medium text-lg">Kategoria produktu</h2>
         </div>
-        <Input value={product.Category.label} disabled />
+        <Input value={product.category.label} disabled />
       </div>
 
       <Separator />

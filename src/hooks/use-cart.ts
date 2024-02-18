@@ -1,27 +1,17 @@
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { TBasketVariant } from '@/lib/types';
 import { create } from 'zustand';
-
-export type TCartItem = {
-  image: string | null;
-  productLabel: string;
-  productLink: string;
-  quantity: number;
-  variantUnit: string;
-  variantCapacity: number;
-  variantPrice: number;
-  variantId: string;
-};
 
 type TUseCart = {
   isOpen: boolean;
   onOpen: () => void;
   onOpenChange: () => void;
 
-  cartData: TCartItem[];
-  addProduct: (variantData: TCartItem) => void;
+  cartData: TBasketVariant[];
+  addProduct: (variantData: TBasketVariant) => void;
   removeProduct: (variantId: string) => void;
 
-  setCart: (cart: TCartItem[]) => void;
+  setCart: (cart: TBasketVariant[]) => void;
 
   increaseQuantity: (variantId: string) => void;
   decreaseQuantity: (variantId: string) => void;
@@ -36,11 +26,11 @@ export const useCart = create<TUseCart>()(
       cartData: [],
 
       addProduct: (variantData) => {
-        const isAdded = get().cartData.find((entry) => entry.variantId === variantData.variantId);
+        const isAdded = get().cartData.find((entry) => entry.variant.id === variantData.variant.id);
         if (isAdded) {
           set((state) => ({
             cartData: state.cartData.map((entry) => {
-              if (entry.variantId === variantData.variantId) {
+              if (entry.variant.id === variantData.variant.id) {
                 return {
                   ...entry,
                   quantity: entry.quantity + 1,
@@ -58,7 +48,7 @@ export const useCart = create<TUseCart>()(
 
       removeProduct: (variantId) =>
         set((state) => ({
-          cartData: state.cartData.filter((entry) => entry.variantId !== variantId),
+          cartData: state.cartData.filter((entry) => entry.variant.id !== variantId),
         })),
 
       setCart: (cart) =>
@@ -69,7 +59,7 @@ export const useCart = create<TUseCart>()(
       increaseQuantity: (variantId) =>
         set((state) => ({
           cartData: state.cartData.map((entry) => {
-            if (entry.variantId === variantId) {
+            if (entry.variant.id === variantId) {
               return { ...entry, quantity: entry.quantity + 1 };
             }
             return entry;
@@ -77,16 +67,16 @@ export const useCart = create<TUseCart>()(
         })),
 
       decreaseQuantity: (variantId) => {
-        const product = get().cartData.find((entry) => entry.variantId === variantId);
+        const product = get().cartData.find((entry) => entry.variant.id === variantId);
         if (!product) return;
         if (product.quantity === 1) {
           set((state) => ({
-            cartData: state.cartData.filter((entry) => entry.variantId !== variantId),
+            cartData: state.cartData.filter((entry) => entry.variant.id !== variantId),
           }));
         } else {
           set((state) => ({
             cartData: state.cartData.map((entry) => {
-              if (entry.variantId === variantId) {
+              if (entry.variant.id === variantId) {
                 return { ...entry, quantity: entry.quantity - 1 };
               }
               return entry;
@@ -96,7 +86,7 @@ export const useCart = create<TUseCart>()(
       },
     }),
     {
-      name: 'cart',
+      name: 'oleje-koszyk',
       storage: createJSONStorage(() => sessionStorage),
     },
   ),

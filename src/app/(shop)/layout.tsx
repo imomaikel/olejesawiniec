@@ -1,4 +1,5 @@
 import { Separator } from '@/components/ui/separator';
+import AfterLogin from '@/components/AfterLogin';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 
@@ -13,6 +14,7 @@ const ShopLayout = ({ children }: { children: React.ReactNode }) => {
         {children}
       </div>
       <Footer />
+      <AfterLogin />
     </div>
   );
 };

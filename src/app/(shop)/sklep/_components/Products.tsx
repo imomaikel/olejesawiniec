@@ -47,7 +47,7 @@ const Products = () => {
       products = products.filter((product) => {
         if (categories.length <= 0) return true;
 
-        if (categories.includes(product.Category.label)) return true;
+        if (categories.includes(product.category.label)) return true;
         return false;
       });
     }
