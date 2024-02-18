@@ -1,7 +1,7 @@
 'use client';
+import { ElementRef, useEffect, useMemo, useRef, useState } from 'react';
 import { cn, errorToast, formatPrice, successToast } from '@/lib/utils';
 import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
@@ -13,11 +13,16 @@ import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
 import { ImSpinner9 } from 'react-icons/im';
 import VariantPicker from './VariantPicker';
-import { useCart } from '@/hooks/use-cart';
 import { useAnimate } from 'framer-motion';
+import { useCart } from '@/hooks/use-cart';
 import { toast } from 'sonner';
 
 const MAX_STARS = 6;
+const OFFSET = 155;
+const makeOffset = (val: number) => {
+  if (val <= OFFSET) return 0;
+  return val - OFFSET;
+};
 
 type TFloatingProduct = {
   productName: string;
@@ -30,11 +35,11 @@ type TFloatingProduct = {
 };
 const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, link, variants }: TFloatingProduct) => {
   const { addProduct, onOpen, cartData } = useCart();
-  const scrollMax = useRef<null | number>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const productRef = useRef<ElementRef<'div'>>(null);
+  const floatBorder = useRef<null | number>(null);
   const [scope, animate] = useAnimate();
-  const user = useCurrentUser();
   const { update } = useSession();
+  const user = useCurrentUser();
 
   const variantIds = user?.wishList ?? [];
 
@@ -48,31 +53,43 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
   });
 
   useEffect(() => {
-    const handleScroll = () => {
-      const productBoxBottom = document.getElementById('productBox')?.getBoundingClientRect().bottom;
-      const productBottom = document.getElementById('product')?.getBoundingClientRect().bottom;
-      if (!productBottom || !productBoxBottom) return;
-
-      const diff = productBoxBottom - productBottom;
-
-      if (diff > 0 || (scrollMax.current && scrollMax.current > window.scrollY)) {
-        setScrollY(window.scrollY);
+    const handleResize = () => {
+      if (!productRef.current) return;
+      const boxH = document.getElementById('productBox')?.clientHeight;
+      if (!boxH) return;
+      if (window.innerWidth < 1024) {
+        productRef.current.style.transform = `translateY(0px)`;
       } else {
-        if (scrollMax.current === null) {
-          scrollMax.current = window.scrollY - Math.abs(diff);
-        }
-        if (diff <= -1) {
-          setScrollY(scrollMax.current);
-        }
+        floatBorder.current = boxH - productRef.current.clientHeight + OFFSET;
+      }
+    };
+    handleResize();
+
+    const handleScroll = () => {
+      if (!productRef.current || !floatBorder.current) return;
+
+      const minScreenHeight = productRef.current.clientHeight;
+      if (minScreenHeight > document.body.clientHeight) {
+        productRef.current.style.transform = `translateY(0px)`;
+        return;
+      }
+
+      if (floatBorder.current > window.scrollY) {
+        productRef.current.style.transform = `translateY(${makeOffset(window.scrollY)}px)`;
+      }
+      if (window.scrollY > floatBorder.current) {
+        productRef.current.style.transform = `translateY(${makeOffset(floatBorder.current)}px)`;
       }
     };
     handleScroll();
 
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
-  }, [scrollY]);
+  }, []);
 
   const { mutate: addToWishList } = trpc.shop.addToWishList.useMutation({
     onSuccess: ({ error, success }) => {
@@ -124,7 +141,7 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
 
   return (
     <div id="productBox" className="max-w-sm w-full relative">
-      <div id="product" style={{ transform: `translateY(${scrollY}px)` }}>
+      <div id="product" ref={productRef}>
         {/* Title */}
         <div className="mb-1">
           <h1 className="text-3xl font-bold">{productName}</h1>
