@@ -1,4 +1,6 @@
+import { TOrderDetailsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, router } from '../trpc';
+import { createNewTransaction } from '../payments';
 import { TBasketVariant } from '@/lib/types';
 import { z } from 'zod';
 
@@ -297,4 +299,160 @@ export const basketRouter = router({
         return { error: true, message: 'Wystąpił błąd.' };
       }
     }),
+  pay: loggedInProcedure
+    .input(
+      z.object({
+        personalDetails: z.custom<TOrderDetailsSchema>(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+      const { personalDetails } = input;
+
+      try {
+        const userData = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: {
+            basket: {
+              include: {
+                variants: {
+                  include: {
+                    variant: {
+                      include: {
+                        product: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const basket = userData?.basket;
+
+        if (!basket) {
+          return { error: true, message: 'Nie znaleziono koszyka.' };
+        }
+
+        const products =
+          basket?.variants
+            .filter((item) => {
+              if (item.variant.product?.enabled) return true;
+              return false;
+            })
+            .map((item) => {
+              if (item.variant.stock < item.quantity) {
+                return { ...item, quantity: item.variant.stock };
+              }
+              return item;
+            }) ?? [];
+        if (products.length <= 0) {
+          return { error: true, message: 'Koszyk jest pusty' };
+        }
+
+        const totalPrice = products.reduce(
+          (acc, curr) => (acc += curr.variant.product?.enabled ? curr.variant.price : 0),
+          0,
+        );
+
+        if (totalPrice < 1) {
+          return { error: true, message: 'Wystąpił błąd (1)' };
+        }
+
+        let description = '';
+        let totalProducts = 0;
+        for (const item of products) {
+          if (!item.variant.product?.enabled) return;
+          totalProducts += item.quantity;
+          description += `${item.quantity}x ${item.variant.product.label}(${item.variant.capacity}${item.variant.unit}) • `;
+        }
+        description += 'Dziękujemy za zakupy w naszym sklepie!';
+
+        const paymentLink = await prisma.paymentLink.create({
+          data: {},
+        });
+        const createTransaction = await createNewTransaction(
+          {
+            title: 'Olejesawiniec.pl - Zamówienie',
+            negativeReturnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/anulowane`,
+            returnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/link/${paymentLink.id}`,
+
+            amount: {
+              currencyCode: 'PLN',
+              value: totalPrice,
+            },
+            description,
+            personalData: {
+              ...personalDetails,
+            },
+            languageCode: 'PL',
+          },
+          // TODO
+          'TEST',
+        );
+
+        if (createTransaction.statusCode === 200) {
+          const payment = await prisma.payment.create({
+            data: {
+              cashbillId: createTransaction.id,
+              checkoutUrl: createTransaction.redirectUrl,
+              status: 'PreStart',
+              productsPrice: totalPrice,
+              // TODO
+              shippingPrice: 0,
+              totalProducts,
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+          await prisma.paymentLink.update({
+            where: { id: paymentLink.id },
+            data: {
+              cashbillId: createTransaction.id,
+            },
+          });
+          for await (const item of products) {
+            await prisma.payment.update({
+              where: { id: payment.id },
+              data: {
+                products: {
+                  create: {
+                    productCapacity: item.variant.capacity,
+                    productName: item.variant.product?.label ?? 'Produkt',
+                    productPrice: item.variant.price,
+                    productQuantity: item.quantity,
+                    productUnit: item.variant.unit,
+                    ...(item.variant.productId && {
+                      originalProduct: {
+                        connect: {
+                          id: item.variant.productId,
+                        },
+                      },
+                    }),
+                  },
+                },
+              },
+            });
+          }
+          return { success: true, redirectUrl: createTransaction.redirectUrl };
+        } else {
+          await prisma.paymentLink.delete({
+            where: { id: paymentLink.id },
+          });
+          console.log('Create transaction reject!');
+          console.log(createTransaction);
+          return { error: true, message: 'Wystąpił błąd (2)' };
+        }
+      } catch (error) {
+        console.log('! Payment Error');
+        console.log(error);
+        return { error: true, message: 'Wystąpił błąd (3)' };
+      }
+    }),
 });
+// TODO Change stock after payment
+// TODO Update basket after payment

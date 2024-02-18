@@ -24,7 +24,8 @@ model Product {
   nutritionFact NutritionFact?
   opinions      Opinion[]
 
-  wishList WishList[]
+  wishList        WishList[]
+  paymentProducts PaymentProduct[]
 
   ratings Rating[]
   rating  Float
@@ -164,6 +165,59 @@ model BasketVariants {
   createdAt DateTime @default(now())
 }
 
+enum PaymentStatus {
+  PreStart
+  Start
+  NegativeAuthorization
+  Abort
+  Fraud
+  PositiveAuthorization
+  PositiveFinish
+  NegativeFinish
+}
+
+model PaymentLink {
+  id         String  @id @default(cuid())
+  cashbillId String?
+
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id Int @id @default(autoincrement())
+
+  cashbillId String
+
+  checkoutUrl   String
+  status        PaymentStatus
+  productsPrice Float
+  shippingPrice Float
+  totalProducts Int
+  products      PaymentProduct[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentProduct {
+  id String @id @default(cuid())
+
+  productPrice    Float
+  productName     String
+  productUnit     String
+  productQuantity Int
+  productCapacity Int
+
+  originalProduct   Product? @relation(fields: [originalProductId], references: [id])
+  originalProductId String?
+
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId Int
+}
+
 // [ ====== AUTH MODELS ====== ]
 model Account {
   id                String  @id @default(cuid())
@@ -192,7 +246,6 @@ enum UserRole {
 
 model User {
   id            String    @id @default(cuid())
-  email         String?   @unique
   name          String?
   emailVerified DateTime?
   image         String?
@@ -200,6 +253,16 @@ model User {
   role          UserRole  @default(USER)
   accounts      Account[]
   basket        Basket?
+
+  email        String?   @unique
+  firstName    String?
+  surname      String?
+  phone        String?
+  city         String?
+  postcode     String?
+  inpostId     String?
+  inpostStreet String?
+  payment      Payment[]
 
   wishList   WishList? @relation(fields: [wishListId], references: [id])
   wishListId String?
