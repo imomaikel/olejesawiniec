@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import prisma from '@/lib/prisma';
 
 const handler = async (req: Request) => {
   const pathArr = req.url.split('/');

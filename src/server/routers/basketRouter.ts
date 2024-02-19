@@ -1,7 +1,9 @@
 import { TOrderDetailsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, router } from '../trpc';
 import { createNewTransaction } from '../payments';
+import { ShippingType } from '@prisma/client';
 import { TBasketVariant } from '@/lib/types';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 export const basketRouter = router({
@@ -303,11 +305,12 @@ export const basketRouter = router({
     .input(
       z.object({
         personalDetails: z.custom<TOrderDetailsSchema>(),
+        shippingMethod: z.custom<ShippingType>(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
-      const { personalDetails } = input;
+      const { personalDetails, shippingMethod } = input;
 
       try {
         const userData = await prisma.user.findUnique({
@@ -352,7 +355,7 @@ export const basketRouter = router({
         }
 
         const totalPrice = products.reduce(
-          (acc, curr) => (acc += curr.variant.product?.enabled ? curr.variant.price : 0),
+          (acc, curr) => (acc += curr.variant.product?.enabled ? curr.quantity * curr.variant.price : 0),
           0,
         );
 
@@ -375,7 +378,7 @@ export const basketRouter = router({
         const createTransaction = await createNewTransaction(
           {
             title: 'Olejesawiniec.pl - Zamówienie',
-            negativeReturnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/anulowane`,
+            negativeReturnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/anulowane?id=${paymentLink.id}`,
             returnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/link/${paymentLink.id}`,
 
             amount: {
@@ -392,14 +395,38 @@ export const basketRouter = router({
           'TEST',
         );
 
+        const { email, phone, firstName, surname, courierData, inpostData } = personalDetails;
+
         if (createTransaction.statusCode === 200) {
           const payment = await prisma.payment.create({
             data: {
+              firstName,
+              surname,
+              phone,
+              email,
               cashbillId: createTransaction.id,
               checkoutUrl: createTransaction.redirectUrl,
               status: 'PreStart',
               productsPrice: totalPrice,
-              // TODO
+              shipping: {
+                create: {
+                  method: shippingMethod,
+                  courierBuilding: courierData?.building,
+                  courierCity: courierData?.city,
+                  courierFlat: courierData?.flat,
+                  courierPostCode: courierData?.postCode,
+                  courierProvince: courierData?.province,
+                  courierStreet: courierData?.street,
+                  inpostBuildingNumber: inpostData?.buildingNumber,
+                  inpostCity: inpostData?.city,
+                  inpostFlatNumber: inpostData?.flatNumber,
+                  inpostName: inpostData?.name,
+                  inpostPostCode: inpostData?.postCode,
+                  inpostProvince: inpostData?.province,
+                  inpostStreet: inpostData?.street,
+                },
+              },
+              // TODO + shipping method
               shippingPrice: 0,
               totalProducts,
               user: {
@@ -413,6 +440,7 @@ export const basketRouter = router({
             where: { id: paymentLink.id },
             data: {
               cashbillId: createTransaction.id,
+              checkoutUrl: createTransaction.redirectUrl,
             },
           });
           for await (const item of products) {
@@ -453,6 +481,55 @@ export const basketRouter = router({
         return { error: true, message: 'Wystąpił błąd (3)' };
       }
     }),
+  paymentInfo: loggedInProcedure.input(z.object({ orderId: z.string() })).query(async ({ ctx, input }) => {
+    const { prisma, user } = ctx;
+    const { orderId } = input;
+
+    const payments = (
+      await prisma.user.findUnique({
+        where: { id: user.id },
+        select: {
+          payment: {
+            where: {
+              cashbillId: orderId,
+            },
+            select: {
+              products: {
+                select: {
+                  productCapacity: true,
+                  productName: true,
+                  productUnit: true,
+                  productPrice: true,
+                  productQuantity: true,
+                  originalProduct: {
+                    select: {
+                      link: true,
+                    },
+                  },
+                },
+              },
+              cashbillId: true,
+              createdAt: true,
+              shippingPrice: true,
+              updatedAt: true,
+              productsPrice: true,
+              totalProducts: true,
+              status: true,
+            },
+            take: 1,
+          },
+        },
+      })
+    )?.payment;
+
+    if (!payments || !payments[0]) {
+      throw new TRPCError({ code: 'BAD_REQUEST' });
+    }
+
+    const payment = payments[0];
+
+    return payment;
+  }),
 });
 // TODO Change stock after payment
 // TODO Update basket after payment

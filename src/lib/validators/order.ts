@@ -9,19 +9,47 @@ export const OrderDetailsSchema = z
       .string()
       .min(9, { message: 'Numer telefonu jest za krótki.' })
       .max(12, { message: 'Numer telefonu jest za długi.' }),
-    city: z.string().min(2, { message: 'Nazwa miast jest za krótka.' }).max(54, { message: 'Limit znaków.' }),
-    postcode: z.string().min(2, { message: 'Kod pocztowy jest za krótki.' }).max(54, { message: 'Limit znaków.' }),
 
-    inpostId: z.optional(z.string().max(54, { message: 'Limit znaków.' })),
-    inpostStreet: z.optional(z.string().max(54, { message: 'Limit znaków.' })),
+    inpostData: z.optional(
+      z.object({
+        name: z.string().min(2, { message: 'Nazwa paczkomatu jest za krótka.' }).max(128, { message: 'Limit znaków.' }),
+        city: z
+          .string()
+          .min(2, { message: 'Nazwa miejscowości jest za krótka.' })
+          .max(128, { message: 'Limit znaków.' }),
+        province: z
+          .string()
+          .min(2, { message: 'Nazwa województwa jest za krótka.' })
+          .max(128, { message: 'Limit znaków.' }),
+        postCode: z.string().min(2, { message: 'Kod pocztowy jest za krótki.' }).max(128, { message: 'Limit znaków.' }),
+        street: z.string().min(2, { message: 'Nazwa ulicy jest za krótka.' }).max(128, { message: 'Limit znaków.' }),
+        buildingNumber: z.optional(z.string().max(128, { message: 'Limit znaków.' })),
+        flatNumber: z.optional(z.string().max(128, { message: 'Limit znaków.' })),
+      }),
+    ),
+    courierData: z.optional(
+      z.object({
+        city: z
+          .string()
+          .min(2, { message: 'Nazwa miejscowości jest za krótka.' })
+          .max(128, { message: 'Limit znaków.' }),
+        province: z
+          .string()
+          .min(2, { message: 'Nazwa województwa jest za krótka.' })
+          .max(128, { message: 'Limit znaków.' }),
+        postCode: z.string().min(2, { message: 'Kod pocztowy jest za krótki.' }).max(128, { message: 'Limit znaków.' }),
+        street: z.string().min(2, { message: 'Nazwa ulicy jest za krótka.' }).max(128, { message: 'Limit znaków.' }),
+        building: z
+          .string()
+          .min(1, { message: 'Numer budynku jest za krótki.' })
+          .max(128, { message: 'Limit znaków.' }),
+        flat: z.optional(z.string().max(128, { message: 'Limit znaków.' })),
+      }),
+    ),
   })
-  .refine(
-    ({ inpostId, inpostStreet }) => {
-      if (!inpostId || !inpostStreet) return false;
-      if (inpostId.length + inpostStreet.length <= 4) return false;
-      return true;
-    },
-    { message: 'Podaj numer paczkomatu lub adres.' },
-  );
+  .refine(({ courierData, inpostData }) => {
+    if (!courierData || !inpostData) return false;
+    return true;
+  });
 
 export type TOrderDetailsSchema = z.infer<typeof OrderDetailsSchema>;

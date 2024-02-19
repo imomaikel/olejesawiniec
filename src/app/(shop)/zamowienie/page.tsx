@@ -1,19 +1,130 @@
 'use client';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useRef, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
+import { TInPostPointSelect } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import CartItems from './_components/CartItems';
+import { Input } from '@/components/ui/input';
+import { ShippingType } from '@prisma/client';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
-import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import InPost from './_components/InPost';
+import { errorToast } from '@/lib/utils';
+import Image from 'next/image';
+import { toast } from 'sonner';
+import Link from 'next/link';
 
 const OrderPage = () => {
   const { onOpenChange: closeCart, cartData: _cartData } = useCart();
+  const router = useRouter();
+  const shippingMethod = useRef<ShippingType>('INPOST');
+  const [inPostMachine, setInPostMachine] = useState<{
+    description: string;
+    imageUrl: string;
+  } | null>(null);
 
   useEffect(() => closeCart(), [closeCart]);
 
   const { data: cartData } = trpc.basket.get.useQuery(undefined, {
     retry: 1,
   });
+
+  const { mutate: pay, isLoading } = trpc.basket.pay.useMutation();
+
+  const form = useForm<TOrderDetailsSchema>({
+    resolver: zodResolver(OrderDetailsSchema),
+    defaultValues: {
+      email: '',
+      firstName: '',
+      phone: '',
+      surname: '',
+      inpostData: {
+        buildingNumber: '',
+        city: '',
+        flatNumber: '',
+        name: '',
+        postCode: '',
+        province: '',
+        street: '',
+      },
+      courierData: {
+        building: '',
+        city: '',
+        flat: '',
+        postCode: '',
+        province: '',
+        street: '',
+      },
+    },
+  });
+
+  const onSubmit = (values: TOrderDetailsSchema) => {
+    toast.info('Za chwilę nastąpi przekierowanie...', { duration: 6000 });
+    pay(
+      {
+        personalDetails: {
+          ...values,
+        },
+        shippingMethod: shippingMethod.current,
+      },
+      {
+        onSuccess: (data) => {
+          if (data?.error) {
+            errorToast(data.message);
+          } else if (data?.success) {
+            router.push(data.redirectUrl);
+          }
+        },
+        onError: () => errorToast(),
+      },
+    );
+  };
+
+  const onPointSelect = (point: TInPostPointSelect) => {
+    toast.info(`Wybrano punkt "${point.name}"`);
+
+    const machineDescription = point.location_description ?? '';
+    const machineImageUrl = point.image_url ?? '';
+
+    if (machineDescription.length >= 3 && machineImageUrl.length >= 3) {
+      setInPostMachine({
+        description: machineDescription,
+        imageUrl: machineImageUrl,
+      });
+    }
+
+    const buildingNumber = point.address_details.building_number ?? '';
+    const flatNumber = point.address_details.flat_number ?? '';
+
+    let street = `${point.address_details.street}`;
+    if (buildingNumber.length >= 1) {
+      street += ` ${buildingNumber}`;
+    }
+    if (flatNumber.length >= 1) {
+      street += `/${flatNumber}`;
+    }
+
+    form.setValue('inpostData.postCode', point.address_details.post_code);
+    form.setValue('inpostData.province', point.address_details.province);
+    form.setValue('inpostData.street', street);
+    form.setValue('inpostData.city', point.address_details.city);
+    form.setValue('inpostData.name', point.name);
+    form.setValue('inpostData.buildingNumber', buildingNumber);
+    form.setValue('inpostData.flatNumber', flatNumber);
+    form.trigger([
+      'inpostData.name',
+      'inpostData.province',
+      'inpostData.postCode',
+      'inpostData.city',
+      'inpostData.street',
+    ]);
+  };
 
   if (!cartData) return null;
 
@@ -23,12 +134,283 @@ const OrderPage = () => {
       <CartItems items={cartData} />
       <Separator className="my-6" />
       <h1 className="text-2xl font-bold">Dostawa</h1>
-
       <Separator className="my-6" />
-      <h1 className="text-2xl font-bold">Płatność</h1>
-      <Button size="2xl" className="rounded-full">
-        Przejdź do płatności
-      </Button>
+      <h1 className="text-2xl font-bold">Szczegóły</h1>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-2 max-w-md">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Imię</FormLabel>
+                  <FormControl>
+                    <Input disabled={isLoading} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="surname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nazwisko</FormLabel>
+                  <FormControl>
+                    <Input disabled={isLoading} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input disabled={isLoading} {...field} type="email" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Numer telefonu</FormLabel>
+                  <FormControl>
+                    <Input disabled={isLoading} {...field} type="tel" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold">Metoda dostawy</h2>
+            <Tabs
+              defaultValue="machine"
+              className="w-full"
+              onValueChange={(e) => {
+                if (e === 'machine') {
+                  shippingMethod.current = 'INPOST';
+                } else if (e === 'courier') {
+                  shippingMethod.current = 'COURIER';
+                }
+              }}
+            >
+              <TabsList className="w-full">
+                <TabsTrigger value="machine">Paczkomat - Przedpłata</TabsTrigger>
+                <TabsTrigger value="courier">Kurier - Za pobraniem</TabsTrigger>
+              </TabsList>
+              <TabsContent value="machine">
+                <div className="my-4">
+                  <InPost onSelect={onPointSelect} />
+                  <div className="mt-2 bg-destructive/10 rounded-md text-center py-1">
+                    <p className="tracking-wide">
+                      Jeżeli mapa z paczkomatami nie ładuje się, dane paczkomatu należy wprowadzić ręcznie.
+                    </p>
+                    <p>
+                      Listę paczkomatów można znaleźć{' '}
+                      <Link href="https://inpost.pl/znajdz-paczkomat" target="_blank" className="underline">
+                        tutaj
+                      </Link>
+                    </p>
+                  </div>
+                </div>
+                <p className="text-muted-foreground text-sm mt-2">
+                  Wybierz punkt z mapy powyżej aby automatycznie uzupełnić dane paczkomatu.
+                </p>
+                <div className="flex w-full lg:items-center max-w-screen-lg justify-between flex-col lg:flex-row space-y-4 lg:space-y-0">
+                  <div className="space-y-2 max-w-md w-full">
+                    <FormField
+                      control={form.control}
+                      name="inpostData.name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nazwa paczkomatu</FormLabel>
+                          <FormControl>
+                            <Input disabled={isLoading} {...field} placeholder="np: GDY50M" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="inpostData.province"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Województwo</FormLabel>
+                          <FormControl>
+                            <Input disabled={isLoading} {...field} placeholder="np: Pomorskie" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="inpostData.postCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Kod pocztowy</FormLabel>
+                          <FormControl>
+                            <Input disabled={isLoading} {...field} placeholder="np: 81-001" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="inpostData.city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Miejscowość</FormLabel>
+                          <FormControl>
+                            <Input disabled={isLoading} {...field} placeholder="np: Gdynia" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="inpostData.street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Adres</FormLabel>
+                          <FormControl>
+                            <Input disabled={isLoading} {...field} placeholder="np: Armii Krajowej 23" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {inPostMachine?.description && (
+                    <div className="flex flex-col lg:items-center h-min">
+                      <div className="w-full lg:w-[420px] h-80 rounded-lg pointer-events-none select-none shadow-lg">
+                        <Image
+                          src={inPostMachine.imageUrl}
+                          alt="Miejsce paczkomatu"
+                          width={0}
+                          height={0}
+                          priority
+                          loading="eager"
+                          onError={() => setInPostMachine({ ...inPostMachine, imageUrl: '/inpost.png' })}
+                          quality={60}
+                          sizes="100vw"
+                          className="h-full w-full max-h-80 object-cover object-center rounded-lg"
+                        />
+                      </div>
+                      <p className="text-muted-foreground">{inPostMachine.description}</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+              <TabsContent value="courier">
+                <div className="space-y-2 max-w-md w-full">
+                  <FormField
+                    control={form.control}
+                    name="courierData.province"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Województwo</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} placeholder="np: Pomorskie" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="courierData.postCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Kod pocztowy</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} placeholder="np: 81-577" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="courierData.city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Miejscowość</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} placeholder="np: Gdynia" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="courierData.street"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nazwa ulicy</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} placeholder="np: Pelikana" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="courierData.building"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Numer budynku</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} placeholder="np: 61" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="courierData.flat"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Numer mieszkania</FormLabel>
+                        <FormControl>
+                          <Input disabled={isLoading} {...field} placeholder="np: 2" />
+                        </FormControl>
+                        <FormDescription>Opcjonalne</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          <div className="mt-4">
+            <Button size="2xl" className="max-w-md w-full" type="submit" disabled={isLoading}>
+              Przejdź do płatności
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 };

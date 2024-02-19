@@ -95,7 +95,6 @@ export const _createNewTransaction = async (
     }
 
     if (response.body) {
-      console.log(response.status, typeof response.status);
       if (response.status === 200) {
         const data = (await response.json()) as TPaymentCreateGateway200;
         data.statusCode = 200;
