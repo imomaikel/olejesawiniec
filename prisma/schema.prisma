@@ -166,14 +166,18 @@ model BasketVariants {
 }
 
 enum PaymentStatus {
-  PreStart
-  Start
   NegativeAuthorization
-  Abort
-  Fraud
   PositiveAuthorization
   PositiveFinish
   NegativeFinish
+  Start
+  PreStart
+  Abort
+  Fraud
+  Order_processing
+  Order_ready
+  Order_sent
+  Order_finished
 }
 
 model PaymentLink {
