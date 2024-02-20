@@ -4,13 +4,12 @@ import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
 import { TInPostPointSelect } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import CartItems from './_components/CartItems';
 import { Input } from '@/components/ui/input';
-import { ShippingType } from '@prisma/client';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
 import { useForm } from 'react-hook-form';
@@ -22,12 +21,11 @@ import Link from 'next/link';
 
 const OrderPage = () => {
   const { onOpenChange: closeCart, cartData: _cartData } = useCart();
-  const router = useRouter();
-  const shippingMethod = useRef<ShippingType>('INPOST');
   const [inPostMachine, setInPostMachine] = useState<{
     description: string;
     imageUrl: string;
   } | null>(null);
+  const router = useRouter();
 
   useEffect(() => closeCart(), [closeCart]);
 
@@ -61,6 +59,7 @@ const OrderPage = () => {
         province: '',
         street: '',
       },
+      method: 'INPOST',
     },
   });
 
@@ -71,7 +70,7 @@ const OrderPage = () => {
         personalDetails: {
           ...values,
         },
-        shippingMethod: shippingMethod.current,
+        shippingMethod: form.getValues('method'),
       },
       {
         onSuccess: (data) => {
@@ -201,9 +200,9 @@ const OrderPage = () => {
               className="w-full"
               onValueChange={(e) => {
                 if (e === 'machine') {
-                  shippingMethod.current = 'INPOST';
+                  form.setValue('method', 'INPOST');
                 } else if (e === 'courier') {
-                  shippingMethod.current = 'COURIER';
+                  form.setValue('method', 'COURIER');
                 }
               }}
             >

@@ -1,7 +1,6 @@
-import { TOrderDetailsSchema } from '@/lib/validators/order';
+import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, router } from '../trpc';
 import { createNewTransaction } from '../payments';
-import { ShippingType } from '@prisma/client';
 import { TBasketVariant } from '@/lib/types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -304,8 +303,8 @@ export const basketRouter = router({
   pay: loggedInProcedure
     .input(
       z.object({
-        personalDetails: z.custom<TOrderDetailsSchema>(),
-        shippingMethod: z.custom<ShippingType>(),
+        personalDetails: OrderDetailsSchema,
+        shippingMethod: z.enum(['INPOST', 'COURIER']),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -395,7 +394,7 @@ export const basketRouter = router({
           'TEST',
         );
 
-        const { email, phone, firstName, surname, courierData, inpostData } = personalDetails;
+        const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
 
         if (createTransaction.statusCode === 200) {
           const payment = await prisma.payment.create({
@@ -411,19 +410,23 @@ export const basketRouter = router({
               shipping: {
                 create: {
                   method: shippingMethod,
-                  courierBuilding: courierData?.building,
-                  courierCity: courierData?.city,
-                  courierFlat: courierData?.flat,
-                  courierPostCode: courierData?.postCode,
-                  courierProvince: courierData?.province,
-                  courierStreet: courierData?.street,
-                  inpostBuildingNumber: inpostData?.buildingNumber,
-                  inpostCity: inpostData?.city,
-                  inpostFlatNumber: inpostData?.flatNumber,
-                  inpostName: inpostData?.name,
-                  inpostPostCode: inpostData?.postCode,
-                  inpostProvince: inpostData?.province,
-                  inpostStreet: inpostData?.street,
+                  ...(method === 'COURIER' && {
+                    courierBuilding: courierData?.building,
+                    courierCity: courierData?.city,
+                    courierFlat: courierData?.flat,
+                    courierPostCode: courierData?.postCode,
+                    courierProvince: courierData?.province,
+                    courierStreet: courierData?.street,
+                  }),
+                  ...(method === 'INPOST' && {
+                    inpostBuildingNumber: inpostData?.buildingNumber,
+                    inpostCity: inpostData?.city,
+                    inpostFlatNumber: inpostData?.flatNumber,
+                    inpostName: inpostData?.name,
+                    inpostPostCode: inpostData?.postCode,
+                    inpostProvince: inpostData?.province,
+                    inpostStreet: inpostData?.street,
+                  }),
                 },
               },
               // TODO + shipping method
