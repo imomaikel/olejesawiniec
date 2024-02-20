@@ -1,5 +1,6 @@
 import { FaShopify, FaChartLine } from 'react-icons/fa6';
 import { BiSolidShoppingBags } from 'react-icons/bi';
+import { RiTodoLine } from 'react-icons/ri';
 import { FaHashtag } from 'react-icons/fa';
 import { TiPlus } from 'react-icons/ti';
 import { FaEdit } from 'react-icons/fa';
@@ -94,7 +95,13 @@ export const PANEL_TABS = [
     label: 'Zamówienia',
     Icon: BiSolidShoppingBags,
     link: '/panel/zamowienia',
-    options: null,
+    options: [
+      {
+        label: 'Podsumowanie',
+        Icon: RiTodoLine,
+        link: '/panel/zamowienia/podsumowanie',
+      },
+    ],
   },
 ];
 

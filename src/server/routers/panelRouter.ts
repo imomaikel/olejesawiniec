@@ -570,4 +570,30 @@ export const panelRouter = router({
       return null;
     }
   }),
+  getUncompletedOrders: panelProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    try {
+      const orders = await prisma.payment.findMany({
+        where: {
+          status: 'Order_processing',
+        },
+        select: {
+          products: {
+            select: {
+              productCapacity: true,
+              productName: true,
+              productQuantity: true,
+              productUnit: true,
+            },
+          },
+        },
+      });
+      return orders;
+    } catch {
+      return [];
+    }
+  }),
 });
+
+// TODO secure

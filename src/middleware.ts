@@ -9,6 +9,7 @@ export default auth(async (req) => {
   const session = req.auth;
   const pathname = nextUrl.pathname;
 
+  // TODO
   if (pathname.startsWith('/panel')) {
     if (!session?.user.email) return Response.redirect(new URL('/sklep', nextUrl));
   }
