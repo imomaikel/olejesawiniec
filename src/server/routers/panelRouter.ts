@@ -369,11 +369,25 @@ export const panelRouter = router({
   getAllProducts: panelProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
-    return await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       include: {
         variants: true,
+        customFeatures: true,
       },
     });
+
+    return products;
+  }),
+  getAllCategories: panelProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    const categories = await prisma.category.findMany({
+      include: {
+        customFeatures: true,
+      },
+    });
+
+    return categories;
   }),
   productState: panelProcedure
     .input(
@@ -593,6 +607,143 @@ export const panelRouter = router({
     } catch {
       return [];
     }
+  }),
+  addCustomFeatureToProduct: panelProcedure
+    .input(z.object({ label: z.string().min(1), productId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const { label, productId } = input;
+      const { prisma } = ctx;
+
+      try {
+        await prisma.product.update({
+          where: { id: productId },
+          data: {
+            customFeatures: {
+              connectOrCreate: {
+                where: {
+                  label,
+                },
+                create: {
+                  label,
+                },
+              },
+            },
+          },
+        });
+
+        return { success: true, message: `Dodano "${label}"` };
+      } catch {
+        return { error: true };
+      }
+    }),
+  addCustomFeatureToCategory: panelProcedure
+    .input(z.object({ label: z.string().min(1), categoryId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { label, categoryId } = input;
+      const { prisma } = ctx;
+
+      try {
+        await prisma.category.update({
+          where: { id: categoryId },
+          data: {
+            customFeatures: {
+              connectOrCreate: {
+                where: {
+                  label,
+                },
+                create: {
+                  label,
+                },
+              },
+            },
+          },
+        });
+
+        return { success: true, message: `Dodano "${label}"` };
+      } catch {
+        return { error: true };
+      }
+    }),
+  removeCustomFeatureFromCategory: panelProcedure
+    .input(z.object({ label: z.string().min(1), categoryId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const { label, categoryId } = input;
+      const { prisma } = ctx;
+
+      try {
+        await prisma.category.update({
+          where: { id: categoryId },
+          data: {
+            customFeatures: {
+              disconnect: {
+                label,
+              },
+            },
+          },
+        });
+
+        return { success: true, message: `Usunięto "${label}"` };
+      } catch {
+        return { error: true };
+      }
+    }),
+  removeCustomFeatureFromProduct: panelProcedure
+    .input(z.object({ label: z.string().min(1), productId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const { label, productId } = input;
+      const { prisma } = ctx;
+
+      try {
+        await prisma.product.update({
+          where: { id: productId },
+          data: {
+            customFeatures: {
+              disconnect: {
+                label,
+              },
+            },
+          },
+        });
+
+        return { success: true, message: `Usunięto "${label}"` };
+      } catch {
+        return { error: true };
+      }
+    }),
+  createCustomFeature: panelProcedure.input(z.object({ label: z.string().min(1) })).mutation(async ({ ctx, input }) => {
+    const { label } = input;
+    const { prisma } = ctx;
+
+    try {
+      await prisma.customFeature.create({
+        data: { label },
+      });
+
+      return { success: true, message: `Dodano "${label}"` };
+    } catch {
+      return { error: true };
+    }
+  }),
+  removeCustomFeature: panelProcedure.input(z.object({ label: z.string().min(1) })).mutation(async ({ ctx, input }) => {
+    const { label } = input;
+    const { prisma } = ctx;
+
+    try {
+      await prisma.customFeature.delete({
+        where: { label },
+      });
+
+      return { success: true, message: `Usunięto "${label}"` };
+    } catch {
+      return { error: true };
+    }
+  }),
+  getCustomFeatues: panelProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    const feature = await prisma.customFeature.findMany();
+
+    return feature;
   }),
 });
 

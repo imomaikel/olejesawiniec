@@ -1,4 +1,5 @@
 import { FaShopify, FaChartLine } from 'react-icons/fa6';
+import { MdOutlineDesignServices } from 'react-icons/md';
 import { BiSolidShoppingBags } from 'react-icons/bi';
 import { RiTodoLine } from 'react-icons/ri';
 import { FaHashtag } from 'react-icons/fa';
@@ -83,6 +84,11 @@ export const PANEL_TABS = [
         label: 'Tagi',
         Icon: FaHashtag,
         link: '/panel/produkty/tagi',
+      },
+      {
+        label: 'Niestandardowe',
+        Icon: MdOutlineDesignServices,
+        link: '/panel/produkty/niestandardowe',
       },
       {
         label: 'Szybka edycja',

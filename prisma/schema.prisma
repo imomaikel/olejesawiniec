@@ -27,6 +27,8 @@ model Product {
   wishList        WishList[]
   paymentProducts PaymentProduct[]
 
+  customFeatures CustomFeature[]
+
   ratings Rating[]
   rating  Float
 
@@ -53,7 +55,8 @@ model Category {
   id    String @id @default(cuid())
   label String @unique
 
-  product Product[]
+  product        Product[]
+  customFeatures CustomFeature[]
 }
 
 model Rating {
@@ -141,6 +144,14 @@ model Tag {
 
   product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId String?
+}
+
+model CustomFeature {
+  id    Int    @id @default(autoincrement())
+  label String @unique
+
+  product  Product[]
+  category Category[]
 }
 
 model Basket {
