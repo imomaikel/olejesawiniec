@@ -1,18 +1,20 @@
 'use client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import FloatingProduct from './_components/FloatingProduct';
+import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
-import { cn, errorToast } from '@/lib/utils';
 import Opinion from './_components/Opinion';
+import { useMemo, useState } from 'react';
 
 const ProductPage = () => {
   const router = useRouter();
   const { productName } = useParams<{
     productName: string;
   }>();
+  const [selectedVariantId, setSelectedVariantId] = useState('');
 
   const { data: product, isLoading } = trpc.shop.getProduct.useQuery(
     { productName },
@@ -21,10 +23,16 @@ const ProductPage = () => {
         if (response && response?.variants.length <= 0) {
           errorToast('Aktualnie nie ma możliwości kupienia tego produktu.');
           router.push('/sklep');
+          setSelectedVariantId(response.variants[0].id);
           return;
         }
       },
     },
+  );
+
+  const selectedVariant = useMemo(
+    () => product?.variants.find(({ id }) => id === selectedVariantId) ?? null,
+    [selectedVariantId, product?.variants],
   );
 
   if (!product && !isLoading) {
@@ -77,6 +85,7 @@ const ProductPage = () => {
         ratingCount={ratingCount}
         link={link}
         variants={variants}
+        onSelect={(variantId) => setSelectedVariantId(variantId)}
       />
       <div className="mx-24 hidden md:block" />
       <div className="w-full max-w-lg relative">
@@ -105,20 +114,32 @@ Pojemności na pomarańczowo są na wyczerpaniu.
 </Alert> */}
 
         {/* Size */}
-        <div className="mt-2 flex md:flex-row flex-col items-center space-x-2">
-          <div className="tracking-wide font-medium">Dostępne w pojemnościach</div>
-          <div className="space-x-2">
-            {variants.map((variant) => (
-              <Badge
-                key={`${variant.price}${variant.capacity}`}
-                className="cursor-pointer"
-                // TODO stock colors
-              >
-                {variant.capacity}
-                {variant.unit}
-              </Badge>
-            ))}
+        <div className="mt-2 flex flex-col">
+          <div className="flex md:flex-row flex-col items-center space-x-2">
+            <div className="tracking-wide font-medium">Dostępne w pojemnościach</div>
+            <div className="space-x-2">
+              {variants.map((variant) => (
+                <Badge
+                  key={`${variant.price}${variant.capacity}`}
+                  className="cursor-pointer"
+                  // TODO stock colors
+                >
+                  {variant.capacity}
+                  {variant.unit}
+                </Badge>
+              ))}
+            </div>
           </div>
+          {selectedVariant && (
+            <div className="flex mt-2 space-x-2">
+              <Badge>
+                {selectedVariant.capacity}
+                {selectedVariant.unit}
+              </Badge>
+              <div>Najniższa cena w ciągu 30 dni</div>
+              <div className="font-semibold">{formatPrice(selectedVariant.priceHistory[0].price)}</div>
+            </div>
+          )}
         </div>
         {/* Detailed informations */}
         <div className={cn('mt-6', product.details.length <= 0 && 'hidden')}>

@@ -1,8 +1,8 @@
 'use client';
 import { trpc } from '@/components/providers/TRPC';
+import { Input } from '@/components/ui/input';
 import EditBox from './_components/EditBox';
 import { useState } from 'react';
-import { Input } from '@/components/ui/input';
 
 const EditPage = () => {
   const [filter, setFilter] = useState('');

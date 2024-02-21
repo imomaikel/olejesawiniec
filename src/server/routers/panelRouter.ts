@@ -259,6 +259,11 @@ export const panelRouter = router({
               stock: stock ?? 0,
               unit,
               parentId: productId,
+              priceHistory: {
+                create: {
+                  price,
+                },
+              },
             },
           },
         },
@@ -305,7 +310,15 @@ export const panelRouter = router({
       try {
         const variant = await prisma.variant.update({
           where: { id: variantId },
-          data: { price, stock },
+          data: {
+            price,
+            stock,
+            priceHistory: {
+              create: {
+                price,
+              },
+            },
+          },
           include: {
             product: {
               include: {

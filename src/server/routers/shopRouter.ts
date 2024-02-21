@@ -7,6 +7,10 @@ export const shopRouter = router({
     const { productName } = input;
     const { prisma } = ctx;
 
+    const now = new Date().getTime();
+    const upTo30Days = 1000 * 60 * 60 * 24 * 30;
+    const dateRange = new Date(now - upTo30Days);
+
     const product = await prisma.product.findFirst({
       where: { link: productName, enabled: true },
       include: {
@@ -14,7 +18,21 @@ export const shopRouter = router({
         extraPhotos: true,
         nutritionFact: true,
         tags: true,
-        variants: true,
+        variants: {
+          include: {
+            priceHistory: {
+              take: 1,
+              where: {
+                createdAt: {
+                  gte: dateRange,
+                },
+              },
+              orderBy: {
+                price: 'asc',
+              },
+            },
+          },
+        },
         opinions: true,
         ratings: {
           select: { id: true },

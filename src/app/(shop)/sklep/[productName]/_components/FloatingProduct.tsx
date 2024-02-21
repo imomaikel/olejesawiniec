@@ -32,8 +32,18 @@ type TFloatingProduct = {
   ratingCount: number;
   link: string;
   variants: Variant[];
+  onSelect: (variantId: string) => void;
 };
-const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, link, variants }: TFloatingProduct) => {
+const FloatingProduct = ({
+  imageUrls,
+  productName,
+  tags,
+  rating,
+  ratingCount,
+  link,
+  variants,
+  onSelect,
+}: TFloatingProduct) => {
   const { addProduct: _addProduct, onOpen, cartData: _cartData } = useCart();
   const productRef = useRef<ElementRef<'div'>>(null);
   const floatBorder = useRef<null | number>(null);
@@ -234,6 +244,7 @@ const FloatingProduct = ({ imageUrls, productName, tags, rating, ratingCount, li
                       [scope.current, { transform: 'scale(110%)' }, { duration: 0.1 }],
                       [scope.current, { transform: 'scale(100%)' }, { duration: 0.1, delay: 0.1 }],
                     ]);
+                    onSelect(variant.id);
                     changeVariant(variant);
                   }}
                   isSelected={selectedVariant.id === variant.id}
