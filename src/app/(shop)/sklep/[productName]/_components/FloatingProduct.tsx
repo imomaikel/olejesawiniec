@@ -77,6 +77,7 @@ const FloatingProduct = ({
 
     const handleScroll = () => {
       if (!productRef.current || !floatBorder.current) return;
+      if (window.innerWidth < 1024) return;
 
       const minScreenHeight = productRef.current.clientHeight;
       if (minScreenHeight > document.body.clientHeight) {
@@ -187,8 +188,8 @@ const FloatingProduct = ({
   };
 
   return (
-    <div id="productBox" className="max-w-sm w-full relative">
-      <div id="product" ref={productRef}>
+    <div id="productBox" className="relative lg:max-w-sm w-full flex justify-center lg:block">
+      <div id="product" ref={productRef} className="max-w-sm w-full">
         {/* Title */}
         <div className="mb-1">
           <h1 className="text-3xl font-bold">{productName}</h1>
@@ -209,7 +210,13 @@ const FloatingProduct = ({
         </div>
         {/* Image */}
         <div>
-          <ImageSwiper alt="olej" urls={imageUrls} fullSizeOnClick fitImage />
+          <ImageSwiper
+            alt="olej"
+            urls={imageUrls}
+            fullSizeOnClick
+            fitImage
+            className="h-80 w-80 mx-auto 2xl:h-96 2xl:w-96 2xl:mx-0"
+          />
         </div>
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mt-3 items-center justify-center">

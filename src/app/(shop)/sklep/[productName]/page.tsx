@@ -20,10 +20,12 @@ const ProductPage = () => {
     { productName },
     {
       onSuccess: (response) => {
+        if (selectedVariantId.length <= 1) {
+          setSelectedVariantId(response?.variants[0].id ?? '');
+        }
         if (response && response?.variants.length <= 0) {
           errorToast('Aktualnie nie ma możliwości kupienia tego produktu.');
           router.push('/sklep');
-          setSelectedVariantId(response.variants[0].id);
           return;
         }
       },
@@ -76,7 +78,7 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 md:space-y-0">
+    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0">
       <FloatingProduct
         productName={label}
         imageUrls={photos}
@@ -87,8 +89,8 @@ const ProductPage = () => {
         variants={variants}
         onSelect={(variantId) => setSelectedVariantId(variantId)}
       />
-      <div className="mx-24 hidden md:block" />
-      <div className="w-full max-w-lg relative">
+      <div className="mx-24 hidden lg:block" />
+      <div className="w-full max-w-lg relative mx-auto lg:mx-0">
         {/* Title */}
         <div className="mb-1">
           <h1 className="text-3xl font-bold">Szczegóły produktu</h1>
@@ -115,7 +117,7 @@ Pojemności na pomarańczowo są na wyczerpaniu.
 
         {/* Size */}
         <div className="mt-2 flex flex-col">
-          <div className="flex md:flex-row flex-col items-center space-x-2">
+          <div className="flex lg:flex-row flex-col lg:space-x-2">
             <div className="tracking-wide font-medium">Dostępne w pojemnościach</div>
             <div className="space-x-2">
               {variants.map((variant) => (
@@ -131,8 +133,8 @@ Pojemności na pomarańczowo są na wyczerpaniu.
             </div>
           </div>
           {selectedVariant && (
-            <div className="flex mt-2 space-x-2">
-              <Badge>
+            <div className="flex mt-4 lg:space-x-2 flex-col lg:flex-row lg:mt-2">
+              <Badge className="w-min">
                 {selectedVariant.capacity}
                 {selectedVariant.unit}
               </Badge>
@@ -191,7 +193,7 @@ Termin przydatności do spożycia:
         {nutritionFact && (
           <div className="mt-4">
             <h1 className="text-3xl font-bold">Wartości odżywcze</h1>
-            <Table className="mt-2">
+            <Table className="mt-2 min-w-[500px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Wartość odżywcza</TableHead>
@@ -299,7 +301,7 @@ Termin przydatności do spożycia:
             </div>
           </div>
         </div>
-        <div className="absolute h-full w-[1px] bg-black/40 -left-24 top-0 hidden md:block" />
+        <div className="absolute h-full w-[1px] bg-black/40 -left-24 top-0 hidden lg:block" />
       </div>
     </div>
   );
