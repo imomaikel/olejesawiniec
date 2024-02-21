@@ -47,7 +47,7 @@ const CustomFeature = ({ label, id, refetch }: TCustomFeature) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="touch-none">
       <Badge className={cn('cursor-grab select-none', isLoading && 'bg-secondary')} onDoubleClick={onDelete}>
         <div className="relative flex items-center justify-center">
           <span className={cn(isLoading && 'invisible')}>{label}</span>
