@@ -1,17 +1,21 @@
 'use client';
-import { ElementRef, useMemo, useRef, useState } from 'react';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import CustomFeature from './_components/CustomFeature';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import CategoryBox from './_components/CategoryBox';
+import DroppableBox from './_components/DroppableBox';
+import { ElementRef, useRef, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
-import ProductBox from './_components/ProductBox';
+import { inferRouterOutputs } from '@trpc/server';
+import { AppRouter } from '@/server/routers/_app';
 import { Button } from '@/components/ui/button';
 import { useEventListener } from 'usehooks-ts';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { errorToast } from '@/lib/utils';
-import { DndProvider } from 'react-dnd';
 import { toast } from 'sonner';
+
+type TPanelRouterOutput = inferRouterOutputs<AppRouter['panel']>;
+type TProducts = TPanelRouterOutput['getAllProducts'];
+type TCategories = TPanelRouterOutput['getAllCategories'];
 
 const CustomProductFeaturePage = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -19,17 +23,24 @@ const CustomProductFeaturePage = () => {
   const ref = useRef<ElementRef<'input'>>(null);
   const [newLabel, setNewLabel] = useState('');
 
-  const { data: features, isLoading: isFetching1, refetch } = trpc.panel.getCustomFeatues.useQuery();
-  const { mutate: createCustomFeature, isLoading: isCreating } = trpc.panel.createCustomFeature.useMutation();
+  const [products, setProducts] = useState<TProducts>();
+  const [categories, setCategories] = useState<TCategories>();
 
-  const { data: products, isLoading: isFetching2, refetch: refetchProducts } = trpc.panel.getAllProducts.useQuery();
   const {
-    data: categories,
-    isLoading: isFetching3,
-    refetch: refetchCategories,
-  } = trpc.panel.getAllCategories.useQuery();
+    data: features,
+    isLoading: featuresLoading,
+    refetch: refetchFeatues,
+  } = trpc.panel.getCustomFeatues.useQuery();
+  const { mutate: createCustomFeature, isLoading: isFeatureCreating } = trpc.panel.createCustomFeature.useMutation();
 
-  const onAddNew = () => {
+  const { isLoading: productsLoading, refetch: refetchProducts } = trpc.panel.getAllProducts.useQuery(undefined, {
+    onSuccess: (data) => setProducts(data),
+  });
+  const { isLoading: categoriesLoading, refetch: refetchCategories } = trpc.panel.getAllCategories.useQuery(undefined, {
+    onSuccess: (data) => setCategories(data),
+  });
+
+  const addNewFeature = () => {
     createCustomFeature(
       { label: newLabel },
       {
@@ -41,7 +52,7 @@ const CustomProductFeaturePage = () => {
               ref.current?.focus();
               ref.current?.select();
             });
-            refetch();
+            refetchFeatues();
           } else if (error) {
             errorToast();
           }
@@ -51,27 +62,161 @@ const CustomProductFeaturePage = () => {
     );
   };
 
-  const onKeyPress = (event: KeyboardEvent) => {
+  const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
-      onAddNew();
+      addNewFeature();
     }
   };
-  useEventListener('keypress', onKeyPress);
+  useEventListener('keypress', handleKeyPress);
 
-  const filteredCategories = useMemo(
-    () => categories?.filter((entry) => entry.label.toLowerCase().includes(categoryFilter)) ?? [],
-    [categoryFilter, categories],
-  );
-  const filteredProducts = useMemo(
-    () => products?.filter((entry) => entry.label.toLowerCase().includes(productFilter)) ?? [],
-    [productFilter, products],
-  );
+  const { mutate: addCustomFeatureToProduct } = trpc.panel.addCustomFeatureToProduct.useMutation();
+  const { mutate: removeCustomFeatureFromProduct } = trpc.panel.removeCustomFeatureFromProduct.useMutation();
 
-  if (isFetching1 || isFetching2 || isFetching3) return null;
-  const featureList: number[] = features?.map((entry) => entry.id) ?? [];
+  const { mutate: addCustomFeatureToCategory } = trpc.panel.addCustomFeatureToCategory.useMutation();
+  const { mutate: removeCustomFeatureFromCategory } = trpc.panel.removeCustomFeatureFromCategory.useMutation();
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (!event.over?.id) return;
+
+    const target = event.over.id.toString().split('-');
+    const targetMode = target[0] as 'CATEGORY' | 'PRODUCT';
+    const targetId = target[1];
+
+    const feature = event.active.data.current as any;
+    const featureId = feature.id as number;
+    const featureLabel = feature.label as string;
+
+    if (targetMode === 'CATEGORY') {
+      if (
+        categories
+          ?.find((category) => category.id === targetId)
+          ?.customFeatures.some((feature) => feature.id === featureId)
+      ) {
+        return toast.info(`"${featureLabel}" już istnieje`);
+      }
+      addCustomFeatureToCategory(
+        { categoryId: targetId, label: featureLabel },
+        {
+          onError: () => errorToast(),
+          onSuccess: ({ error, message, success }) => {
+            if (success) {
+              toast.success(message);
+            } else if (error) {
+              errorToast();
+              refetchCategories();
+            }
+          },
+        },
+      );
+      setCategories(
+        categories?.map((category) => {
+          if (category.id !== targetId) return category;
+          return {
+            ...category,
+            customFeatures: [
+              ...category.customFeatures,
+              {
+                id: featureId,
+                label: featureLabel,
+              },
+            ],
+          };
+        }),
+      );
+    } else if (targetMode === 'PRODUCT') {
+      if (
+        products?.find((product) => product.id === targetId)?.customFeatures.some((feature) => feature.id === featureId)
+      ) {
+        return toast.info(`"${featureLabel}" już istnieje`);
+      }
+      addCustomFeatureToProduct(
+        { productId: targetId, label: featureLabel },
+        {
+          onError: () => errorToast(),
+          onSuccess: ({ error, message, success }) => {
+            if (success) {
+              toast.success(message);
+            } else if (error) {
+              errorToast();
+              refetchProducts();
+            }
+          },
+        },
+      );
+      setProducts(
+        products?.map((product) => {
+          if (product.id !== targetId) return product;
+          return {
+            ...product,
+            customFeatures: [
+              ...product.customFeatures,
+              {
+                id: featureId,
+                label: featureLabel,
+              },
+            ],
+          };
+        }),
+      );
+    }
+  };
+
+  const handleFeatureDelete = (featureLabel: string, targetId: string, mode: 'CATEGORY' | 'PRODUCT') => {
+    if (mode === 'CATEGORY') {
+      removeCustomFeatureFromCategory(
+        { categoryId: targetId, label: featureLabel },
+        {
+          onError: () => errorToast(),
+          onSuccess: ({ error, message, success }) => {
+            if (success) {
+              toast.success(message);
+            } else if (error) {
+              errorToast();
+              refetchCategories();
+            }
+          },
+        },
+      );
+      setCategories(
+        categories?.map((category) => {
+          if (category.id !== targetId) return category;
+          return {
+            ...category,
+            customFeatures: category.customFeatures.filter((feature) => feature.label !== featureLabel),
+          };
+        }),
+      );
+    } else if (mode === 'PRODUCT') {
+      removeCustomFeatureFromProduct(
+        { productId: targetId, label: featureLabel },
+        {
+          onError: () => errorToast(),
+          onSuccess: ({ error, message, success }) => {
+            if (success) {
+              toast.success(message);
+            } else if (error) {
+              errorToast();
+              refetchProducts();
+            }
+          },
+        },
+      );
+      setProducts(
+        products?.map((product) => {
+          if (product.id !== targetId) return product;
+          return {
+            ...product,
+            customFeatures: product.customFeatures.filter((feature) => feature.label !== featureLabel),
+          };
+        }),
+      );
+    }
+  };
+
+  if (productsLoading || categoriesLoading || featuresLoading) return null;
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndContext onDragEnd={handleDragEnd}>
       <div className="flex flex-col space-y-4 w-full">
         <div>
           <h1 className="text-xl font-bold">Niestandardowe właściwości</h1>
@@ -83,15 +228,20 @@ const CustomProductFeaturePage = () => {
             <div className="flex gap-2 flex-wrap w-full">
               {features &&
                 features.map((feature) => (
-                  <CustomFeature key={feature.id} label={feature.label} id={feature.id} refetch={refetch} />
+                  <CustomFeature key={feature.id} label={feature.label} id={feature.id} refetch={refetchFeatues} />
                 ))}
             </div>
           </div>
           <div>
             <h2 className="text-lg font-semibold">Dodaj nową właściwość</h2>
             <div className="flex space-x-2 max-w-md">
-              <Input disabled={isCreating} value={newLabel} onChange={(e) => setNewLabel(e.target.value)} ref={ref} />
-              <Button disabled={isCreating} onClick={onAddNew}>
+              <Input
+                disabled={isFeatureCreating}
+                value={newLabel}
+                onChange={(e) => setNewLabel(e.target.value)}
+                ref={ref}
+              />
+              <Button disabled={isFeatureCreating} onClick={addNewFeature}>
                 Dodaj
               </Button>
             </div>
@@ -117,14 +267,14 @@ const CustomProductFeaturePage = () => {
                   />
                 </div>
                 <div className="my-4 flex flex-wrap gap-4">
-                  {filteredCategories.map((category) => (
-                    <CategoryBox
+                  {categories?.map((category) => (
+                    <DroppableBox
                       key={category.id}
                       id={category.id}
+                      mode="CATEGORY"
                       label={category.label}
                       features={category.customFeatures}
-                      allFeatures={featureList}
-                      refetch={refetchCategories}
+                      onFeatureDelete={(featureLabel) => handleFeatureDelete(featureLabel, category.id, 'CATEGORY')}
                     />
                   ))}
                 </div>
@@ -141,14 +291,14 @@ const CustomProductFeaturePage = () => {
                   />
                 </div>
                 <div className="my-4 flex flex-wrap gap-4">
-                  {filteredProducts.map((product) => (
-                    <ProductBox
+                  {products?.map((product) => (
+                    <DroppableBox
                       key={product.id}
                       id={product.id}
+                      mode="PRODUCT"
                       label={product.label}
                       features={product.customFeatures}
-                      allFeatures={featureList}
-                      refetch={refetchProducts}
+                      onFeatureDelete={(featureLabel) => handleFeatureDelete(featureLabel, product.id, 'PRODUCT')}
                     />
                   ))}
                 </div>
@@ -157,7 +307,7 @@ const CustomProductFeaturePage = () => {
           </div>
         </div>
       </div>
-    </DndProvider>
+    </DndContext>
   );
 };
 
