@@ -346,6 +346,7 @@ model User {
 
   wishList   WishList? @relation(fields: [wishListId], references: [id])
   wishListId String?
+  createdAt  DateTime  @default(now())
 }
 
 model VerificationToken {

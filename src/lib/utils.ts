@@ -78,3 +78,7 @@ export const nextPaymentStep = (currentStatus: PaymentStatus): ReturnType<typeof
   }
   return null;
 };
+
+export const pad = (number: number) => {
+  return number.toString().padStart(2, '0');
+};

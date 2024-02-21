@@ -1,8 +1,10 @@
+import { endOfMonth, endOfYear, format, getDaysInMonth, getMonth, startOfMonth, startOfYear } from 'date-fns';
 import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS } from '@/utils/constans';
 import { PanelVariantProductValidator } from '@/lib/validators/panel';
 import { panelProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
+import { pad } from '@/lib/utils';
 import { z } from 'zod';
 
 type TErrorStatus = {
@@ -757,6 +759,101 @@ export const panelRouter = router({
     const feature = await prisma.customFeature.findMany();
 
     return feature;
+  }),
+  getStatistics: panelProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    const now = new Date();
+
+    const firstDay = startOfMonth(now);
+    const lastDay = endOfMonth(now);
+    const yearStart = startOfYear(now);
+    const yearEnd = endOfYear(now);
+    const daysThisMonth = Array.from(Array(getDaysInMonth(now)).keys());
+    const thisMonth = getMonth(now) + 1;
+    const thisYear = format(now, 'yy');
+
+    const payments = await prisma.payment.findMany({
+      where: {
+        createdAt: {
+          gte: firstDay,
+          lte: lastDay,
+        },
+      },
+      select: {
+        productsPrice: true,
+        createdAt: true,
+      },
+    });
+    const users = await prisma.user.findMany({
+      where: {
+        createdAt: {
+          gte: firstDay,
+          lte: lastDay,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+    });
+    const yearlyPayments = await prisma.payment.findMany({
+      where: {
+        createdAt: {
+          gte: yearStart,
+          lte: yearEnd,
+        },
+      },
+      select: {
+        createdAt: true,
+        productsPrice: true,
+      },
+    });
+
+    type TStatsData = { label: string; value: number }[];
+    const ordersThisMonth: TStatsData = [];
+    const earningsThisMonth: TStatsData = [];
+    const usersThisMonth: TStatsData = [];
+    const yearlyEarnings: TStatsData = [];
+
+    for (let i = 1; i <= 12; i++) {
+      const ordersThisMonth = yearlyPayments.filter((payment) => payment.createdAt.getMonth() + 1 === i);
+      const earnings = ordersThisMonth.reduce((acc, curr) => (acc += curr.productsPrice), 0);
+      yearlyEarnings.push({
+        label: `${pad(i)}.${thisYear}`,
+        value: earnings,
+      });
+    }
+
+    for (const entry in daysThisMonth) {
+      const day = parseInt(entry) + 1;
+
+      const ordersThisDay = payments.filter((payment) => payment.createdAt.getDate() === day);
+      const usersThisDay = users.filter((user) => user.createdAt.getDate() === day);
+
+      const orderCount = ordersThisDay.length;
+      const usersCount = usersThisDay.length;
+      const earnings = ordersThisDay.reduce((acc, curr) => (acc += curr.productsPrice), 0);
+
+      ordersThisMonth.push({
+        label: `${pad(day)}.${pad(thisMonth)}`,
+        value: orderCount,
+      });
+      earningsThisMonth.push({
+        label: `${pad(day)}.${pad(thisMonth)}`,
+        value: earnings,
+      });
+      usersThisMonth.push({
+        label: `${pad(day)}.${pad(thisMonth)}`,
+        value: usersCount,
+      });
+    }
+
+    return {
+      ordersThisMonth,
+      earningsThisMonth,
+      usersThisMonth,
+      yearlyEarnings,
+    };
   }),
 });
 
