@@ -63,6 +63,7 @@ NegativeFinish	Payment Channel has refused transfer of funds. This is a final st
 */
 
 export type TPaymentStatusGateway200 = {
+  statusCode: 200;
   id: string;
   paymentChannel: string;
   amount: {

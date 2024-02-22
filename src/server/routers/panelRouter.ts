@@ -1,10 +1,11 @@
+import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS, TOrderStatus } from '@/utils/constans';
 import { endOfMonth, endOfYear, format, getDaysInMonth, getMonth, startOfMonth, startOfYear } from 'date-fns';
-import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS } from '@/utils/constans';
 import { PanelVariantProductValidator } from '@/lib/validators/panel';
+import { getNextPaymentSteps, pad } from '@/lib/utils';
+import { getTransactionStatus } from '../payments';
 import { panelProcedure, router } from '../trpc';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
-import { pad } from '@/lib/utils';
 import { z } from 'zod';
 
 type TErrorStatus = {
@@ -897,6 +898,88 @@ export const panelRouter = router({
 
     return orders;
   }),
+  getOrder: panelProcedure.input(z.object({ cashbillId: z.string().min(1) })).query(async ({ ctx, input }) => {
+    const { cashbillId } = input;
+    const { prisma } = ctx;
+
+    const order = await prisma.payment.findUnique({
+      where: { cashbillId },
+      include: {
+        products: {
+          include: {
+            originalProduct: {
+              select: {
+                link: true,
+                enabled: true,
+              },
+            },
+          },
+        },
+        shipping: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return order;
+  }),
+  verifyOrder: panelProcedure.input(z.object({ cashbillId: z.string().min(1) })).mutation(async ({ input }) => {
+    const { cashbillId } = input;
+
+    // TODO Test
+    const payment = await getTransactionStatus(cashbillId, 'TEST');
+
+    if (payment.statusCode === 200) {
+      const { amount, personalData, requestedAmount, status } = payment;
+      return { success: true, amount, personalData, requestedAmount, status };
+    }
+    return { error: true, message: payment.errorMessage };
+  }),
+  changeOrderStatus: panelProcedure
+    .input(z.object({ cashbillId: z.string().min(1), nextStatus: z.custom<TOrderStatus>(), sendMail: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const { cashbillId, nextStatus, sendMail } = input;
+      const { prisma } = ctx;
+
+      try {
+        const currentStatus = (
+          await prisma.payment.findUnique({
+            where: { cashbillId },
+            select: { status: true },
+          })
+        )?.status;
+        if (!currentStatus) {
+          return { error: true, message: 'Wystąpił błąd!' };
+        }
+
+        const possibleSteps = getNextPaymentSteps(currentStatus);
+        const canChange = possibleSteps.find((entry) => entry.key === nextStatus);
+
+        if (!canChange) {
+          return { error: true, message: 'Nie udało się zmienić statusu!' };
+        }
+
+        await prisma.payment.update({
+          where: { cashbillId },
+          data: {
+            status: canChange.key,
+          },
+        });
+
+        if (sendMail) {
+        }
+        // TODO : Send mail
+
+        return { success: true, message: 'Status zmieniony!' };
+      } catch {
+        return { error: true, message: 'Wystąpił błąd!' };
+      }
+    }),
 });
 
-// TODO secure
+// TODO secure route + custom

@@ -415,3 +415,5 @@ const OrderPage = () => {
 };
 
 export default OrderPage;
+
+// TODO https://developers.google.com/maps/documentation/javascript/place-autocomplete?hl=pl

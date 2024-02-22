@@ -30,7 +30,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 type Order = {
-  id: bigint;
+  id: string;
   date: Date;
   amount: number;
   userEmail: string;
@@ -129,12 +129,11 @@ const columns: ColumnDef<Order>[] = [
     id: 'actions',
     header: 'Szczegóły',
     cell: ({ row }) => {
-      // TODO ID link
       const order = row.original;
 
       return (
         <Button asChild size="icon" variant="secondary">
-          <Link href="/">
+          <Link href={`/panel/zamowienia/${order.id}`}>
             <FaExternalLinkAlt className="h-4 w-4" />
           </Link>
         </Button>

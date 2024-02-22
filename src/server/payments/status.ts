@@ -49,7 +49,7 @@ export const _getTransactionStatus = async (
     if (response.body) {
       if (response.status === 200) {
         const data = (await response.json()) as TPaymentStatusGateway200;
-        return data;
+        return { ...data, statusCode: 200 };
       } else if (response.status === 400) {
         const data = (await response.json()) as TPaymentGateway400;
         return data;

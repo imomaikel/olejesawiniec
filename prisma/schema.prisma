@@ -334,6 +334,7 @@ model User {
   accounts      Account[]
   basket        Basket?
 
+  // TODO
   email        String?   @unique
   firstName    String?
   surname      String?

@@ -1,4 +1,4 @@
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus, ShippingType } from '@prisma/client';
 import { type ClassValue, clsx } from 'clsx';
 import { formatRelative } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
@@ -78,7 +78,48 @@ export const nextPaymentStep = (currentStatus: PaymentStatus): ReturnType<typeof
   }
   return null;
 };
+export const getNextPaymentSteps = (
+  currentStatus: PaymentStatus,
+): { key: PaymentStatus; label: ReturnType<typeof translatePaymentStatus> }[] => {
+  const data: ReturnType<typeof getNextPaymentSteps> = [
+    {
+      key: 'Order_processing',
+      label: 'Zamówienie w realizacji',
+    },
+    {
+      key: 'Order_ready',
+      label: 'Zamówienie gotowe do wysyłki',
+    },
+    {
+      key: 'Order_sent',
+      label: 'Zamówienie wysłane',
+    },
+    {
+      key: 'Order_finished',
+      label: 'Zamówienie zrealizowane',
+    },
+  ];
+  if (currentStatus === 'PositiveFinish') {
+    return data;
+  }
+  if (currentStatus === 'Order_processing') {
+    return data.slice(1);
+  }
+  if (currentStatus === 'Order_ready') {
+    return data.slice(2);
+  }
+  if (currentStatus === 'Order_sent') {
+    return data.slice(3);
+  }
+
+  return [];
+};
 
 export const pad = (number: number) => {
   return number.toString().padStart(2, '0');
+};
+
+export const translateShippingMethod = (method: ShippingType) => {
+  if (method === 'COURIER') return 'Kurier';
+  if (method === 'INPOST') return 'Paczkomat';
 };
