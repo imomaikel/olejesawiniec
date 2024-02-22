@@ -1,11 +1,13 @@
 'use client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import FloatingProduct from './_components/FloatingProduct';
 import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
+import { IoWarning } from 'react-icons/io5';
 import Opinion from './_components/Opinion';
 import { useMemo, useState } from 'react';
 
@@ -36,6 +38,11 @@ const ProductPage = () => {
     () => product?.variants.find(({ id }) => id === selectedVariantId) ?? null,
     [selectedVariantId, product?.variants],
   );
+  const { isLowStock, isOutOfStock } = useMemo(() => {
+    const isOutOfStock = product?.variants.some((entry) => !entry.stock);
+    const isLowStock = product?.variants.some((entry) => entry.stock >= 1 && entry.stock <= 2);
+    return { isOutOfStock, isLowStock };
+  }, [product?.variants]);
 
   if (!product && !isLoading) {
     errorToast('Produkt nie istnieje!');
@@ -78,7 +85,7 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0">
+    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0 border">
       <FloatingProduct
         productName={label}
         imageUrls={photos}
@@ -89,47 +96,58 @@ const ProductPage = () => {
         variants={variants}
         onSelect={(variantId) => setSelectedVariantId(variantId)}
       />
-      <div className="mx-24 hidden lg:block" />
-      <div className="w-full max-w-lg relative mx-auto lg:mx-0">
+      <div className="2xl:mx-24 lg:mx-16 hidden lg:block" />
+      <div className="w-full max-w-2xl lg:max-w-xl relative mx-auto lg:mx-0">
         {/* Title */}
         <div className="mb-1">
           <h1 className="text-3xl font-bold">Szczegóły produktu</h1>
         </div>
 
-        {/* TODO */}
-        {/* No Stock */}
-        {/* <Alert variant='destructive' className='my-2'>
-<IoWarning className='h-8 w-8' />
-<AlertTitle className='ml-2'>Uwaga!</AlertTitle>
-<AlertDescription className='ml-2'>
-Pojemności na czerwono nie są aktualnie dostępne. Możesz dodać do
-listy życzeń i otrzymać e-mail gdy będzie dostępny ponownie.
-</AlertDescription>
-</Alert> */}
-        {/* Low Stock */}
-        {/* <Alert variant='warning' className='my-2'>
-<IoWarning className='h-8 w-8' />
-<AlertTitle className='ml-2'>Uwaga!</AlertTitle>
-<AlertDescription className='ml-2'>
-Pojemności na pomarańczowo są na wyczerpaniu.
-</AlertDescription>
-</Alert> */}
+        {isLowStock && (
+          <Alert variant="warning" className="my-2">
+            <IoWarning className="h-8 w-8" />
+            <AlertTitle className="ml-2">Uwaga!</AlertTitle>
+            <AlertDescription className="ml-2">Pojemności na pomarańczowo są na wyczerpaniu.</AlertDescription>
+          </Alert>
+        )}
+
+        {isOutOfStock && (
+          <Alert variant="destructive" className="my-2">
+            <IoWarning className="h-8 w-8" />
+            <AlertTitle className="ml-2">Uwaga!</AlertTitle>
+            <AlertDescription className="ml-2">
+              Pojemności na czerwono nie są aktualnie dostępne. Możesz dodać je do listy życzeń i otrzymać e-mail gdy
+              będą dostępny ponownie.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Size */}
         <div className="mt-2 flex flex-col">
           <div className="flex lg:flex-row flex-col lg:space-x-2">
-            <div className="tracking-wide font-medium">Dostępne w pojemnościach</div>
-            <div className="space-x-2">
-              {variants.map((variant) => (
-                <Badge
-                  key={`${variant.price}${variant.capacity}`}
-                  className="cursor-pointer"
-                  // TODO stock colors
-                >
-                  {variant.capacity}
-                  {variant.unit}
-                </Badge>
-              ))}
+            <div className="flex flex-col">
+              <div className="tracking-wide font-medium">Dostępne w pojemnościach</div>
+              <div className="text-muted-foreground font-medium text-right">Stan magazynowy</div>
+            </div>
+            <div className="flex flex-wrap space-x-2">
+              {variants.map((variant) => {
+                const outOutStock = !variant.stock;
+                const lowStock = variant.stock >= 1 && variant.stock <= 2;
+                const stock = !outOutStock && !lowStock;
+
+                return (
+                  <div key={`${variant.price}${variant.capacity}`} className="flex flex-col items-center">
+                    <Badge
+                      className="cursor-pointer"
+                      variant={stock ? 'default' : lowStock ? 'warning' : 'destructive'}
+                    >
+                      {variant.capacity}
+                      {variant.unit}
+                    </Badge>
+                    <span className="text-muted-foreground text-sm">({variant.stock})</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
           {selectedVariant && (
