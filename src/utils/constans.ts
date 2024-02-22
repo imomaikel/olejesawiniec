@@ -1,17 +1,24 @@
 import { FaShopify, FaChartLine } from 'react-icons/fa6';
 import { MdOutlineDesignServices } from 'react-icons/md';
 import { BiSolidShoppingBags } from 'react-icons/bi';
+import { PaymentStatus } from '@prisma/client';
 import { RiTodoLine } from 'react-icons/ri';
 import { FaHashtag } from 'react-icons/fa';
 import { TiPlus } from 'react-icons/ti';
 import { FaEdit } from 'react-icons/fa';
 
-export const TStatuses = [
-  { value: 'Submitted', label: 'Złożone', color: 'black' },
-  { value: 'In progress', label: 'W realizacji', color: '#3c40c6' },
-  { value: 'Shipped', label: 'Wysłane', color: '#8e44ad' },
-  { value: 'Awaiting pickup', label: 'Oczekuje na odbiór', color: '#8e44ad' },
-  { value: 'Fulfilled', label: 'Zrealizowane', color: 'hsl(var(--primary))' },
+export const TStatuses: {
+  value: PaymentStatus;
+  label: string;
+  color: string;
+}[] = [
+  { value: 'PositiveFinish', label: 'Złożone', color: 'black' },
+  { value: 'Order_processing', label: 'W realizacji', color: '#3c40c6' },
+  { value: 'Order_ready', label: 'Gotowe do wysyłki', color: '#8e44ad' },
+  { value: 'Order_sent', label: 'Wysłane', color: '#8e44ad' },
+  { value: 'Order_finished', label: 'Zrealizowane', color: 'hsl(var(--primary))' },
+  { value: 'PreStart', label: 'Płatność nierozpoczęta', color: '#ff6b81' },
+  { value: 'Start', label: 'Płatność w trakcie', color: '#ff6b81' },
 ] as const;
 export type TOrderStatus = (typeof TStatuses)[number]['value'];
 

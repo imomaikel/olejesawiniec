@@ -855,6 +855,48 @@ export const panelRouter = router({
       yearlyEarnings,
     };
   }),
+  getOrders: panelProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    const orders = (
+      await prisma.payment.findMany({
+        where: {
+          status: {
+            in: [
+              'PositiveFinish',
+              'Order_processing',
+              'Order_ready',
+              'Order_sent',
+              'Order_finished',
+              'PreStart',
+              'Start',
+            ],
+          },
+        },
+        select: {
+          cashbillId: true,
+          createdAt: true,
+          productsPrice: true,
+          status: true,
+          totalProducts: true,
+          user: {
+            select: {
+              email: true,
+            },
+          },
+        },
+      })
+    ).map((order) => ({
+      id: order.cashbillId,
+      date: order.createdAt,
+      amount: order.productsPrice,
+      userEmail: order.user.email ?? 'Błąd',
+      status: order.status,
+      productCount: order.totalProducts,
+    }));
+
+    return orders;
+  }),
 });
 
 // TODO secure

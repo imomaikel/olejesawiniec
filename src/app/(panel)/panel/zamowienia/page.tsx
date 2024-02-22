@@ -1,15 +1,4 @@
 'use client';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import OrderLabel, { TOrderStatus } from './_components/OrderLabel';
-import { FaExternalLinkAlt } from 'react-icons/fa';
-import { Button } from '@/components/ui/button';
-import { LuArrowUpDown } from 'react-icons/lu';
-import { Input } from '@/components/ui/input';
-import { TStatuses } from '@/utils/constans';
-import { formatPrice, relativeDate } from '@/lib/utils';
-import { format } from 'date-fns';
-import { useState } from 'react';
-import Link from 'next/link';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -27,16 +16,27 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import OrderLabel, { TOrderStatus } from './_components/OrderLabel';
+import { formatPrice, relativeDate } from '@/lib/utils';
+import { trpc } from '@/components/providers/TRPC';
+import { FaExternalLinkAlt } from 'react-icons/fa';
+import { Button } from '@/components/ui/button';
+import { LuArrowUpDown } from 'react-icons/lu';
+import { Input } from '@/components/ui/input';
+import { TStatuses } from '@/utils/constans';
+import { format } from 'date-fns';
+import { useState } from 'react';
+import Link from 'next/link';
 
 type Order = {
-  id: string;
+  id: bigint;
   date: Date;
   amount: number;
   userEmail: string;
   status: TOrderStatus;
   productCount: number;
 };
-
 const columns: ColumnDef<Order>[] = [
   {
     accessorKey: 'id',
@@ -145,57 +145,20 @@ const columns: ColumnDef<Order>[] = [
   },
 ];
 
-const TEMP_DATE_2 = new Date();
-TEMP_DATE_2.setDate(TEMP_DATE_2.getDate() - 10);
-const orders: Order[] = [
-  {
-    id: '1',
-    amount: 20,
-    date: new Date(),
-    productCount: 2,
-    status: 'Awaiting pickup',
-    userEmail: 'user1@gmail.com',
-  },
-  {
-    id: '5',
-    amount: 200,
-    date: new Date(),
-    productCount: 2,
-    status: 'Shipped',
-    userEmail: 'user5@gmail.com',
-  },
-  {
-    id: '2',
-    amount: 50,
-    date: TEMP_DATE_2,
-    productCount: 3,
-    status: 'Fulfilled',
-    userEmail: 'user2@gmail.com',
-  },
-  {
-    id: '4',
-    amount: 49.99,
-    date: TEMP_DATE_2,
-    productCount: 4,
-    status: 'In progress',
-    userEmail: 'user4@gmail.com',
-  },
-  {
-    id: '3',
-    amount: 50.01,
-    date: new Date(),
-    productCount: 1,
-    status: 'Submitted',
-    userEmail: 'user3@gmail.com',
-  },
-];
-
 const PanelOrdersPage = () => {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     { id: 'status', value: TStatuses.map(({ value }) => value) },
   ]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ id: false });
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  trpc.panel.getOrders.useQuery(undefined, {
+    onSuccess: (data) => {
+      setOrders(data);
+    },
+  });
 
   const table = useReactTable({
     data: orders,
@@ -287,8 +250,8 @@ const PanelOrdersPage = () => {
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md border w-full ">
-        <Table>
+      <div className="w-full relative rounded-md border md:max-w-lg lg:max-w-3xl xl:max-w-none">
+        <Table className="min-w-[800px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -314,7 +277,7 @@ const PanelOrdersPage = () => {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Brak wyników z danymi filtrami.
+                  Brak wyników.
                 </TableCell>
               </TableRow>
             )}
