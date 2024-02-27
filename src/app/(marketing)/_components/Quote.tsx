@@ -14,8 +14,7 @@ const Quote = () => {
           viewport={{ once: true }}
           className="text-2xl md:text-4xl font-bold text-center !md:leading-[50px] leading-[35px] "
         >
-          Kuchnia Jest Naszym Najbliższym Szpitalem, A Zdrowe Jedzenie To Recepta Na Długie, Pełne Energii Życie. To Nie
-          Tylko Posiłki, To Inwestycja W Swoje Dobre Samopoczucie I Harmonię Z Naturą
+          Właściwe odżywianie będzie medycyną jutra.
         </motion.h3>
       </div>
       <motion.h4
@@ -25,7 +24,7 @@ const Quote = () => {
         viewport={{ once: true }}
         className="text-primary text-xl md:text-3xl font-bold mt-10 mb-5"
       >
-        Jamie Oliver
+        Linus Pauling
       </motion.h4>
       <motion.p
         variants={slideIn('top', 'spring', 0.75, 1)}
@@ -34,7 +33,7 @@ const Quote = () => {
         viewport={{ once: true }}
         className="text-muted-foreground text-center"
       >
-        szef kuchni i aktywista kulinarnej świadomości
+        współtwórca nauki o chorobach genetycznych
       </motion.p>
       <div className="absolute w-screen h-full bg-black -z-10" />
     </ContentWrapper>

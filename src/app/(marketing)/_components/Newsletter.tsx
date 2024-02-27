@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 
+// TODO
 const Newsletter = () => {
   return (
     <div className="relative h-auto">
@@ -16,9 +17,7 @@ const Newsletter = () => {
                 placeholder="Podaj swój adres e-mail"
               />
             </div>
-            <Button className="h-full w-2/5 rounded-full shadow-md shadow-primary hidden lg:block text-black">
-              Zapisz
-            </Button>
+            <Button className="h-full w-2/5 rounded-full hidden lg:block text-black">Zapisz</Button>
           </div>
           <Button className="rounded-full shadow-md shadow-primary lg:hidden text-black" size="2xl">
             Zapisz

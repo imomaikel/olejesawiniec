@@ -85,7 +85,7 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0 border">
+    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0">
       <FloatingProduct
         productName={label}
         imageUrls={photos}
@@ -127,7 +127,7 @@ const ProductPage = () => {
           <div className="flex lg:flex-row flex-col lg:space-x-2">
             <div className="flex flex-col">
               <div className="tracking-wide font-medium">Dostępne w pojemnościach</div>
-              <div className="text-muted-foreground font-medium text-right">Stan magazynowy</div>
+              <div className="text-muted-foreground font-medium lg:text-right">Stan magazynowy</div>
             </div>
             <div className="flex flex-wrap space-x-2">
               {variants.map((variant) => {
@@ -176,7 +176,7 @@ const ProductPage = () => {
         {/* Description */}
         <div className={cn('mt-6', !product.description && 'hidden')}>
           <h1 className="text-3xl font-bold">Opis produktu</h1>
-          <p>{product.description}</p>
+          <p className="whitespace-pre-wrap">{product.description}</p>
           {/* TODO */}
           {/* <ul>
 <li className='flex space-x-2'>

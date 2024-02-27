@@ -225,6 +225,26 @@ export const shopRouter = router({
 
       return { error: true };
     }),
+  getLandingPageProducts: publicProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    // TODO Order by
+    const products = await prisma.product.findMany({
+      where: {
+        enabled: true,
+      },
+      select: {
+        lowestPrice: true,
+        label: true,
+        mainPhoto: true,
+        link: true,
+        details: true,
+      },
+      take: 10,
+    });
+
+    return products;
+  }),
 });
 
 // TODO ZOD CUSTOM
