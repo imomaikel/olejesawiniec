@@ -5,11 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { trpc } from '@/components/providers/TRPC';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SyncLoader } from 'react-spinners';
+import { useRef } from 'react';
 import Link from 'next/link';
 
 const PaymentPage = () => {
   const router = useRouter();
   const { cashbillId } = useParams<{ cashbillId: string }>();
+  const enableRefetch = useRef(false);
 
   const { data: payment, isLoading } = trpc.basket.paymentInfo.useQuery(
     {
@@ -19,6 +22,7 @@ const PaymentPage = () => {
       refetchOnWindowFocus: false,
       retry: 1,
       enabled: !!cashbillId,
+      refetchInterval: enableRefetch.current ? 2000 : false,
     },
   );
 
@@ -28,6 +32,12 @@ const PaymentPage = () => {
   if (!payment) {
     router.replace('/sklep');
     return;
+  }
+
+  if (payment.status === 'Start' || payment.status === 'PreStart') {
+    enableRefetch.current = true;
+  } else {
+    enableRefetch.current = false;
   }
 
   const productsPrice = payment.products.reduce((acc, curr) => (acc += curr.productQuantity * curr.productPrice), 0);
@@ -42,6 +52,12 @@ const PaymentPage = () => {
       <div>
         <h2 className="text-2xl font-semibold">Status zamówienia</h2>
         <Badge className="px-6 py-1">{translatePaymentStatus(payment.status)}</Badge>
+        {enableRefetch.current && (
+          <div className="my-6 flex items-center space-x-2">
+            <SyncLoader color="#4cd137" />
+            <p className="font-semibold animate-pulse">Przetwarzanie zamówienia</p>
+          </div>
+        )}
         {nextPaymentStatus && (
           <div className="mt-2">
             <span>
