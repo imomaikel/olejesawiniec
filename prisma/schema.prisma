@@ -357,3 +357,12 @@ model VerificationToken {
 
   @@unique([email, token])
 }
+
+model Newsletter {
+  id BigInt @id @default(autoincrement())
+
+  email    String  @unique @db.VarChar(64)
+  verified Boolean @default(false)
+
+  createdAt DateTime @default(now())
+}
