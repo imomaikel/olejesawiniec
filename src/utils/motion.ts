@@ -1,13 +1,14 @@
 type TTransition = 'decay' | 'spring' | 'keyframes' | 'tween' | 'inertia';
 
-export const container = {
-  hidden: {},
+export const staggerContainer = (delay: number = 0.25) => ({
+  hidden: { opacity: 0 },
   show: {
+    opacity: 1,
     transition: {
-      delayChildren: 0.5,
+      staggerChildren: delay,
     },
   },
-};
+});
 
 export const zoomOut = (delay: number, duration: number) => ({
   hidden: {
@@ -25,6 +26,13 @@ export const zoomOut = (delay: number, duration: number) => ({
     },
   },
 });
+
+export const itemSlide = (y: number, x: number) => {
+  return {
+    hidden: { opacity: 0, y, x },
+    show: { opacity: 1, y: 0, x: 0 },
+  };
+};
 
 export const slideIn = (
   direction: 'top' | 'right' | 'bottom' | 'left',
@@ -50,3 +58,20 @@ export const slideIn = (
     },
   },
 });
+
+export const opacity = {
+  hidden: {
+    opacity: [1, 0],
+    display: ['none'],
+    transition: {
+      duration: 1,
+    },
+  },
+  show: {
+    display: 'block',
+    opacity: [0, 1],
+    transition: {
+      duration: 0.5,
+    },
+  },
+};

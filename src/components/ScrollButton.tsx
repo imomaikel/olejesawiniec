@@ -35,7 +35,7 @@ const ScrollButton = ({ trackElementIdOrHeight }: TScrollButton) => {
   };
 
   return (
-    <div className="fixed right-3 bottom-3 md:right-6 md:bottom-6 opacity-75 cursor-pointer z-50" onClick={scrollToTop}>
+    <div className="fixed right-3 bottom-3 md:right-6 md:bottom-6 opacity-75 cursor-pointer z-10" onClick={scrollToTop}>
       <div className="w-10 h-10 md:w-12 md:h-12 bg-black rounded-full">
         <FaArrowAltCircleUp className="w-10 h-10 md:w-12 md:h-12 text-white" />
       </div>

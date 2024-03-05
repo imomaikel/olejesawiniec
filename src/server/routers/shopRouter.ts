@@ -233,10 +233,37 @@ export const shopRouter = router({
   getLandingPageProducts: publicProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
-    // TODO Order by
+    // TODO PERF
     const products = await prisma.product.findMany({
       where: {
         enabled: true,
+        mainPhoto: {
+          not: null,
+        },
+        lowestPrice: {
+          not: null,
+        },
+        category: {
+          AND: [
+            {
+              label: {
+                contains: 'olej',
+              },
+            },
+            {
+              label: {
+                contains: 'zimno',
+              },
+            },
+          ],
+        },
+        details: {
+          some: {
+            id: {
+              not: undefined,
+            },
+          },
+        },
       },
       select: {
         lowestPrice: true,
@@ -244,6 +271,12 @@ export const shopRouter = router({
         mainPhoto: true,
         link: true,
         details: true,
+        variants: true,
+      },
+      orderBy: {
+        paymentProducts: {
+          _count: 'desc',
+        },
       },
       take: 10,
     });
