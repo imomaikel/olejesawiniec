@@ -68,6 +68,7 @@ const Hero = () => {
                 onClick={() => setRandomProductOpened(true)}
                 className="uppercase rounded-full text-[16px] hover:bg-black/90 transition-all shadow-md shadow-primary hover:shadow-black/90"
                 size="2xl"
+                id="randomProduct"
               >
                 Właściwości Oleju
               </Button>

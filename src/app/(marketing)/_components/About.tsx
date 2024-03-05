@@ -20,6 +20,7 @@ const About = () => {
             className="max-w-md"
             bigTitle="Odkryj Unikalne Doznania Kulinarne Z Naszymi Olejami"
             smallTitle="Olejarnia Sawiniec"
+            buttonOpenDetails
             buttonText="Właściwości zdrowotne"
             description="W Olejarni Sawiniec tworzymy wyjątkowe oleje ręcznie robione,
 korzystając wyłącznie z najwyższej jakości surowców. Nasza pasja do
