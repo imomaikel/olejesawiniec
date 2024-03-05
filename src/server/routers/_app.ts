@@ -25,6 +25,11 @@ export const appRouter = router({
           },
         },
       },
+      orderBy: {
+        product: {
+          _count: 'desc',
+        },
+      },
     });
 
     return categories ?? null;

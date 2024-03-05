@@ -1,7 +1,7 @@
 'use client';
 import { cn, errorToast, formatPrice, successToast } from '@/lib/utils';
+import { MdOutlineImageNotSupported } from 'react-icons/md';
 import { trpc } from '@/components/providers/TRPC';
-import { FaBottleDroplet } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ElementRef, useRef } from 'react';
@@ -49,7 +49,7 @@ const WishListItem = ({ capacity, price, productImage, productLabel, productLink
           {productImage ? (
             <Image src={productImage} width={60} height={60} alt={productLabel} />
           ) : (
-            <FaBottleDroplet className="h-16 w-16" />
+            <MdOutlineImageNotSupported className="h-16 w-16" />
           )}
         </div>
         <div className="flex flex-col space-y-2 w-full">

@@ -73,10 +73,13 @@ const Products = () => {
   return (
     <div className="flex flex-col w-full space-y-8">
       <div className="flex items-center justify-between flex-col md:flex-row">
-        <h1 className="text-4xl font-bold">Nasze Produkty</h1>
+        <div className="flex flex-col">
+          <h1 className="text-4xl font-bold">Nasze Produkty</h1>
+          <p className="text-muted-foreground text-sm">Kliknij na produkt aby zobaczyć szczegóły.</p>
+        </div>
         <SortProducts />
       </div>
-      <div className="grid gap-5 2xl:gap-10 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 ">
+      <div className="flex flex-row flex-wrap gap-5 2xl:gap-10">
         {isLoading &&
           [...Array.from(Array(9).keys())].map((index) => <ShopProduct.Skeleton key={`skeleton-${index}`} />)}
         {products &&

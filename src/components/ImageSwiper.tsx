@@ -1,4 +1,5 @@
 'use client';
+import { MdOutlineImageNotSupported } from 'react-icons/md';
 import { FaArrowAltCircleLeft } from 'react-icons/fa';
 import { FaArrowCircleRight } from 'react-icons/fa';
 import { Dialog, DialogContent } from './ui/dialog';
@@ -12,7 +13,6 @@ import Link from 'next/link';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { FaBottleDroplet } from 'react-icons/fa6';
 
 type TImageSwiper = {
   urls: string[];
@@ -108,7 +108,7 @@ const ImageSwiper = ({ urls, alt, className, caption, captionLink, fullSizeOnCli
           {urls.length === 0 && (
             <SwiperSlide>
               <div className="h-full w-full flex items-center justify-center flex-col">
-                <FaBottleDroplet className="h-48 w-48" />
+                <MdOutlineImageNotSupported className="h-48 w-48" />
                 <span className="mt-1">Brak Zdjęcia</span>
               </div>
             </SwiperSlide>

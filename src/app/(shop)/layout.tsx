@@ -8,7 +8,7 @@ const ShopLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="flex flex-col min-h-screen justify-between">
       <div className="w-full max-w-screen-2xl mx-auto flex flex-col relative px-4 md:px-12">
         <Navbar
-          className="pt-4 px-3 pb-2 lg:pt-0 lg:px-0 lg:pb-0 fixed bg-background/60 lg:bg-background backdrop-blur-lg lg:backdrop-blur-0 left-0 lg:relative lg:mt-4"
+          className="pt-4 px-3 pb-2 lg:pt-0 lg:px-0 lg:pb-0 fixed bg-background/60 lg:bg-background backdrop-blur-lg lg:backdrop-blur-0 left-0 lg:relative lg:mt-4 z-50"
           textColor="black"
           topPadding={0}
         />

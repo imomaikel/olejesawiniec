@@ -1,12 +1,12 @@
 'use client';
 import { cn, errorToast, formatPrice, successToast } from '@/lib/utils';
 import ProductStatus from '../../../_components/ProductStatus';
+import { MdOutlineImageNotSupported } from 'react-icons/md';
 import { Separator } from '@/components/ui/separator';
 import ActionButton from '@/components/ActionButton';
 import { ElementRef, useRef, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
 import { Product, Variant } from '@prisma/client';
-import { FaBottleDroplet } from 'react-icons/fa6';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,7 +53,7 @@ const EditBox = ({ product, refetchProduct }: TEditBox) => {
         {product.mainPhoto ? (
           <Image src={product.mainPhoto} height={64} width={64} alt={product.label} />
         ) : (
-          <FaBottleDroplet className="h-16 w-16" />
+          <MdOutlineImageNotSupported className="h-16 w-16" />
         )}
       </div>
       <Separator orientation="vertical" className="mx-2 md:mx-4" />

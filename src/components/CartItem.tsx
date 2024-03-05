@@ -1,9 +1,9 @@
 'use client';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
+import { MdOutlineImageNotSupported } from 'react-icons/md';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { errorToast, formatPrice } from '@/lib/utils';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import { FaBottleDroplet } from 'react-icons/fa6';
 import { TBasketVariant } from '@/lib/types';
 import { BsCartDash } from 'react-icons/bs';
 import { useCart } from '@/hooks/use-cart';
@@ -135,7 +135,7 @@ const CartItem = ({ quantity, variant }: TBasketVariant) => {
             className="group-hover:scale-110 transition-transform"
           />
         ) : (
-          <FaBottleDroplet className="w-16 h-16" />
+          <MdOutlineImageNotSupported className="w-16 h-16" />
         )}
       </div>
       <div className="flex flex-1">

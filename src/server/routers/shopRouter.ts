@@ -48,7 +48,12 @@ export const shopRouter = router({
     const { prisma } = ctx;
 
     const products = await prisma.product.findMany({
-      where: { enabled: true },
+      where: {
+        enabled: true,
+        lowestPrice: {
+          gte: 1,
+        },
+      },
       include: {
         variants: true,
         tags: true,

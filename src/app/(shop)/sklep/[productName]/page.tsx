@@ -64,7 +64,7 @@ const ProductPage = () => {
   }
 
   const calcServing = (value: number, serving: number = 12) => {
-    const calculated = (value * serving) / 100;
+    const calculated = parseFloat(((value * serving) / 100).toFixed(2));
     return calculated;
   };
   const calcDietaryReference = (

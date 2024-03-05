@@ -195,19 +195,21 @@ const FloatingProduct = ({
           <h1 className="text-3xl font-bold">{productName}</h1>
         </div>
         {/* Feedback */}
-        <div className="flex items-center mb-1">
-          <div className="flex items-center mr-1">
-            {[...Array.from(Array(fullStars).keys())].map((index) => (
-              <IoStar key={`star-${index}`} className="text-orange-400" />
-            ))}
-            {[...Array.from(Array(notFullStars).keys())].map((index) => {
-              if (rating - fullStars >= 0.5 && index == 0)
-                return <IoStarHalf className="text-orange-400" key={`start-half-${index}`} />;
-              return <IoStarOutline key={`star-empty-${index}`} className="opacity-75" />;
-            })}
+        {ratingCount >= 1 && (
+          <div className="flex items-center mb-1">
+            <div className="flex items-center mr-1">
+              {[...Array.from(Array(fullStars).keys())].map((index) => (
+                <IoStar key={`star-${index}`} className="text-orange-400" />
+              ))}
+              {[...Array.from(Array(notFullStars).keys())].map((index) => {
+                if (rating - fullStars >= 0.5 && index == 0)
+                  return <IoStarHalf className="text-orange-400" key={`start-half-${index}`} />;
+                return <IoStarOutline key={`star-empty-${index}`} className="opacity-75" />;
+              })}
+            </div>
+            <p className="text-muted-foreground text-xs pt-1">na podstawie {ratingCount} ocen</p>
           </div>
-          <p className="text-muted-foreground text-xs pt-1">na podstawie {ratingCount} ocen</p>
-        </div>
+        )}
         {/* Image */}
         <div>
           <ImageSwiper

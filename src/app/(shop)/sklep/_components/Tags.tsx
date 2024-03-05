@@ -24,7 +24,7 @@ const Tags = () => {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const { data: tags, isLoading } = trpc.getTagList.useQuery();
+  const { data: tags, isLoading } = trpc.getTagList.useQuery(undefined, { refetchOnWindowFocus: false });
 
   if (isLoading) return <Tags.Skeleton />;
 
@@ -61,7 +61,7 @@ const Tags = () => {
         </Button>
       ) : (
         <Button className="w-full mt-3" variant="secondary" size="sm" onClick={() => setTagCount(6)}>
-          Pokaż mniej
+          Zwiń
         </Button>
       )}
       {/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px] opacity-75' /> */}
