@@ -37,6 +37,7 @@ const ProductsPreview = () => {
       <ContentWrapper className="bg-gray-100 relative">
         <div className="w-full flex justify-center flex-col items-center">
           <SectionInfo smallTitle="Wybrane Produkty" bigTitle="Oleje Zimnotłoczone" className="mb-12" />
+          <p className="text-muted-foreground text-sm md:hidden -translate-y-12">Kliknij na produkt, aby rozwinąć.</p>
 
           <motion.div
             variants={staggerContainer(0.15)}

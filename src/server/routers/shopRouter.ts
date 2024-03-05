@@ -236,6 +236,33 @@ export const shopRouter = router({
 
     return products;
   }),
+  getRandomProduct: publicProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    const products = await prisma.product.findMany({
+      where: {
+        enabled: true,
+        details: {
+          some: {
+            id: {
+              not: undefined,
+            },
+          },
+        },
+      },
+      select: {
+        label: true,
+        link: true,
+        details: true,
+        tags: true,
+        id: true,
+      },
+    });
+
+    const randomProduct = products[Math.floor(Math.random() * products.length)];
+
+    return randomProduct;
+  }),
 });
 
 // TODO ZOD CUSTOM

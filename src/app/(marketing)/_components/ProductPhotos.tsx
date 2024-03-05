@@ -22,6 +22,7 @@ const ProductPhotos = () => {
 starannie wyselekcjonowanych składników, co gwarantuje najwyższą jakość
 i unikalny smak."
           buttonText="Więcej"
+          buttonLink="#produkty"
         />
       </motion.div>
       <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row space-x-0 lg:space-x-3 max-w-7xl justify-center">

@@ -27,7 +27,7 @@ export default function Home() {
           <ProductPhotos />
         </section>
 
-        <section>
+        <section id="produkty">
           <ProductsPreview />
         </section>
 
