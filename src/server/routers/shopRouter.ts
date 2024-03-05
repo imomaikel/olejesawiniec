@@ -1,4 +1,5 @@
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
+import { getLandingPageProducts } from './cache';
 import { TBasketVariant } from '@/lib/types';
 import { z } from 'zod';
 
@@ -231,55 +232,7 @@ export const shopRouter = router({
       return { error: true };
     }),
   getLandingPageProducts: publicProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
-
-    // TODO PERF
-    const products = await prisma.product.findMany({
-      where: {
-        enabled: true,
-        mainPhoto: {
-          not: null,
-        },
-        lowestPrice: {
-          not: null,
-        },
-        category: {
-          AND: [
-            {
-              label: {
-                contains: 'olej',
-              },
-            },
-            {
-              label: {
-                contains: 'zimno',
-              },
-            },
-          ],
-        },
-        details: {
-          some: {
-            id: {
-              not: undefined,
-            },
-          },
-        },
-      },
-      select: {
-        lowestPrice: true,
-        label: true,
-        mainPhoto: true,
-        link: true,
-        details: true,
-        variants: true,
-      },
-      orderBy: {
-        paymentProducts: {
-          _count: 'desc',
-        },
-      },
-      take: 10,
-    });
+    const products = getLandingPageProducts();
 
     return products;
   }),
