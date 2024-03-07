@@ -66,6 +66,7 @@
   .richText ul,
   .richText ol {
     list-style: revert;
+    @apply pl-5 !my-1;
   }
   .richText a {
     text-decoration: underline;

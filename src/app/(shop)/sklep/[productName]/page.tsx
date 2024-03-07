@@ -187,7 +187,7 @@ const ProductPage = () => {
         {productDescription && (
           <div className="mt-6">
             <h1 className="text-3xl font-bold">Opis produktu</h1>
-            <div className="richText" dangerouslySetInnerHTML={{ __html: productDescription }} />
+            <div className="richText space-y-2" dangerouslySetInnerHTML={{ __html: productDescription }} />
             {/* TODO */}
             {/*
              <ul>
