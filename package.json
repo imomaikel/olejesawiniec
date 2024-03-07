@@ -38,6 +38,7 @@
     "clsx": "^2.0.0",
     "date-fns": "^3.0.6",
     "draft-js": "^0.11.7",
+    "draftjs-to-html": "^0.9.1",
     "framer-motion": "^10.16.16",
     "next": "14.0.4",
     "next-auth": "^5.0.0-beta.4",
@@ -64,6 +65,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/draft-js": "^0.11.18",
+    "@types/draftjs-to-html": "^0.8.4",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.14",
     "@types/react": "^18",

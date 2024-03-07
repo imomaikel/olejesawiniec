@@ -1,10 +1,10 @@
 'use client';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { errorToast } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { Button } from '@/components/ui/button';
 
 const Editor = dynamic(() => import('react-draft-wysiwyg').then((imported) => imported.Editor), { ssr: false });
 
@@ -33,14 +33,14 @@ const RichEditor = ({ defaultValue, onSave, className, isDisabled }: TRichEditor
   };
 
   const handleSave = () => {
-    const content = JSON.stringify(editorState.getCurrentContent());
+    const content = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     onSave(content);
   };
 
   return (
     <div className={className}>
       <Editor
-        editorClassName="border"
+        editorClassName="border max-h-[400px]"
         editorState={editorState}
         readOnly={isDisabled}
         onEditorStateChange={onEditorStateChange}
@@ -55,7 +55,6 @@ const RichEditor = ({ defaultValue, onSave, className, isDisabled }: TRichEditor
             'textAlign',
             'colorPicker',
             'link',
-            'embedded',
             'emoji',
             'remove',
             'history',

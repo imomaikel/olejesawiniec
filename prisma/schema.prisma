@@ -14,7 +14,7 @@ model Product {
   label         String          @unique
   link          String          @unique
   enabled       Boolean?        @default(false)
-  description   String?         @db.Text
+  description   String?         @db.LongText
   mainPhoto     String?
   extraPhotos   ExtraPhoto[]
   variants      Variant[]

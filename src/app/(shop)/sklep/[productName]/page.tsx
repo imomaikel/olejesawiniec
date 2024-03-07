@@ -9,6 +9,7 @@ import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
 import { IoWarning } from 'react-icons/io5';
 import Opinion from './_components/Opinion';
+import draftToHtml from 'draftjs-to-html';
 import { useMemo, useState } from 'react';
 
 const ProductPage = () => {
@@ -33,6 +34,15 @@ const ProductPage = () => {
       },
     },
   );
+
+  const productDescription = useMemo(() => {
+    if (!product || !product.description) return;
+    try {
+      const html = draftToHtml(JSON.parse(product.description));
+      return html;
+    } catch {}
+    return undefined;
+  }, [product]);
 
   const selectedVariant = useMemo(
     () => product?.variants.find(({ id }) => id === selectedVariantId) ?? null,
@@ -174,39 +184,43 @@ const ProductPage = () => {
           </ul>
         </div>
         {/* Description */}
-        <div className={cn('mt-6', !product.description && 'hidden')}>
-          <h1 className="text-3xl font-bold">Opis produktu</h1>
-          <p className="whitespace-pre-wrap">{product.description}</p>
-          {/* TODO */}
-          {/* <ul>
-<li className='flex space-x-2'>
-<span className='font-medium'>Zastosowanie:</span>
-<span className='text-muted-foreground'>lorem ipsum</span>
-</li>
-<li className='flex space-x-2'>
-<span className='font-medium'>Kraj pochodzenia:</span>
-<span className='text-muted-foreground'>lorem ipsum</span>
-</li>
-<li className='flex space-x-2'>
-<span className='font-medium'>Przechowywanie:</span>
-<span className='text-muted-foreground'>lorem ipsum</span>
-</li>
-<li className='flex space-x-2'>
-<span className='font-medium'>Opakowanie:</span>
-<span className='text-muted-foreground'>lorem ipsum</span>
-</li>
-<li className='flex space-x-2'>
-<span className='font-medium'>
-Termin przydatności do spożycia:
-</span>
-<span className='text-muted-foreground'>lorem ipsum</span>
-</li>
-<li className='flex space-x-2'>
-<span className='font-medium'>Producent:</span>
-<span className='text-muted-foreground'>lorem ipsum</span>
-</li>
-</ul> */}
-        </div>
+        {productDescription && (
+          <div className="mt-6">
+            <h1 className="text-3xl font-bold">Opis produktu</h1>
+            <div className="richText" dangerouslySetInnerHTML={{ __html: productDescription }} />
+            {/* TODO */}
+            {/*
+             <ul>
+            <li className='flex space-x-2'>
+            <span className='font-medium'>Zastosowanie:</span>
+            <span className='text-muted-foreground'>lorem ipsum</span>
+            </li>
+            <li className='flex space-x-2'>
+            <span className='font-medium'>Kraj pochodzenia:</span>
+            <span className='text-muted-foreground'>lorem ipsum</span>
+            </li>
+            <li className='flex space-x-2'>
+            <span className='font-medium'>Przechowywanie:</span>
+            <span className='text-muted-foreground'>lorem ipsum</span>
+            </li>
+            <li className='flex space-x-2'>
+            <span className='font-medium'>Opakowanie:</span>
+            <span className='text-muted-foreground'>lorem ipsum</span>
+            </li>
+            <li className='flex space-x-2'>
+            <span className='font-medium'>
+            Termin przydatności do spożycia:
+            </span>
+            <span className='text-muted-foreground'>lorem ipsum</span>
+            </li>
+            <li className='flex space-x-2'>
+            <span className='font-medium'>Producent:</span>
+            <span className='text-muted-foreground'>lorem ipsum</span>
+            </li>
+            </ul> 
+            */}
+          </div>
+        )}
         {/* Nutrition facts */}
         {nutritionFact && (
           <div className="mt-4">

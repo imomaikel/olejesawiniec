@@ -61,3 +61,13 @@
 .imageSwipeBar {
   @apply !bg-primary;
 }
+
+@layer base {
+  .richText ul,
+  .richText ol {
+    list-style: revert;
+  }
+  .richText a {
+    text-decoration: underline;
+  }
+}
