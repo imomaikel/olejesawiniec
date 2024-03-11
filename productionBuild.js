@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const EXCLUDE_DIRECTORIES = ['build', 'node_modules', '.git', '.vscode'];
 const EXCLUDE_FILES = ['productionBuild.js', '.env', '.env.example'];
-const PRODUCTION_URL = 'https://test.olejesawiniec.pl';
+const PRODUCTION_URL = 'https://sandbox.olejesawiniec.pl';
 
 
 const EXCLUDED = [...EXCLUDE_FILES, ...EXCLUDE_DIRECTORIES];
@@ -37,8 +37,7 @@ const lstat = promisify(fs.lstat);
   await writeFile('./.env', newEnv)
 
   // Create zip archive
-  const output = fs.createWriteStream(path.join(__dirname, `build/zip.zip`));
-  // const output = fs.createWriteStream(path.join(__dirname, `build/${new Date().toISOString()}.zip`));
+  const output = fs.createWriteStream(path.join(__dirname, `build/${new Date().toISOString()}.zip`));
   const archive = archiver('zip', {
     zlib: { level: 9 }
   });
