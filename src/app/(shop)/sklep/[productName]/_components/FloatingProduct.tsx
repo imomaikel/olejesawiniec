@@ -16,6 +16,7 @@ import VariantPicker from './VariantPicker';
 import { useAnimate } from 'framer-motion';
 import { useCart } from '@/hooks/use-cart';
 import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const MAX_STARS = 6;
 const OFFSET = 155;
@@ -217,7 +218,7 @@ const FloatingProduct = ({
             urls={imageUrls}
             fullSizeOnClick
             fitImage
-            className="h-80 w-80 mx-auto 2xl:h-96 2xl:w-96 2xl:mx-0"
+            className="h-80 w-80 mx-auto 2xl:h-96 2xl:w-96 2xl:mx-0 max-w-[90vw]"
           />
         </div>
         {/* Tags */}
@@ -270,6 +271,38 @@ const FloatingProduct = ({
             <FaHeart className="h-6 w-6 mr-4" />
             Dodaj do listy życzeń
           </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+FloatingProduct.Skeleton = function ShowSkeleton() {
+  return (
+    <div className="relative lg:max-w-sm w-full flex justify-center lg:block">
+      <div className="max-w-sm w-full">
+        <div className="mb-1">
+          <Skeleton className="w-52 h-9" />
+        </div>
+        <div>
+          <Skeleton className="h-80 w-80 2xl:h-96 mx-auto 2xl:w-96 2xl:mx-0 max-w-[90vw]" />
+        </div>
+        <div className="flex flex-wrap gap-1 mt-3 items-center justify-center">
+          {[91, 162, 52, 73, 73, 81, 112, 56, 54, 78, 153, 126, 185, 55, 150].map((width) => (
+            <Skeleton key={`skeleton-${width}`} className="h-[22px]" style={{ width: `${width}px` }} />
+          ))}
+        </div>
+        <Separator className="my-4" />
+        <div>
+          <Skeleton className="w-full h-12 rounded-full" />
+          <div className="flex flex-col justify-center items-center mb-3 mt-2">
+            <Skeleton className="w-56 h-6 mb-1" />
+            <div className="grid grid-cols-3 gap-5">
+              <Skeleton className="h-11 w-[77px]" />
+              <Skeleton className="h-11 w-[77px]" />
+              <Skeleton className="h-11 w-[77px]" />
+            </div>
+          </div>
+          <Skeleton className="w-full h-10 rounded-full" />
         </div>
       </div>
     </div>

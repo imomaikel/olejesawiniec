@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import FloatingProduct from './_components/FloatingProduct';
 import { cn, errorToast, formatPrice } from '@/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
@@ -58,9 +59,8 @@ const ProductPage = () => {
     errorToast('Produkt nie istnieje!');
     router.push('/sklep');
   }
-  if (!product) {
-    return 'Loading';
-  }
+
+  if (!product) return <ProductPage.Skeleton />;
 
   const { variants, tags, mainPhoto, extraPhotos, label, details, nutritionFact, rating, ratings, opinions, link } =
     product;
@@ -188,37 +188,6 @@ const ProductPage = () => {
           <div className="mt-6">
             <h1 className="text-3xl font-bold">Opis produktu</h1>
             <div className="richText space-y-2" dangerouslySetInnerHTML={{ __html: productDescription }} />
-            {/* TODO */}
-            {/*
-             <ul>
-            <li className='flex space-x-2'>
-            <span className='font-medium'>Zastosowanie:</span>
-            <span className='text-muted-foreground'>lorem ipsum</span>
-            </li>
-            <li className='flex space-x-2'>
-            <span className='font-medium'>Kraj pochodzenia:</span>
-            <span className='text-muted-foreground'>lorem ipsum</span>
-            </li>
-            <li className='flex space-x-2'>
-            <span className='font-medium'>Przechowywanie:</span>
-            <span className='text-muted-foreground'>lorem ipsum</span>
-            </li>
-            <li className='flex space-x-2'>
-            <span className='font-medium'>Opakowanie:</span>
-            <span className='text-muted-foreground'>lorem ipsum</span>
-            </li>
-            <li className='flex space-x-2'>
-            <span className='font-medium'>
-            Termin przydatności do spożycia:
-            </span>
-            <span className='text-muted-foreground'>lorem ipsum</span>
-            </li>
-            <li className='flex space-x-2'>
-            <span className='font-medium'>Producent:</span>
-            <span className='text-muted-foreground'>lorem ipsum</span>
-            </li>
-            </ul> 
-            */}
           </div>
         )}
         {/* Nutrition facts */}
@@ -332,6 +301,63 @@ const ProductPage = () => {
               )}
             </div>
           </div>
+        </div>
+        <div className="absolute h-full w-[1px] bg-black/40 -left-24 top-0 hidden lg:block" />
+      </div>
+    </div>
+  );
+};
+ProductPage.Skeleton = function ShowSkeleton() {
+  return (
+    <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0">
+      <FloatingProduct.Skeleton />
+      <div className="2xl:mx-24 lg:mx-16 hidden lg:block" />
+      <div className="w-full max-w-2xl lg:max-w-xl relative mx-auto lg:mx-0">
+        <div className="mb-1">
+          <Skeleton className="w-80 h-9" />
+        </div>
+        <div className="mt-2 flex flex-col">
+          <div className="flex lg:flex-row flex-col lg:space-x-2">
+            <div className="flex flex-col">
+              <Skeleton className="w-[231px] h-6 mb-1" />
+              <Skeleton className="lg:ml-auto w-[150px] h-5" />
+            </div>
+            <div className="flex flex-wrap space-x-2 mt-1 lg:mt-0">
+              <div className="flex flex-col items-center">
+                <Skeleton className="w-[55px] h-6 mb-1" />
+                <Skeleton className="w-8 h-5" />
+              </div>
+              <div className="flex flex-col items-center">
+                <Skeleton className="w-[55px] h-6 mb-1" />
+                <Skeleton className="w-8 h-5" />
+              </div>
+              <div className="flex flex-col items-center">
+                <Skeleton className="w-[55px] h-6 mb-1" />
+                <Skeleton className="w-8 h-5" />
+              </div>
+            </div>
+          </div>
+          <div className="flex mt-4 lg:space-x-2 flex-col lg:flex-row lg:mt-2 space-y-0.5 lg:space-y-0">
+            <Skeleton className="w-[55px] h-6" />
+            <Skeleton className="w-[230px] h-6" />
+            <Skeleton className="w-[55px] h-6" />
+          </div>
+        </div>
+        <div className="mt-5">
+          <Skeleton className="w-48 h-9 mb-1" />
+          <div className="flex flex-col space-y-1">
+            <Skeleton className="w-[220px] h-6 ml-7" />
+            <Skeleton className="w-[250px] h-6 ml-7" />
+            <Skeleton className="w-[210px] h-6 ml-7" />
+            <Skeleton className="w-[220px] h-6 ml-7" />
+            <Skeleton className="w-[275px] h-6 ml-7" />
+          </div>
+        </div>
+        <div className="mt-8">
+          <Skeleton className="w-48 h-9" />
+          <Skeleton className="w-full h-16 mt-1" />
+          <Skeleton className="w-full h-60 mt-2" />
+          <Skeleton className="w-full h-36 mt-2" />
         </div>
         <div className="absolute h-full w-[1px] bg-black/40 -left-24 top-0 hidden lg:block" />
       </div>
