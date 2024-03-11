@@ -78,7 +78,13 @@ const Products = () => {
         </div>
         <SortProducts />
       </div>
-      <div className={cn(isLoading ? 'grid grid-cols-4 gap-5' : 'flex flex-row flex-wrap gap-5 justify-center')}>
+      <div
+        className={cn(
+          isLoading
+            ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5'
+            : 'flex flex-row flex-wrap gap-5 justify-center',
+        )}
+      >
         {isLoading
           ? [...Array.from(Array(9).keys())].map((index) => <ShopProduct.Skeleton key={`skeleton-${index}`} />)
           : filteredProducts.length >= 1

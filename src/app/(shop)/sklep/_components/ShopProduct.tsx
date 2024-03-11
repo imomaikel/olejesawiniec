@@ -17,16 +17,18 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
 
   return (
     <Link href={productLink}>
-      <div className="shadow-2xl rounded-xl hover:scale-105 transition-transform cursor-pointer ring-1 ring-primary/10 z-20 hover:z-10 relative h-full flex flex-col justify-around">
-        <div className="relative max-w-[225px] flex">
+      <div className="shadow-2xl rounded-xl hover:scale-105 transition-transform cursor-pointer ring-1 ring-primary/10 z-20 hover:z-10 h-full flex flex-0 flex-col justify-around">
+        <div className="relative max-h-96">
           {image ? (
             <Image
               src={image}
               width={0}
               height={0}
               sizes="100vw"
+              priority
+              quality={70}
               loading="eager"
-              className="h-full w-full object-cover object-center"
+              className="h-full w-full max-h-96 object-contain object-center rounded-tr-xl rounded-tl-xl"
               alt={label}
             />
           ) : (
@@ -36,7 +38,7 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
             </div>
           )}
         </div>
-        <div className="py-2 px-4 text-center flex flex-col max-w-[225px]">
+        <div className="py-2 px-4 text-center flex flex-col">
           <span className="font-medium tracking-wide mb-1">{label}</span>
           {!editMode && price && <span className="text-primary font-bold">{formatPrice(price)}</span>}
         </div>
@@ -47,9 +49,9 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
 
 ShopProduct.Skeleton = function ShowSkeleton() {
   return (
-    <div className="shadow-2xl overflow-hidden bg-white rounded-xl hover:scale-105 transition-transform cursor-pointer ring-1 ring-primary/10 z-20 hover:z-10 relative w-[225px] h-[400px]">
-      <Skeleton className="w-auto h-[300px] relative flex flex-col items-center" />
-      <div className="py-2 px-4 text-center flex flex-col w-[225px]">
+    <div className="shadow-2xl rounded-xl hover:scale-105 transition-transform cursor-pointer ring-1 ring-primary/10 z-20 hover:z-10 flex flex-0 flex-col justify-around h-[447px] w-full">
+      <Skeleton className="w-auto h-96 relative flex flex-col items-center" />
+      <div className="py-2 px-4 text-center flex flex-col">
         <Skeleton className="h-6 w-3/4 mx-auto mb-1" />
         <Skeleton className="h-6 w-1/4 mx-auto" />
       </div>

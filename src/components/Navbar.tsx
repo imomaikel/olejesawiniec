@@ -5,7 +5,6 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/utils/constans';
 import UserProfile from './UserProfile';
-import { motion } from 'framer-motion';
 import CartButton from './CartButton';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
@@ -31,20 +30,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
 
   return (
     <div className={cn('w-full absolute z-20', className)}>
-      <motion.div
-        initial={{
-          y: -200,
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.5,
-          type: 'tween',
-        }}
-        viewport={{ once: true }}
+      <div
         className={cn(
           'w-full min-h-fit max-w-7xl mx-auto flex justify-between lg:px-20',
           topPadding !== undefined ? `pt-${topPadding}` : 'pt-6',
@@ -83,17 +69,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
               if (pathname === entry.path) return null;
 
               return (
-                <motion.li
-                  initial={{
-                    x: -100,
-                    opacity: 0,
-                  }}
-                  animate={{
-                    x: 0,
-                    opacity: 1,
-                  }}
-                  key={entry.label}
-                >
+                <li key={entry.label}>
                   <Button variant="ghost" asChild>
                     {entry.path === '/logowanie' && pathname.length >= 2 ? (
                       <Link href={`${entry.path}?powrót=${pathname}`}>{entry.label}</Link>
@@ -101,14 +77,14 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
                       <Link href={entry.path}>{entry.label}</Link>
                     )}
                   </Button>
-                </motion.li>
+                </li>
               );
             })}
           </ul>
           <UserProfile />
           <CartButton />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

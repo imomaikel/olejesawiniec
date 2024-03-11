@@ -5,6 +5,7 @@ import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
+import { Skeleton } from '@/components/ui/skeleton';
 import { trpc } from '@/components/providers/TRPC';
 import ImageSwiper from '@/components/ImageSwiper';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ import VariantPicker from './VariantPicker';
 import { useAnimate } from 'framer-motion';
 import { useCart } from '@/hooks/use-cart';
 import { toast } from 'sonner';
-import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
 const MAX_STARS = 6;
 const OFFSET = 155;
@@ -223,7 +224,12 @@ const FloatingProduct = ({
         </div>
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mt-3 items-center justify-center">
-          {tags && tags.map(({ label }) => <Badge key={label}>{label}</Badge>)}
+          {tags &&
+            tags.map(({ label }) => (
+              <Link key={label} href={`/sklep?tag=${label.replace(/ /g, '+')}`}>
+                <Badge className="cursor-pointer">{label}</Badge>
+              </Link>
+            ))}
         </div>
         <Separator className="my-4" />
         {/* Actions */}
