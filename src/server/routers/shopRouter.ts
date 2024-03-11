@@ -1,5 +1,6 @@
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { getLandingPageProducts } from './cache';
+import { TSortOptions } from '@/utils/constans';
 import { TBasketVariant } from '@/lib/types';
 import { z } from 'zod';
 
@@ -45,24 +46,75 @@ export const shopRouter = router({
 
     return product ?? null;
   }),
-  getEnabledProducts: publicProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
+  getEnabledProducts: publicProcedure
+    .input(
+      z.object({
+        orderBy: z.custom<TSortOptions>().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { orderBy } = input;
+      const { prisma } = ctx;
 
-    const products = await prisma.product.findMany({
-      where: {
-        enabled: true,
-        lowestPrice: {
-          gte: 1,
+      const products = await prisma.product.findMany({
+        where: {
+          enabled: true,
+          lowestPrice: {
+            gte: 1,
+          },
         },
-      },
-      include: {
-        variants: true,
-        tags: true,
-        category: true,
-      },
-    });
-    return products ?? null;
-  }),
+        include: {
+          variants: true,
+          tags: true,
+          category: true,
+        },
+        ...((!orderBy || orderBy === 'domyślnie') && {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        }),
+        ...(orderBy === 'alfabetycznie' && {
+          orderBy: {
+            label: 'asc',
+          },
+        }),
+        ...(orderBy === 'cena_malejąco' && {
+          orderBy: {
+            lowestPrice: 'desc',
+          },
+        }),
+        ...(orderBy === 'cena_rosnąco' && {
+          orderBy: {
+            lowestPrice: 'asc',
+          },
+        }),
+        ...(orderBy === 'nowości' && {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        }),
+        ...(orderBy === 'ilość_opinii' && {
+          orderBy: {
+            opinions: {
+              _count: 'desc',
+            },
+          },
+        }),
+        ...(orderBy === 'popularność' && {
+          orderBy: {
+            paymentProducts: {
+              _count: 'desc',
+            },
+          },
+        }),
+        ...(orderBy === 'najlepiej_oceniane' && {
+          orderBy: {
+            rating: 'desc',
+          },
+        }),
+      });
+      return products ?? null;
+    }),
   verifyCartItem: publicProcedure
     .input(
       z.object({

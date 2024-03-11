@@ -2,24 +2,26 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { PopoverClose, PopoverTrigger } from '@radix-ui/react-popover';
 import { Popover, PopoverContent } from '@/components/ui/popover';
+import { SORT_OPTIONS, TSortOptions } from '@/utils/constans';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FaSortAlphaDown } from 'react-icons/fa';
-import { SORT_OPTIONS } from '@/utils/constans';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useMemo } from 'react';
 
 const SortProducts = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  const orderBy = searchParams.get('sortuj') ?? 'popularność';
+  const orderBy = (searchParams.get('sortuj') || 'domyślnie') as TSortOptions;
+  const displayName = useMemo(() => SORT_OPTIONS.find((entry) => entry.id === orderBy)?.label, [orderBy]);
 
   const handleCheckbox = (checked: boolean | string, label: string) => {
     if (typeof checked === 'string') return;
     const params = new URLSearchParams(searchParams);
 
-    if (label === 'popularność') {
+    if (label === 'domyślnie') {
       params.delete('sortuj');
     } else {
       params.set('sortuj', label);
@@ -29,9 +31,9 @@ const SortProducts = () => {
   };
 
   return (
-    <div className="flex items-center space-x-1">
+    <div className="flex items-center space-x-1 flex-col lg:flex-row">
       <span className="text-muted-foreground">Sortuj według:</span>
-      <span className="capitalize font-bold">Popularność</span>
+      <span className="capitalize font-bold">{displayName || 'Domyślnie'}</span>
       <Popover>
         <PopoverTrigger asChild>
           <Button size="icon">

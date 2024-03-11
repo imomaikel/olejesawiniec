@@ -215,6 +215,10 @@ export const REPLACE_LETTERS = [
 
 export const SORT_OPTIONS = [
   {
+    label: 'Domyślnie',
+    id: 'domyślnie',
+  },
+  {
     label: 'Popularność',
     id: 'popularność',
   },
@@ -235,8 +239,12 @@ export const SORT_OPTIONS = [
     id: 'nowości',
   },
   {
-    label: 'Opinie',
-    id: 'opinie',
+    label: 'Ilość opinii',
+    id: 'ilość_opinii',
+  },
+  {
+    label: 'Najlepiej oceniane',
+    id: 'najlepiej_oceniane',
   },
 ] as const;
-export type SORT_OPTIONS = (typeof SORT_OPTIONS)[number]['id'];
+export type TSortOptions = (typeof SORT_OPTIONS)[number]['id'];
