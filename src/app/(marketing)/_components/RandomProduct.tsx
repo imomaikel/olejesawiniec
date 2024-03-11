@@ -7,30 +7,41 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { shopRouter } from '@/server/routers/shopRouter';
+import { useEffect, useRef, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
+import { inferRouterOutputs } from '@trpc/server';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RiseLoader } from 'react-spinners';
 import Link from 'next/link';
+
+type TProduct = inferRouterOutputs<typeof shopRouter>['getRandomProduct'];
 
 type TRandomProduct = {
   isOpen: boolean;
   onClose: () => void;
 };
 const RandomProduct = ({ isOpen, onClose }: TRandomProduct) => {
-  const {
-    data: product,
-    isLoading,
-    isRefetching,
-    refetch,
-  } = trpc.shop.getRandomProduct.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    retry: 1,
-  });
+  const [product, setProduct] = useState<TProduct>();
+
+  const { mutate: getRandomProduct, isLoading } = trpc.shop.getRandomProduct.useMutation();
+
+  const handleGetProduct = () => {
+    getRandomProduct(
+      { previousId: product?.id },
+      {
+        onSuccess: (data) => setProduct(data),
+      },
+    );
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => handleGetProduct(), []);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      {isLoading || !product ? (
+      {isLoading && !product ? (
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ładowanie produktu</DialogTitle>
@@ -39,9 +50,9 @@ const RandomProduct = ({ isOpen, onClose }: TRandomProduct) => {
           <div className="my-4">
             <RiseLoader color="#16a34a" />
           </div>
-          <div className="w-full h-full absolute inset-0 bg-gradient-to-l from-green-200 to-green-500 opacity-20 -z-10" />
+          <div className="w-full h-full absolute inset-0 bg-gradient-to-r from-green-200 to-green-500 opacity-15 -z-10" />
         </DialogContent>
-      ) : (
+      ) : product ? (
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{product.label}</DialogTitle>
@@ -70,13 +81,22 @@ const RandomProduct = ({ isOpen, onClose }: TRandomProduct) => {
               </div>
             )}
           </div>
-          <div className="w-full h-full absolute inset-0 bg-gradient-to-l from-green-200 to-green-500 opacity-20 -z-10" />
+          <div className="w-full h-full absolute inset-0 bg-gradient-to-r from-green-200 to-green-500 opacity-15 -z-10" />
           <DialogFooter>
             <Button asChild variant="link">
               <Link href={`/sklep/${product.link}`}>Zobacz produkt</Link>
             </Button>
-            <Button onClick={() => refetch()} disabled={isLoading || isRefetching}>
+            <Button onClick={handleGetProduct} disabled={isLoading}>
               Zmień produkt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      ) : (
+        <DialogContent>
+          <p>Nie udało się wczytać produktu.</p>
+          <DialogFooter>
+            <Button onClick={handleGetProduct} disabled={isLoading}>
+              Spróbuj ponownie
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -288,33 +288,41 @@ export const shopRouter = router({
 
     return products;
   }),
-  getRandomProduct: publicProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
+  getRandomProduct: publicProcedure
+    .input(z.object({ previousId: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const { previousId } = input;
+      const { prisma } = ctx;
 
-    const products = await prisma.product.findMany({
-      where: {
-        enabled: true,
-        details: {
-          some: {
+      const products = await prisma.product.findMany({
+        where: {
+          ...(previousId && {
             id: {
-              not: undefined,
+              not: previousId,
+            },
+          }),
+          enabled: true,
+          details: {
+            some: {
+              id: {
+                not: undefined,
+              },
             },
           },
         },
-      },
-      select: {
-        label: true,
-        link: true,
-        details: true,
-        tags: true,
-        id: true,
-      },
-    });
+        select: {
+          label: true,
+          link: true,
+          details: true,
+          tags: true,
+          id: true,
+        },
+      });
 
-    const randomProduct = products[Math.floor(Math.random() * products.length)];
+      const randomProduct = products[Math.floor(Math.random() * products.length)];
 
-    return randomProduct;
-  }),
+      return randomProduct;
+    }),
 });
 
 // TODO ZOD CUSTOM
