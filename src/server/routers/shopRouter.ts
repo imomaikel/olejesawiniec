@@ -63,11 +63,7 @@ export const shopRouter = router({
             gte: 1,
           },
         },
-        include: {
-          variants: true,
-          tags: true,
-          category: true,
-        },
+        select: { tags: true, category: true, label: true, mainPhoto: true, link: true, lowestPrice: true },
         ...((!orderBy || orderBy === 'domyślnie') && {
           orderBy: {
             createdAt: 'asc',
@@ -113,7 +109,15 @@ export const shopRouter = router({
           },
         }),
       });
-      return products ?? null;
+
+      if (!products) return null;
+
+      const productList = products.map((product) => {
+        const tags = product.tags.map((tag) => tag.label);
+        return { ...product, tags };
+      });
+
+      return productList;
     }),
   verifyCartItem: publicProcedure
     .input(

@@ -54,7 +54,7 @@ const Products = () => {
         if (tagsArr.length <= 0) return true;
         if (!product.tags) return false;
 
-        if (product.tags.some((entry) => tagsArr.includes(entry.label))) return true;
+        if (product.tags.some((tag) => tagsArr.includes(tag))) return true;
         return false;
       });
     }
