@@ -1,3 +1,4 @@
 import PasswordResetMail from './(templates)/PasswordResetMail';
+import OrderUpdateMail from './(templates)/OrderUpdateMail';
 
-export { PasswordResetMail };
+export { OrderUpdateMail, PasswordResetMail };
