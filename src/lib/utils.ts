@@ -123,3 +123,9 @@ export const translateShippingMethod = (method: ShippingType) => {
   if (method === 'COURIER') return 'Kurier';
   if (method === 'INPOST') return 'Paczkomat';
 };
+
+export const isDayOrNight = (): 'day' | 'night' => {
+  const hour = new Date().getHours();
+  if (hour >= 22 && hour <= 5) return 'night';
+  return 'day';
+};

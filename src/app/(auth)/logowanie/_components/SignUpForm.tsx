@@ -21,17 +21,18 @@ const SignUpForm = ({ redirectTo }: TSignUpForm) => {
     defaultValues: {
       email: '',
       password: '',
+      firstName: '',
     },
   });
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
 
-  const onSubmit = ({ email, password }: TSignUpSchema) => {
+  const onSubmit = ({ email, password, firstName }: TSignUpSchema) => {
     setSuccess('');
     setError('');
 
     setIsStransition(() => {
-      signUpUser({ email, password })
+      signUpUser({ email, password, firstName })
         .then((response) => {
           if (response.error) {
             setError(response.error);
@@ -49,6 +50,19 @@ const SignUpForm = ({ redirectTo }: TSignUpForm) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Imię</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Wpisz tutaj swoje imię" {...field} disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"

@@ -30,6 +30,7 @@ export const SignUpMail = ({ confirmUrl, username, dayOrNightTime }: TSignUpMail
         <Text className="text-muted-foreground text-sm">
           Jeśli nie rejestrowałeś/rejestrowałaś się na naszej stronie, zignoruj tę wiadomość.
         </Text>
+        <Text className="text-muted-foreground text-sm">Link do potwierdzenia rejestracji jest ważny przez 7 dni.</Text>
       </Section>
     </MailTemplate>
   );

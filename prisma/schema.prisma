@@ -48,7 +48,7 @@ model WishList {
 
   createdAt DateTime @default(now())
 
-  product   Product? @relation(fields: [productId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String?
 }
 
@@ -171,7 +171,7 @@ model Basket {
   id       String           @id @default(cuid())
   variants BasketVariants[]
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 }
 
@@ -263,7 +263,7 @@ model Payment {
 
   shipping ShippingAddress?
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
   createdAt DateTime @default(now())
@@ -344,6 +344,7 @@ model User {
   inpostId     String?
   inpostStreet String?
   payment      Payment[]
+  forceLogin   Boolean?
 
   wishList   WishList? @relation(fields: [wishListId], references: [id])
   wishListId String?

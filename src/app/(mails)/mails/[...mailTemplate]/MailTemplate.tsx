@@ -28,13 +28,13 @@ export const MailTemplate = ({ children, title }: TMailTemplate) => {
             <Container className="mx-6">
               <Section className="mt-8">
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_SERVER_URL}/signatureBlack.png`}
+                  src={`${process.env.NEXT_PUBLIC_PRODUCTION_URL}/signatureBlack.png`}
                   alt="podpis"
                   className="my-0 mx-auto w-[330px] h-[134px]"
                 />
               </Section>
               <Heading as="h1" className="text-2xl font-bold text-center p-0 my-3 mx-0">
-                <Link href={process.env.NEXT_PUBLIC_SERVER_URL} className="!text-black">
+                <Link href={process.env.NEXT_PUBLIC_PRODUCTION_URL} className="!text-black">
                   Olejesawiniec.pl
                 </Link>
               </Heading>
@@ -45,7 +45,7 @@ export const MailTemplate = ({ children, title }: TMailTemplate) => {
               <Container className="relative">
                 <Container className="w-full h-full absolute" />
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_SERVER_URL}/nature.webp`}
+                  src={`${process.env.NEXT_PUBLIC_PRODUCTION_URL}/nature.webp`}
                   className="w-full max-h-36 object-cover"
                 />
               </Container>
