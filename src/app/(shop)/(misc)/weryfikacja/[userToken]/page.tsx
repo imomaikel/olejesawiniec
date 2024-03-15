@@ -1,6 +1,6 @@
 'use server';
 import VerifyButton from './components/VerifyButton';
-import { redirect } from 'next/navigation';
+import { RedirectType, redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { signIn } from '@/auth';
 
@@ -21,19 +21,12 @@ const AccountVerificationPage = async ({ params }: { params: { userToken: string
     'use server';
     await prisma.user.update({
       where: { email: token.email },
-      data: { forceLogin: true },
+      data: { forceLogin: true, emailVerified: new Date() },
     });
     await signIn('credentials', {
       email: token.email,
       password: process.env.FORCE_AUTH_PASS,
-      redirectTo: '/sklep',
-    });
-    await prisma.user.update({
-      where: { email: token.email },
-      data: { forceLogin: false, emailVerified: new Date() },
-    });
-    await prisma.verificationToken.delete({
-      where: { token: userToken },
+      redirectTo: '/sklep?weryfikacja=sukces',
     });
   };
 

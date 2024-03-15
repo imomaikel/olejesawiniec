@@ -5,10 +5,25 @@ import { sendMail } from '@/server/mails/nodemailer';
 import { getUserByEmail } from './data';
 import { isDayOrNight } from './utils';
 import { AuthError } from 'next-auth';
+import { auth, signIn } from '@/auth';
 import { v4 as uuidv4 } from 'uuid';
-import { signIn } from '@/auth';
 import prisma from './prisma';
 import bcrypt from 'bcryptjs';
+
+export const afterVerification = async () => {
+  const session = await auth();
+  if (!session?.user.email) return;
+
+  try {
+    await prisma.user.update({
+      where: { email: session.user.email, emailVerified: { equals: null } },
+      data: { forceLogin: false, emailVerified: new Date() },
+    });
+    await prisma.verificationToken.deleteMany({
+      where: { email: session.user.email },
+    });
+  } catch {}
+};
 
 export const signInUser = async (credentials: TSignInSchema, redirectTo?: string | null) => {
   const parseFields = SignInSchema.safeParse(credentials);
