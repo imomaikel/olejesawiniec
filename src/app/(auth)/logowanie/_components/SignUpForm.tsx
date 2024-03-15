@@ -11,10 +11,7 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 
-type TSignUpForm = {
-  redirectTo: string | null;
-};
-const SignUpForm = ({ redirectTo }: TSignUpForm) => {
+const SignUpForm = () => {
   const [isLoading, setIsStransition] = useTransition();
   const form = useForm<TSignUpSchema>({
     resolver: zodResolver(SignUpSchema),
@@ -38,8 +35,9 @@ const SignUpForm = ({ redirectTo }: TSignUpForm) => {
             setError(response.error);
           }
           if (response.success) {
-            setSuccess(response.success);
-            signInUser({ email, password }, redirectTo);
+            setSuccess(
+              'Twoje konto zostało pomyślnie założone. Wysłaliśmy do Ciebie e-maila z prośbą o weryfikację konta. Prosimy o sprawdzenie skrzynki odbiorczej i potwierdzenie swoich danych.',
+            );
           }
         })
         .catch(() => setError('Wystąpił błąd!'));

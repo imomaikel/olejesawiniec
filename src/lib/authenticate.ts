@@ -14,15 +14,15 @@ export const afterVerification = async () => {
   const session = await auth();
   if (!session?.user.email) return;
 
-  try {
-    await prisma.user.update({
+  await prisma.user
+    .update({
       where: { email: session.user.email, emailVerified: { equals: null } },
       data: { forceLogin: false, emailVerified: new Date() },
-    });
-    await prisma.verificationToken.deleteMany({
-      where: { email: session.user.email },
-    });
-  } catch {}
+    })
+    .catch(() => {});
+  await prisma.verificationToken.deleteMany({
+    where: { email: session.user.email },
+  });
 };
 
 export const signInUser = async (credentials: TSignInSchema, redirectTo?: string | null) => {
@@ -34,6 +34,9 @@ export const signInUser = async (credentials: TSignInSchema, redirectTo?: string
 
   const user = await getUserByEmail(email);
   if (!user || !user.password) return { error: 'Nieprawidłowe dane logowania!' };
+
+  if (!user.emailVerified)
+    return { error: 'Proszę potwierdzić swoje konto poprzez e-mail, aby móc się zalogować. Dziękujemy!' };
 
   try {
     await signIn('credentials', {
@@ -111,7 +114,7 @@ export const signUpUser = async (credentials: TSignUpSchema) => {
         },
         {
           sendTo: email,
-          subject: '',
+          subject: 'Weryfikacja konta',
         },
       ).then(({ error }) => {
         if (error) throw new Error();

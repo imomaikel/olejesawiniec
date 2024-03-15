@@ -53,7 +53,7 @@ const SignUp = () => {
         </motion.div>
       </CardHeader>
       <CardContent>
-        <SignUpForm redirectTo={redirectTo} />
+        <SignUpForm />
         <Providers redirectTo={redirectTo} />
       </CardContent>
     </Card>

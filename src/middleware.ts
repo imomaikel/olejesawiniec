@@ -13,6 +13,9 @@ export default auth(async (req) => {
   if (pathname.startsWith('/panel')) {
     if (!session?.user.email) return Response.redirect(new URL('/sklep', nextUrl));
   }
+  if (session?.user.email && pathname.startsWith('/logowanie')) {
+    return Response.redirect(new URL('/sklep', nextUrl));
+  }
 
   return null;
 });
