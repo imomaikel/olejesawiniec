@@ -32,6 +32,8 @@ export const PasswordResetMail = ({ username, dayOrNightTime, passwordResetUrl }
           Po kliknięciu na link zostaniesz przekierowany/przekierowana do strony, gdzie będziesz mógł/mogła wprowadzić
           nowe hasło dostępu.
         </Text>
+
+        <Text className="text-muted-foreground text-sm">Link do zmiany hasła jest wazny przez 30 minut.</Text>
       </Section>
     </MailTemplate>
   );

@@ -1,6 +1,6 @@
 'use server';
-import { SignInSchema, SignUpSchema, TSignInSchema, TSignUpSchema } from './validators/auth';
-import { addDays, hoursToMilliseconds } from 'date-fns';
+import { PasswordResetSchema, SignInSchema, SignUpSchema, TSignInSchema, TSignUpSchema } from './validators/auth';
+import { addDays, addMinutes, hoursToMilliseconds } from 'date-fns';
 import { sendMail } from '@/server/mails/nodemailer';
 import { getUserByEmail } from './data';
 import { isDayOrNight } from './utils';
@@ -9,6 +9,7 @@ import { auth, signIn } from '@/auth';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from './prisma';
 import bcrypt from 'bcryptjs';
+import { z } from 'zod';
 
 export const afterVerification = async () => {
   const session = await auth();
@@ -101,6 +102,7 @@ export const signUpUser = async (credentials: TSignUpSchema) => {
       });
       await tx.user.create({
         data: {
+          firstName,
           email,
           password: hashedPassword,
         },
@@ -125,4 +127,106 @@ export const signUpUser = async (credentials: TSignUpSchema) => {
   }
 
   return { success: 'Konto założone!' };
+};
+
+export const forgotPassword = async (email: string) => {
+  try {
+    const safeEmail = z.string().email().safeParse(email);
+
+    if (!safeEmail.success) {
+      return { error: true, message: 'Podaj prawidłowy adres e-mail!' };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: safeEmail.data },
+    });
+
+    if (!user?.email) {
+      return { error: true, message: 'Nie znaleziono użytkownika z podanym adresem e-mail!' };
+    }
+
+    const resetToken = uuidv4();
+    const expiryAt = addMinutes(new Date(), 30);
+
+    await prisma.user.update({
+      where: { email: safeEmail.data },
+      data: {
+        passwordResetToken: resetToken,
+        passwordResetTokenExpires: expiryAt,
+      },
+    });
+
+    const mail = await sendMail(
+      'PasswordResetMail',
+      {
+        dayOrNightTime: isDayOrNight(),
+        passwordResetUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/logowanie/reset/${resetToken}`,
+        username: user.firstName || user.name || user.email,
+      },
+      {
+        sendTo: safeEmail.data,
+        subject: 'Prośba o przypomnienie hasła',
+      },
+    );
+
+    if (mail.error) {
+      return { success: true, message: 'Nie udało się wyslać e-maila.' };
+    }
+
+    return { success: true, message: 'Wysłaliśmy do Ciebie e-mail.' };
+  } catch {
+    return { error: true, message: 'Wystąpił błąd.' };
+  }
+};
+
+export const forgottenPasswordSetNew = async (password: string, retypePassword: string, resetToken: string) => {
+  try {
+    const safeInput = PasswordResetSchema.safeParse({ password, retypePassword });
+
+    if (!safeInput.success) {
+      return { error: true, message: 'Podane hasła nie są takie same!' };
+    }
+
+    const newPassword = safeInput.data.password;
+
+    const user = await prisma.user.findUnique({
+      where: { passwordResetToken: resetToken },
+    });
+
+    if (!user || !user.passwordResetTokenExpires || !user.passwordResetToken) {
+      return {
+        error: true,
+        message: 'Link nie jest prawidłowy lub wygasł. Prosimy o wykonanie tej czynności od nowa.',
+      };
+    }
+
+    const tokenExpires = user.passwordResetTokenExpires?.getTime();
+    const now = new Date().getTime();
+
+    if (tokenExpires < now) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordResetToken: null,
+          passwordResetTokenExpires: null,
+        },
+      });
+      return { error: true, message: 'Link do zmiany hasła wygasł. Prosimy o wykonanie tej czynności od nowa.' };
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetTokenExpires: null,
+      },
+    });
+
+    return { success: true };
+  } catch {
+    return { error: true, message: 'Wystąpił błąd.' };
+  }
 };

@@ -7,6 +7,7 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { signInUser } from '@/lib/authenticate';
 import FormError from '@/components/FormError';
+import ForgotPassword from './ForgotPassword';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
@@ -25,6 +26,7 @@ const SignInForm = ({ redirectTo }: TSignInForm) => {
   });
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const onSubmit = ({ email, password }: TSignInSchema) => {
     setSuccess('');
     setError('');
@@ -44,54 +46,71 @@ const SignInForm = ({ redirectTo }: TSignInForm) => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="space-y-2">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Adres e-mail</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Wpisz tutaj swój adres e-mail" {...field} disabled={isLoading} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Hasło</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Wpisz tutaj swoje hasło" {...field} disabled={isLoading} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <motion.div
-          animate={{
-            x: [10, -10, 0],
-          }}
-          transition={{
-            duration: 0.35,
-            stiffness: 30,
-          }}
-          viewport={{ once: false }}
-        >
-          <Button type="submit" size="lg" className="w-full rounded-full mt-4" disabled={isLoading}>
-            Zaloguj się
-          </Button>
-        </motion.div>
-        {error && <FormError description={error} />}
-        {success && <FormSuccess description={success} />}
-      </form>
-    </Form>
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-2">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Adres e-mail</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Wpisz tutaj swój adres e-mail" {...field} disabled={isLoading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Hasło</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="Wpisz tutaj swoje hasło" {...field} disabled={isLoading} />
+                  </FormControl>
+                  <div className="relative flex items-center justify-between">
+                    <FormMessage />
+                    <p
+                      className="text-muted-foreground text-sm hover:underline cursor-pointer ml-auto"
+                      role="button"
+                      aria-labelledby="przypomij hasło"
+                      onClick={() => setIsDialogOpen(true)}
+                    >
+                      Nie pamiętasz hasła?
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+          <motion.div
+            animate={{
+              x: [10, -10, 0],
+            }}
+            transition={{
+              duration: 0.35,
+              stiffness: 30,
+            }}
+            viewport={{ once: false }}
+          >
+            <Button type="submit" size="lg" className="w-full rounded-full mt-4" disabled={isLoading}>
+              Zaloguj się
+            </Button>
+          </motion.div>
+          {error && <FormError description={error} />}
+          {success && <FormSuccess description={success} />}
+        </form>
+      </Form>
+      <ForgotPassword
+        onOpenChange={() => setIsDialogOpen(false)}
+        open={isDialogOpen}
+        defaultValue={form.getValues('email')}
+      />
+    </>
   );
 };
 

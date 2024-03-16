@@ -346,6 +346,9 @@ model User {
   payment      Payment[]
   forceLogin   Boolean?
 
+  passwordResetToken        String?   @unique
+  passwordResetTokenExpires DateTime?
+
   wishList   WishList? @relation(fields: [wishListId], references: [id])
   wishListId String?
   createdAt  DateTime  @default(now())
