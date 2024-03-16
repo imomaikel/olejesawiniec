@@ -365,6 +365,7 @@ model Newsletter {
 
   email    String  @unique @db.VarChar(64)
   verified Boolean @default(false)
+  token    String? @unique
 
   createdAt DateTime @default(now())
 }

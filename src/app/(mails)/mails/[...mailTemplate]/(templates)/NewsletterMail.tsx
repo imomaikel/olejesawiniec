@@ -25,6 +25,7 @@ export const NewsletterMail = ({ confirmUrl }: TNewsletterMail) => {
           Jeśli nie chcesz otrzymywać naszych wiadomości, możesz w każdej chwili zrezygnować z subskrypcji, klikając w
           link do wypisania się znajdujący się na dole każdego naszego maila.
         </Text>
+        <Text className="text-muted-foreground text-sm">Link do potwierdzenia zapisu jest ważny przez 21 dni.</Text>
       </Section>
     </MailTemplate>
   );

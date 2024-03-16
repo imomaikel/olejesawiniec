@@ -1,36 +1,30 @@
 'use client';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { trpc } from '@/components/providers/TRPC';
+import { signUpForNewsletter } from '@/lib/newsletter';
 import { Button } from '@/components/ui/button';
+import { useState, useTransition } from 'react';
 import { errorToast } from '@/lib/utils';
-import { useState } from 'react';
 
 const Newsletter = () => {
-  const [value, setValue] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { mutate: signUpForNewsletter, isLoading } = trpc.signUpForNewsletter.useMutation();
+  const [isPending, startTransition] = useTransition();
+  const [value, setValue] = useState('');
 
   const handleClick = () => {
-    signUpForNewsletter(
-      { email: value },
-      {
-        onSuccess: ({ error, message, success }) => {
+    startTransition(() => {
+      signUpForNewsletter(value)
+        .then(({ error, message }) => {
           if (error) {
-            errorToast(message);
-          } else if (success) {
-            setIsDialogOpen(true);
+            return errorToast(message);
           }
-        },
-        onError: (error) => {
-          errorToast(error.data?.zodErrorList);
-        },
-      },
-    );
+          setIsDialogOpen(true);
+        })
+        .catch(() => errorToast());
+    });
   };
 
   return (
     <>
-      {' '}
       <div className="relative h-auto">
         <div className="bg-footer bg-no-repeat bg-cover bg-center flex items-center justify-center lg:justify-end w-full min-h-[768px] relative px-8 lg:px-0">
           <div className="bg-black/90 w-full lg:w-[650px] h-[500px] lg:mr-40 rounded-md text-white z-10 flex flex-col p-12 space-y-12">
@@ -45,7 +39,7 @@ const Newsletter = () => {
                   className="w-full h-full bg-transparent outline-none px-2 lg:px-4 text-xs lg:text-base"
                   placeholder="Podaj swój adres e-mail"
                   type="email"
-                  disabled={isLoading}
+                  disabled={isPending}
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                 />
@@ -53,7 +47,7 @@ const Newsletter = () => {
               <Button
                 className="h-full w-2/5 rounded-full hidden lg:block text-black"
                 onClick={handleClick}
-                disabled={isLoading}
+                disabled={isPending}
               >
                 Zapisz
               </Button>
@@ -62,7 +56,7 @@ const Newsletter = () => {
               className="rounded-full shadow-md shadow-primary lg:hidden text-black"
               size="2xl"
               onClick={handleClick}
-              disabled={isLoading}
+              disabled={isPending}
             >
               Zapisz
             </Button>
@@ -95,5 +89,3 @@ const Newsletter = () => {
 };
 
 export default Newsletter;
-
-// TODO Send mail
