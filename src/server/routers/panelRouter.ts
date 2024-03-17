@@ -1,9 +1,10 @@
 import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS, TOrderStatus } from '@/utils/constans';
 import { endOfMonth, endOfYear, format, getDaysInMonth, getMonth, startOfMonth, startOfYear } from 'date-fns';
+import { getConfig, getNextPaymentSteps, isDayOrNight, pad } from '@/lib/utils';
 import { PanelVariantProductValidator } from '@/lib/validators/panel';
-import { getNextPaymentSteps, pad } from '@/lib/utils';
 import { getTransactionStatus } from '../payments';
 import { panelProcedure, router } from '../trpc';
+import { sendMail } from '../mails/nodemailer';
 import { handlePrismaError } from './errors';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -943,16 +944,15 @@ export const panelRouter = router({
   changeOrderStatus: panelProcedure
     .input(z.object({ cashbillId: z.string().min(1), nextStatus: z.custom<TOrderStatus>(), sendMail: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
-      const { cashbillId, nextStatus, sendMail } = input;
+      const { cashbillId, nextStatus, sendMail: sendMailToUser } = input;
       const { prisma } = ctx;
 
       try {
-        const currentStatus = (
-          await prisma.payment.findUnique({
-            where: { cashbillId },
-            select: { status: true },
-          })
-        )?.status;
+        const order = await prisma.payment.findUnique({
+          where: { cashbillId },
+        });
+
+        const currentStatus = order?.status;
         if (!currentStatus) {
           return { error: true, message: 'Wystąpił błąd!' };
         }
@@ -971,12 +971,34 @@ export const panelRouter = router({
           },
         });
 
-        if (sendMail) {
+        const { supportPhoneNumber, supportMail } = await getConfig();
+
+        if (sendMailToUser) {
+          const nextSteps = getNextPaymentSteps(canChange.key);
+          const nextPaymentStep = nextSteps[0] ? nextSteps[0].key : undefined;
+          await sendMail(
+            'OrderUpdateMail',
+            {
+              dayOrNightTime: isDayOrNight(),
+              newOrderStatus: canChange.key,
+              oldOrderStatus: currentStatus,
+              nextOrderStatus: nextPaymentStep,
+              orderId: cashbillId,
+              supportPhoneNumber,
+              supportMail,
+              orderUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/zamowienie/${cashbillId}`,
+              username: order.firstName,
+            },
+            {
+              sendTo: order.email,
+              subject: 'Aktualizacja zamówienia',
+            },
+          );
         }
-        // TODO : Send mail
 
         return { success: true, message: 'Status zmieniony!' };
-      } catch {
+      } catch (err) {
+        console.log(err);
         return { error: true, message: 'Wystąpił błąd!' };
       }
     }),

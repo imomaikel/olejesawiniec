@@ -150,7 +150,7 @@ const PanelOrderPage = () => {
                     defaultChecked
                     onCheckedChange={(checked) => (sendMail.current = !!checked)}
                   />
-                  <Label>Wyślij email do klienta o zmianie statusu</Label>
+                  <Label className="pt-1">Wyślij email do klienta o zmianie statusu</Label>
                 </div>
                 <div>
                   <p className="text-muted-foreground tracking-wide">Kliknij aby zmienić status</p>

@@ -4,6 +4,7 @@ import { formatRelative } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 import { pl } from 'date-fns/locale';
 import { toast } from 'sonner';
+import prisma from './prisma';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -128,4 +129,13 @@ export const isDayOrNight = (): 'day' | 'night' => {
   const hour = new Date().getHours();
   if (hour >= 22 && hour <= 5) return 'night';
   return 'day';
+};
+
+export const getConfig = async () => {
+  let cfg = await prisma?.config.findFirst();
+  if (!cfg) {
+    cfg = await prisma.config.create({ data: {} });
+  }
+
+  return cfg;
 };

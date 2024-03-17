@@ -372,3 +372,10 @@ model Newsletter {
 
   createdAt DateTime @default(now())
 }
+
+model Config {
+  id Int @id @default(autoincrement())
+
+  supportPhoneNumber String @default("780 031 831")
+  supportMail        String @default("sawiniec.olejarnia@gmail.com")
+}
