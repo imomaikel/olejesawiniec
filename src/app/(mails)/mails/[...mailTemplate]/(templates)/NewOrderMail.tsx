@@ -31,7 +31,7 @@ export const NewOrderMail = ({
   const toalPrice = products.reduce((acc, curr) => (acc += curr.price), shippingPrice);
 
   return (
-    <MailTemplate title={`Aktualizacja statusu zamówienia ${orderId}`}>
+    <MailTemplate title={`Nowe zamówienie: ${orderId}`}>
       <Section>
         {dayOrNightTime === 'day' ? (
           <Text className="tracking-wide font-medium">Dzień dobry, {username}!</Text>

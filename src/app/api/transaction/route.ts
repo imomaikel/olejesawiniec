@@ -1,4 +1,6 @@
 import { getTransactionStatus } from '@/server/payments';
+import { getConfig, isDayOrNight } from '@/lib/utils';
+import { sendMail } from '@/server/mails/nodemailer';
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import crypto from 'node:crypto';
@@ -32,14 +34,46 @@ const handler = async (req: NextRequest) => {
       const updatedTransaction = await getTransactionStatus(orderId, 'TEST');
       if (updatedTransaction.statusCode === 200) {
         const { status } = updatedTransaction;
-        await prisma.payment
+        const payment = await prisma.payment
           .update({
             where: { cashbillId: updatedTransaction.id },
             data: {
               status,
             },
+            include: {
+              products: true,
+            },
           })
           .catch(() => {});
+
+        if (payment) {
+          const config = await getConfig();
+          const { email, products, shippingPrice, firstName: username } = payment;
+
+          await sendMail(
+            'NewOrderMail',
+            {
+              dayOrNightTime: isDayOrNight(),
+              orderId: updatedTransaction.id,
+              orderUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/zamowienie/${updatedTransaction.id}`,
+              products: products.map((product) => ({
+                label: product.productName,
+                price: product.productPrice,
+                quantity: product.productQuantity,
+                variant: `${product.productCapacity}${product.productUnit}`,
+              })),
+              supportMail: config.supportMail,
+              supportPhoneNumber: config.supportPhoneNumber,
+              username,
+              shippingPrice,
+            },
+            {
+              sendTo: email,
+              subject: 'Nowe zamówienie',
+            },
+          );
+        }
+
         // TODO Update basket and stock
       }
     }
