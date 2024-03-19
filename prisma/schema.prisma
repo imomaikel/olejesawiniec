@@ -279,6 +279,7 @@ model PaymentProduct {
   // TODO
   productQuantity Int
   productCapacity Int
+  variantId       String?
 
   originalProduct   Product? @relation(fields: [originalProductId], references: [id])
   originalProductId String?

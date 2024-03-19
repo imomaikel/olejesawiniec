@@ -48,7 +48,7 @@ const handler = async (req: NextRequest) => {
 
         if (payment) {
           const config = await getConfig();
-          const { email, products, shippingPrice, firstName: username } = payment;
+          const { email, products, shippingPrice, firstName: username, userId } = payment;
 
           await sendMail(
             'NewOrderMail',
@@ -72,9 +72,34 @@ const handler = async (req: NextRequest) => {
               subject: 'Nowe zamówienie',
             },
           );
-        }
 
-        // TODO Update basket and stock
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              basket: {
+                update: {
+                  variants: {
+                    set: [],
+                  },
+                },
+              },
+            },
+          });
+
+          for await (const product of products) {
+            if (!product.variantId) continue;
+            try {
+              await prisma.variant.update({
+                where: { id: product.variantId },
+                data: {
+                  stock: {
+                    decrement: product.productQuantity,
+                  },
+                },
+              });
+            } catch {}
+          }
+        }
       }
     }
 

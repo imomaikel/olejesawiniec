@@ -457,6 +457,7 @@ export const basketRouter = router({
                     productPrice: item.variant.price,
                     productQuantity: item.quantity,
                     productUnit: item.variant.unit,
+                    variantId: item.variant.id,
                     ...(item.variant.productId && {
                       originalProduct: {
                         connect: {
