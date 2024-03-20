@@ -47,7 +47,7 @@ export const FOOTER_LINKS = [
       },
       {
         label: 'Polityka prywatności',
-        link: '#',
+        link: '/polityka-prywatnosci',
       },
       {
         label: 'Oferta dla sklepów',
