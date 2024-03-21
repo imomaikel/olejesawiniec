@@ -2,6 +2,7 @@ import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS, TOrderSt
 import { endOfMonth, endOfYear, format, getDaysInMonth, getMonth, startOfMonth, startOfYear } from 'date-fns';
 import { getConfig, getNextPaymentSteps, isDayOrNight, pad } from '@/lib/utils';
 import { PanelVariantProductValidator } from '@/lib/validators/panel';
+import { getPaymentMode } from '@/utils/paymentMode';
 import { getTransactionStatus } from '../payments';
 import { panelProcedure, router } from '../trpc';
 import { sendMail } from '../mails/nodemailer';
@@ -932,8 +933,7 @@ export const panelRouter = router({
   verifyOrder: panelProcedure.input(z.object({ cashbillId: z.string().min(1) })).mutation(async ({ input }) => {
     const { cashbillId } = input;
 
-    // TODO Test
-    const payment = await getTransactionStatus(cashbillId, 'TEST');
+    const payment = await getTransactionStatus(cashbillId, getPaymentMode());
 
     if (payment.statusCode === 200) {
       const { amount, personalData, requestedAmount, status } = payment;

@@ -1,6 +1,7 @@
 import { getTransactionStatus } from '@/server/payments';
 import { getConfig, isDayOrNight } from '@/lib/utils';
 import { sendMail } from '@/server/mails/nodemailer';
+import { getPaymentMode } from '@/utils/paymentMode';
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import crypto from 'node:crypto';
@@ -31,7 +32,7 @@ const handler = async (req: NextRequest) => {
     if (cmd === 'transactionStatusChanged') {
       const orderId = args;
       // TODO
-      const updatedTransaction = await getTransactionStatus(orderId, 'TEST');
+      const updatedTransaction = await getTransactionStatus(orderId, getPaymentMode());
       if (updatedTransaction.statusCode === 200) {
         const { status } = updatedTransaction;
         const payment = await prisma.payment

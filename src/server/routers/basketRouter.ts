@@ -1,4 +1,5 @@
 import { OrderDetailsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
+import { getPaymentMode } from '@/utils/paymentMode';
 import { loggedInProcedure, router } from '../trpc';
 import { createNewTransaction } from '../payments';
 import { TRPCError } from '@trpc/server';
@@ -389,8 +390,7 @@ export const basketRouter = router({
             },
             languageCode: 'PL',
           },
-          // TODO
-          'TEST',
+          getPaymentMode(),
         );
 
         const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
