@@ -252,7 +252,7 @@ export const shopRouter = router({
           },
         });
 
-        return { success: data };
+        return { success: true, wishList: data };
       } catch {}
       return { error: true };
     }),

@@ -9,9 +9,8 @@ export default auth(async (req) => {
   const session = req.auth;
   const pathname = nextUrl.pathname;
 
-  // TODO
-  if (pathname.startsWith('/panel')) {
-    if (!session?.user.email) return Response.redirect(new URL('/sklep', nextUrl));
+  if (pathname.startsWith('/panel') || pathname.startsWith('lista-zyczen')) {
+    if (!session?.user.email) return Response.redirect(new URL('/logowanie', nextUrl));
   }
   if (session?.user.email && pathname.startsWith('/logowanie')) {
     return Response.redirect(new URL('/sklep', nextUrl));
