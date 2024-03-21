@@ -37,7 +37,6 @@ const SignInForm = ({ redirectTo }: TSignInForm) => {
           if (response?.error) {
             setError(response.error);
           } else {
-            // TODO
             setSuccess('Suckes!');
           }
         })

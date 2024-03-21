@@ -1,7 +1,7 @@
+import { TBasketVariantsSchema } from '@/lib/validators/order';
 import CartItem from '@/components/CartItem';
-import { TBasketVariant } from '@/lib/types';
 
-const CartItems = ({ items }: { items: TBasketVariant[] }) => {
+const CartItems = ({ items }: { items: TBasketVariantsSchema }) => {
   return (
     <div className="max-w-sm space-y-2">
       {items.map((item) => (

@@ -1,7 +1,7 @@
+import { BasketVariantsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { getLandingPageProducts } from './cache';
 import { TSortOptions } from '@/utils/constans';
-import { TBasketVariant } from '@/lib/types';
 import { z } from 'zod';
 
 export const shopRouter = router({
@@ -146,7 +146,7 @@ export const shopRouter = router({
   verifyCart: publicProcedure
     .input(
       z.object({
-        cart: z.custom<TBasketVariant[]>(),
+        cart: BasketVariantsSchema,
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -166,7 +166,7 @@ export const shopRouter = router({
         },
       });
 
-      const updatedProducts: TBasketVariant[] = [];
+      const updatedProducts: TBasketVariantsSchema = [];
 
       cart.forEach((item) => {
         const variant = variants.find((entry) => entry.id === item.variant.id);
@@ -328,5 +328,3 @@ export const shopRouter = router({
       return randomProduct;
     }),
 });
-
-// TODO ZOD CUSTOM

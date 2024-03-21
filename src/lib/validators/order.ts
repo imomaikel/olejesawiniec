@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { number, z } from 'zod';
 
 export const OrderDetailsSchema = z
   .object({
@@ -132,3 +132,23 @@ export const OrderDetailsSchema = z
     }
   });
 export type TOrderDetailsSchema = z.infer<typeof OrderDetailsSchema>;
+
+export const BasketVariantSchema = z.object({
+  quantity: z.number(),
+  variant: z.object({
+    id: z.string(),
+    unit: z.string(),
+    price: z.number(),
+    capacity: z.number(),
+    product: z
+      .object({
+        link: z.string(),
+        label: z.string(),
+        mainPhoto: z.string().nullable(),
+      })
+      .nullable(),
+  }),
+});
+export const BasketVariantsSchema = z.array(BasketVariantSchema);
+export type TBasketVariantSchema = z.infer<typeof BasketVariantSchema>;
+export type TBasketVariantsSchema = z.infer<typeof BasketVariantsSchema>;

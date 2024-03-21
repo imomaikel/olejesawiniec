@@ -1,10 +1,10 @@
 'use client';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
+import { TBasketVariantSchema } from '@/lib/validators/order';
 import { MdOutlineImageNotSupported } from 'react-icons/md';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { errorToast, formatPrice } from '@/lib/utils';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import { TBasketVariant } from '@/lib/types';
 import { BsCartDash } from 'react-icons/bs';
 import { useCart } from '@/hooks/use-cart';
 import { trpc } from './providers/TRPC';
@@ -15,7 +15,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Hover from './Hover';
 
-const CartItem = ({ quantity, variant }: TBasketVariant) => {
+const CartItem = ({ quantity, variant }: TBasketVariantSchema) => {
   const user = useCurrentUser();
   const {
     removeProduct: _removeProduct,

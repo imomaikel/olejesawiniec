@@ -1,7 +1,6 @@
-import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
+import { OrderDetailsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, router } from '../trpc';
 import { createNewTransaction } from '../payments';
-import { TBasketVariant } from '@/lib/types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -9,7 +8,7 @@ export const basketRouter = router({
   get: loggedInProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
 
-    const basketVariants: TBasketVariant[] =
+    const basketVariants: TBasketVariantsSchema =
       (
         await prisma.user.findUnique({
           where: {

@@ -1,5 +1,5 @@
+import { TBasketVariantSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { TBasketVariant } from '@/lib/types';
 import { create } from 'zustand';
 
 type TUseCart = {
@@ -7,11 +7,11 @@ type TUseCart = {
   onOpen: () => void;
   onOpenChange: () => void;
 
-  cartData: TBasketVariant[];
-  addProduct: (variantData: TBasketVariant) => void;
+  cartData: TBasketVariantsSchema;
+  addProduct: (variantData: TBasketVariantSchema) => void;
   removeProduct: (variantId: string) => void;
 
-  setCart: (cart: TBasketVariant[]) => void;
+  setCart: (cart: TBasketVariantsSchema) => void;
 
   increaseQuantity: (variantId: string) => void;
   decreaseQuantity: (variantId: string) => void;
