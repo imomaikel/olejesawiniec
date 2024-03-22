@@ -2,8 +2,16 @@ import { Separator } from '@/components/ui/separator';
 import AfterLogin from '@/components/AfterLogin';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import { Metadata } from 'next';
 
-const ShopLayout = ({ children }: { children: React.ReactNode }) => {
+export const metadata: Metadata = {
+  title: {
+    default: 'Sklep | Oleje Sawiniec',
+    template: '%s | Oleje Sawiniec',
+  },
+};
+
+const ShopLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col min-h-screen justify-between">
       <div className="w-full max-w-screen-2xl mx-auto flex flex-col relative px-4 md:px-12">

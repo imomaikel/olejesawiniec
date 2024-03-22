@@ -96,7 +96,7 @@ const EditBox = ({ product, refetchProduct }: TEditBox) => {
           </div>
         </div>
         <p className="text-muted-foreground text-xs mb-0.5 mt-2">Kliknij na pojemność aby edytować</p>
-        <div className="flex lg:divide-x-2 divide-gray-300 mb-2 flex-col lg:flex-row">
+        <div className="flex lg:divide-x-2 divide-gray-300 mb-2 flex-col lg:flex-row flex-wrap">
           {product.variants.map((variant) => (
             <div
               key={variant.id}

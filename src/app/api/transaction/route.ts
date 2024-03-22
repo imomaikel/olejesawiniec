@@ -31,7 +31,6 @@ const handler = async (req: NextRequest) => {
 
     if (cmd === 'transactionStatusChanged') {
       const orderId = args;
-      // TODO
       const updatedTransaction = await getTransactionStatus(orderId, getPaymentMode());
       if (updatedTransaction.statusCode === 200) {
         const { status } = updatedTransaction;

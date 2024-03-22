@@ -10,7 +10,6 @@ import './globals.css';
 
 const epilogue = Epilogue({ subsets: ['latin'] });
 
-// TODO Lodash title
 export const metadata: Metadata = {
   title: 'Oleje Sawiniec',
   description: 'Olejarnia w zgodzie z naturą',
