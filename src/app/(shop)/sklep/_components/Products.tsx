@@ -85,18 +85,23 @@ const Products = () => {
             : 'flex flex-row flex-wrap gap-5 justify-center',
         )}
       >
-        {isLoading
-          ? [...Array.from(Array(9).keys())].map((index) => <ShopProduct.Skeleton key={`skeleton-${index}`} />)
-          : filteredProducts.length >= 1
-          ? filteredProducts.map(({ label, link, mainPhoto, lowestPrice }) => {
-              return <ShopProduct label={label} image={mainPhoto ?? ''} link={link} key={link} price={lowestPrice!} />;
-            })
-          : isFiltered
-          ? 'Brak produktów z podanymi filtrami.'
-          : 'Aktualnie brak dostępnych produktów.'}
+        {isLoading ? (
+          <Products.Skeleton />
+        ) : filteredProducts.length >= 1 ? (
+          filteredProducts.map(({ label, link, mainPhoto, lowestPrice }) => {
+            return <ShopProduct label={label} image={mainPhoto ?? ''} link={link} key={link} price={lowestPrice!} />;
+          })
+        ) : isFiltered ? (
+          'Brak produktów z podanymi filtrami.'
+        ) : (
+          'Aktualnie brak dostępnych produktów.'
+        )}
       </div>
     </div>
   );
+};
+Products.Skeleton = function ShowSkeleton() {
+  return [...Array.from(Array(9).keys())].map((index) => <ShopProduct.Skeleton key={`skeleton-${index}`} />);
 };
 
 export default Products;

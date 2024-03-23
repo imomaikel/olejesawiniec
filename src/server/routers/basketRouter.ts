@@ -534,5 +534,3 @@ export const basketRouter = router({
     return payment;
   }),
 });
-// TODO Change stock after payment
-// TODO Update basket after payment
