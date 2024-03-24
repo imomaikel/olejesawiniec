@@ -2,6 +2,7 @@ import { BasketVariantsSchema, TBasketVariantsSchema } from '@/lib/validators/or
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { getLandingPageProducts } from './cache';
 import { TSortOptions } from '@/utils/constans';
+import { subDays } from 'date-fns';
 import { z } from 'zod';
 
 export const shopRouter = router({
@@ -43,6 +44,20 @@ export const shopRouter = router({
     });
 
     //  TODO Calculate rating
+
+    if (product) {
+      const fallbackDate = subDays(new Date(), 30);
+      product.variants.forEach((variant, index) => {
+        if (variant.priceHistory.length <= 0) {
+          variant.priceHistory.push({
+            createdAt: fallbackDate,
+            id: BigInt(index - 100),
+            price: variant.price,
+            variantId: variant.id,
+          });
+        }
+      });
+    }
 
     return product ?? null;
   }),
