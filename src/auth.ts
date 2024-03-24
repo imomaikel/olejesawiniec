@@ -24,10 +24,13 @@ export const {
     },
   },
   callbacks: {
-    async signIn({ account }) {
+    async signIn({ account, user }) {
       if (account?.provider !== 'credentials') return true;
 
-      // TODO
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.id },
+      });
+      if (!dbUser || !dbUser.emailVerified) return false;
 
       return true;
     },
