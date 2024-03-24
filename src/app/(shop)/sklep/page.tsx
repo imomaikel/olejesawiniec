@@ -35,7 +35,7 @@ const ShopPage = () => {
 const ProductControlsFallback = () => {
   return (
     <>
-      <Search disabled />
+      <Search.Skeleton />
       <Categories.Skeleton />
       <Tags.Skeleton />
       <Separator />
