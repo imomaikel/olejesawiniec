@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const EXCLUDE_DIRECTORIES = ['build', 'node_modules', '.git', '.vscode'];
 const EXCLUDE_FILES = ['productionBuild.js', '.env', '.env.example'];
-const PRODUCTION_URL = 'https://sandbox.olejesawiniec.pl';
+const PRODUCTION_URL = 'https://test.olejesawiniec.pl';
 
 
 const EXCLUDED = [...EXCLUDE_FILES, ...EXCLUDE_DIRECTORIES];
