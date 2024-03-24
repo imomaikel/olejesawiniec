@@ -24,7 +24,10 @@ export const {
     },
   },
   callbacks: {
-    async signIn({ account, user }) {
+    async signIn({ account, user, profile }) {
+      if (account?.provider === 'google') {
+        return !!profile?.email_verified;
+      }
       if (account?.provider !== 'credentials') return true;
 
       const dbUser = await prisma.user.findUnique({
