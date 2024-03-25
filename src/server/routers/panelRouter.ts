@@ -1,7 +1,7 @@
 import { DISALLOWED_PRODUCT_NAMES, PRODUCT_NAME_REGEX, REPLACE_LETTERS, TOrderStatus } from '@/utils/constans';
 import { endOfMonth, endOfYear, format, getDaysInMonth, getMonth, startOfMonth, startOfYear } from 'date-fns';
+import { PanelShippingConfigValidator, PanelVariantProductValidator } from '@/lib/validators/panel';
 import { getConfig, getNextPaymentSteps, isDayOrNight, pad } from '@/lib/utils';
-import { PanelVariantProductValidator } from '@/lib/validators/panel';
 import { getPaymentMode } from '@/utils/paymentMode';
 import { getTransactionStatus } from '../payments';
 import { panelProcedure, router } from '../trpc';
@@ -1002,6 +1002,19 @@ export const panelRouter = router({
         return { error: true, message: 'Wystąpił błąd!' };
       }
     }),
+  updateShippingPrice: panelProcedure.input(PanelShippingConfigValidator).mutation(async ({ ctx, input }) => {
+    const { prisma } = ctx;
+
+    try {
+      await prisma.shopConfig.updateMany({
+        data: { ...input },
+      });
+
+      return { success: true };
+    } catch {
+      return { error: true };
+    }
+  }),
 });
 
 // TODO secure route + custom

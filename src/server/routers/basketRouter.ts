@@ -1,6 +1,7 @@
 import { OrderDetailsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { getPaymentMode } from '@/utils/paymentMode';
 import { loggedInProcedure, router } from '../trpc';
+import { calculateShipping } from '@/lib/shipping';
 import { createNewTransaction } from '../payments';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -394,6 +395,13 @@ export const basketRouter = router({
         );
 
         const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
+        const shippingPrice = await calculateShipping({
+          method,
+          productsTotalPrice: totalPrice,
+        });
+        if (shippingPrice === 'error') {
+          return { error: true, message: 'Wystąpił błąd (cena dostawy)' };
+        }
 
         if (createTransaction.statusCode === 200) {
           const payment = await prisma.payment.create({
@@ -428,8 +436,7 @@ export const basketRouter = router({
                   }),
                 },
               },
-              // TODO + shipping method
-              shippingPrice: 0,
+              shippingPrice,
               totalProducts,
               user: {
                 connect: {

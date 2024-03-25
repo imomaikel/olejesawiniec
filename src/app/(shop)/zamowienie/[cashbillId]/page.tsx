@@ -148,16 +148,14 @@ const PaymentPage = () => {
               <div className="w-full flex items-center">
                 <span>Cena przesyłki</span>
                 <div className="flex flex-1 h-[1px] bg-primary opacity-75 mx-4" />
-                {/* TODO */}
-                <span>{formatPrice(10)}</span>
+                <span>{formatPrice(payment.shippingPrice)}</span>
               </div>
             </li>
             <li>
               <div className="w-full flex items-center">
                 <span>Cena całkowita</span>
                 <div className="flex flex-1 h-[1px] bg-primary opacity-75 mx-4" />
-                {/* TODO */}
-                <span>{formatPrice(10 + productsPrice)}</span>
+                <span>{formatPrice(productsPrice + payment.shippingPrice)}</span>
               </div>
             </li>
           </ul>

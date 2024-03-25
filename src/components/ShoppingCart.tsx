@@ -70,7 +70,7 @@ const ShoppingCart = () => {
                   <span>{formatPrice(cartItemsPrice)}</span>
                 </div>
                 <div className="relative flex justify-between items-center flex-col md:flex-row">
-                  <span>Cena przesyłki</span>
+                  <span>Cena wysyłki</span>
                   <div className="h-0.5 bg-gray-300 flex-1 mx-4 hidden md:flex" />
                   <span>W następnym kroku</span>
                 </div>

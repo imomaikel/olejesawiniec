@@ -1,36 +1,45 @@
 'use client';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { errorToast, formatPrice } from '@/lib/utils';
+import { calculateShipping } from '@/lib/shipping';
 import { trpc } from '@/components/providers/TRPC';
 import { TInPostPointSelect } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import CartItems from './_components/CartItems';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
+import { ShippingType } from '@prisma/client';
 import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { useForm } from 'react-hook-form';
 import InPost from './_components/InPost';
-import { errorToast } from '@/lib/utils';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
 const OrderPage = () => {
-  const { onOpenChange: closeCart, cartData: _cartData } = useCart();
   const [inPostMachine, setInPostMachine] = useState<{
     description: string;
     imageUrl: string;
   } | null>(null);
+  const [shippingPrice, setShippingPrice] = useState<number | null>();
+  const [shippingMethod, setShippingMethod] = useState<ShippingType>('INPOST');
+
+  const { onOpenChange: closeCart } = useCart();
   const router = useRouter();
 
   useEffect(() => closeCart(), [closeCart]);
 
   const { data: cartData } = trpc.basket.get.useQuery(undefined, {
     retry: 1,
+  });
+  const { data: shippingConfig, isLoading: shippingLoading } = trpc.shop.getShippingConfig.useQuery(undefined, {
+    refetchOnWindowFocus: false,
   });
 
   const { mutate: pay, isLoading } = trpc.basket.pay.useMutation();
@@ -85,6 +94,22 @@ const OrderPage = () => {
     );
   };
 
+  const productsTotalPrice = useMemo(
+    () => cartData?.reduce((acc, curr) => (acc += curr.quantity * curr.variant.price), 0) || 0,
+    [cartData],
+  );
+
+  useEffect(() => {
+    calculateShipping({
+      method: shippingMethod,
+      productsTotalPrice,
+    }).then((res) => {
+      if (res !== 'error') {
+        setShippingPrice(res);
+      }
+    });
+  }, [productsTotalPrice, shippingMethod]);
+
   const onPointSelect = (point: TInPostPointSelect) => {
     toast.info(`Wybrano punkt "${point.name}"`);
 
@@ -127,12 +152,31 @@ const OrderPage = () => {
 
   if (!cartData) return null;
 
+  const shipping = shippingConfig?.data;
+
   return (
     <div className="mb-12">
       <h1 className="text-2xl font-bold">Aktualny koszyk</h1>
       <CartItems items={cartData} />
-      <Separator className="my-6" />
+      <p className="mb-6 mt-3">
+        Cena wszystkich produktów: <span>{formatPrice(productsTotalPrice)}</span>
+      </p>
+      <Separator className="mb-6" />
       <h1 className="text-2xl font-bold">Dostawa</h1>
+      <div>
+        <p>
+          Wybrana metoda dostawy: <span>{shippingMethod === 'COURIER' ? 'Kurier za pobraniem' : 'Paczkomat'}</span>
+        </p>
+        <p>
+          Cena dostawy:{' '}
+          {typeof shippingPrice === 'number' ? <span>{formatPrice(shippingPrice)}</span> : <span>Obliczanie...</span>}
+        </p>
+        {shippingMethod === 'INPOST' && shipping && (
+          <p>
+            Darmowa dostawa do paczkomatu od <span>{formatPrice(shipping.inpostFreeShippingOverPrice)}</span>
+          </p>
+        )}
+      </div>
       <Separator className="my-6" />
       <h1 className="text-2xl font-bold">Szczegóły</h1>
 
@@ -200,8 +244,10 @@ const OrderPage = () => {
               className="w-full"
               onValueChange={(e) => {
                 if (e === 'machine') {
+                  setShippingMethod('INPOST');
                   form.setValue('method', 'INPOST');
                 } else if (e === 'courier') {
+                  setShippingMethod('COURIER');
                   form.setValue('method', 'COURIER');
                 }
               }}
@@ -402,6 +448,35 @@ const OrderPage = () => {
               </TabsContent>
             </Tabs>
           </div>
+
+          <Separator className="my-6" />
+          <h1 className="text-2xl font-bold">Podsumowanie</h1>
+          <Table className="max-w-sm">
+            <TableHeader>
+              <TableRow>
+                <TableHead></TableHead>
+                <TableHead className="text-right">Cena</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Produkty</TableCell>
+                <TableCell className="text-right">{formatPrice(productsTotalPrice)}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Wysyłka</TableCell>
+                <TableCell className="text-right">
+                  {shippingPrice ? formatPrice(shippingPrice) : 'Obliczanie...'}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Razem</TableCell>
+                <TableCell className="text-right">{formatPrice(productsTotalPrice + (shippingPrice || 0))}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+
+          <Separator className="my-6" />
 
           <div className="mt-4">
             <Button size="2xl" className="max-w-md w-full" type="submit" disabled={isLoading}>

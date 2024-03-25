@@ -342,4 +342,21 @@ export const shopRouter = router({
 
       return randomProduct;
     }),
+  getShippingConfig: publicProcedure.query(async ({ ctx }) => {
+    const { prisma } = ctx;
+
+    const config = await prisma.shopConfig.findFirst({
+      select: {
+        courierPrice: true,
+        inpostFreeShippingOverPrice: true,
+        inpostPrice: true,
+      },
+    });
+
+    if (!config) {
+      return { error: true, message: 'Nie udało się wczytać ustawień dostaw.' };
+    }
+
+    return { success: true, data: config };
+  }),
 });

@@ -23,3 +23,10 @@ export const PanelVariantProductValidator = z.object({
   options: PanelVariantValidator,
   productId: z.string(),
 });
+
+export const PanelShippingConfigValidator = z.object({
+  inpostPrice: z.number(ERROR_MESSAGES),
+  courierPrice: z.number(ERROR_MESSAGES),
+  inpostFreeShippingOverPrice: z.number(ERROR_MESSAGES),
+});
+export type TPanelShippingConfigValidator = z.infer<typeof PanelShippingConfigValidator>;

@@ -1,5 +1,6 @@
 import { FaShopify, FaChartLine } from 'react-icons/fa6';
 import { MdOutlineDesignServices } from 'react-icons/md';
+import { LiaShippingFastSolid } from 'react-icons/lia';
 import { BiSolidShoppingBags } from 'react-icons/bi';
 import { PaymentStatus } from '@prisma/client';
 import { RiTodoLine } from 'react-icons/ri';
@@ -113,6 +114,11 @@ export const PANEL_TABS = [
         label: 'Podsumowanie',
         Icon: RiTodoLine,
         link: '/panel/zamowienia/podsumowanie',
+      },
+      {
+        label: 'Dostawa',
+        Icon: LiaShippingFastSolid,
+        link: '/panel/zamowienia/dostawa',
       },
     ],
   },
