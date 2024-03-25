@@ -76,7 +76,7 @@ const SignInForm = ({ redirectTo }: TSignInForm) => {
                     <p
                       className="text-muted-foreground text-sm hover:underline cursor-pointer ml-auto"
                       role="button"
-                      aria-labelledby="przypomij hasło"
+                      aria-label="przypomij hasło"
                       onClick={() => setIsDialogOpen(true)}
                     >
                       Nie pamiętasz hasła?

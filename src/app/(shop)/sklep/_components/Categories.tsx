@@ -61,6 +61,7 @@ const Categories = () => {
                   id={id}
                   checked={searchCategories.length >= 1 ? searchCategories.includes(label) : true}
                   onCheckedChange={(checked) => handleCheckbox(checked, label)}
+                  aria-label={`zaznacz ${label.toLowerCase()}`}
                 />
                 <Label htmlFor={id}>{label}</Label>
               </div>

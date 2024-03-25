@@ -36,7 +36,7 @@ const SortProducts = () => {
       <span className="capitalize font-bold">{displayName || 'Domyślnie'}</span>
       <Popover>
         <PopoverTrigger asChild>
-          <Button size="icon">
+          <Button size="icon" aria-label="pokaż menu">
             <FaSortAlphaDown className="h-6 w-6" />
           </Button>
         </PopoverTrigger>
@@ -49,6 +49,7 @@ const SortProducts = () => {
                   id={id}
                   checked={orderBy === id}
                   onCheckedChange={(checked) => handleCheckbox(checked, id)}
+                  aria-label={`sortuj według ${label}`}
                 />
                 <Label htmlFor={id}>{label}</Label>
               </div>
