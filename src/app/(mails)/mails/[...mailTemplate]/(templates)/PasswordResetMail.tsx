@@ -40,7 +40,6 @@ export const PasswordResetMail = ({ username, dayOrNightTime, passwordResetUrl }
 };
 
 const PasswordResetMailPage = () => {
-  // TODO
   const plain = render(
     PasswordResetMail({
       passwordResetUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/`,

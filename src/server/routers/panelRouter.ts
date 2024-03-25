@@ -1016,5 +1016,3 @@ export const panelRouter = router({
     }
   }),
 });
-
-// TODO secure route + custom

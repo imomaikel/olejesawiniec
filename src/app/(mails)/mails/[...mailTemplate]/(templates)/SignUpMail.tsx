@@ -37,7 +37,6 @@ export const SignUpMail = ({ confirmUrl, username, dayOrNightTime }: TSignUpMail
 };
 
 const SignUpMailPage = () => {
-  // TODO
   const plain = render(
     SignUpMail({
       confirmUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/`,

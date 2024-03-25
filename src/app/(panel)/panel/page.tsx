@@ -11,9 +11,8 @@ const PanelSummaryPage = () => {
     retry: 1,
   });
 
-  // TODO
   if (isLoading) return <PanelSummaryPage.Skeleton />;
-  if (!data) return 'Error';
+  if (!data) return 'Wystąpił błąd';
 
   const { earningsThisMonth, ordersThisMonth, usersThisMonth, yearlyEarnings } = data;
 

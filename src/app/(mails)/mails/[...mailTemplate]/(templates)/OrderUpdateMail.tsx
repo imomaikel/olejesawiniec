@@ -76,7 +76,6 @@ export const OrderUpdateMail = ({
 };
 
 const OrderUpdateMailPage = () => {
-  // TODO
   const plain = render(
     OrderUpdateMail({
       orderUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/`,

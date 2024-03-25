@@ -89,7 +89,6 @@ export const NewOrderMail = ({
 };
 
 const NewOrderMailPage = () => {
-  // TODO
   const plain = render(
     NewOrderMail({
       orderUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/`,

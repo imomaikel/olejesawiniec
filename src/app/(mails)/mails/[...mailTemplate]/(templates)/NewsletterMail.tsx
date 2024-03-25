@@ -32,7 +32,6 @@ export const NewsletterMail = ({ confirmUrl }: TNewsletterMail) => {
 };
 
 const NewsletterMailPage = () => {
-  // TODO
   const plain = render(NewsletterMail({ confirmUrl: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/` }));
   return <div dangerouslySetInnerHTML={{ __html: plain }} />;
 };
