@@ -2,7 +2,7 @@
 const nextConfig = {
     images: {
         remotePatterns: [{
-            hostname: process.env.UPLOAD_HOST,
+            hostname: 'utfs.io',
             protocol: 'https'
         }, {
             hostname: 'static.easypack24.net',

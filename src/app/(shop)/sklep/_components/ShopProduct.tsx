@@ -25,7 +25,6 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
               width={0}
               height={0}
               sizes="100vw"
-              priority
               quality={70}
               loading="eager"
               className="h-full w-full max-h-96 object-contain object-center rounded-tr-xl rounded-tl-xl"

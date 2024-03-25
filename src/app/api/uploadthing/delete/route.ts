@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { utapi } from '../core';
 import { auth } from '@/auth';
 
 const handler = async (req: Request) => {
@@ -23,39 +24,24 @@ const handler = async (req: Request) => {
       return NextResponse.json({ status: 'error', message: 'Złe żądanie' });
     }
 
-    let isError = false;
-    const response = await new Promise((resolve, reject) => {
-      fetch(process.env.DELETE_URL!, {
-        method: 'POST',
-        body: JSON.stringify({
-          path: photo.path,
-          apiKey: process.env.UPLOAD_KEY!,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
-        .then(async (res) => {
-          const { status, data } = res;
-          if (status === 'error') {
-            reject(data);
-          } else if (status === 'success') {
-            await prisma.extraPhoto.delete({
-              where: { id: fileId },
-            });
-            resolve('Zdjęcie usunięte!');
-          }
-        })
-        .catch(() => reject('Błąd serwera (2)'));
-    }).catch((error) => {
-      isError = true;
-      return error;
+    try {
+      const file = photo.url.split('/');
+      const fileName = file[file.length - 1];
+      await utapi.deleteFiles(fileName);
+    } catch {
+      return NextResponse.json({
+        status: 'error',
+        message: 'Wystąpił błąd!',
+      });
+    }
+
+    await prisma.extraPhoto.delete({
+      where: { id: fileId },
     });
 
     return NextResponse.json({
-      status: isError ? 'error' : 'success',
-      message: response,
+      status: 'success',
+      message: 'Zdjęcie usunięte',
     });
   } catch {
     return NextResponse.json({ status: 'error', message: 'Błąd serwera (2)' });

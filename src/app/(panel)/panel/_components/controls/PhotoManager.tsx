@@ -1,14 +1,17 @@
 'use client';
 import { errorToast, successToast } from '@/lib/utils';
 import { ExtraPhoto, Product } from '@prisma/client';
+import { useUploadThing } from '@/lib/reactHelpers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { IoOptions } from 'react-icons/io5';
 import { FaImage } from 'react-icons/fa6';
-import { useState } from 'react';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
 import Link from 'next/link';
 
+type TPhoto = 'main' | 'extra';
 type TPhotoManager = {
   product: Product & {
     extraPhotos: ExtraPhoto[];
@@ -16,62 +19,54 @@ type TPhotoManager = {
   refetch: () => void;
 };
 const PhotoManager = ({ product, refetch }: TPhotoManager) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [deletePending, startTransition] = useTransition();
 
-  const uploadFile = (file: File, photoType: 'main' | 'extra') => {
-    if (isLoading || !file) return;
-    setIsLoading(true);
+  const fileHeaders = {
+    productId: product.id,
+    method: 'main' as TPhoto,
+  };
 
-    const body = new FormData();
-    body.set('file', file);
-    body.set('productLink', product.link);
-    body.set('isMainPhoto', photoType);
+  const { startUpload, isUploading } = useUploadThing('imageUploader', {
+    onClientUploadComplete: () => {
+      toast.success('Zdjęcie dodane!');
+      refetch();
+    },
+    onUploadError: (err) => {
+      toast.error('Nie udało się dodać zdjęcia!');
+      console.log(err);
+    },
+    onUploadBegin: () => {
+      toast.info('Dodawanie zdjęcia...');
+    },
+    headers: () => fileHeaders,
+  });
 
-    fetch('/api/images/upload', {
-      method: 'POST',
-      body,
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.status === 'error') {
-          errorToast(res.message);
-        } else {
-          successToast('Zdjęcie dodane!');
-          refetch();
-        }
-        setIsLoading(false);
-      })
-      .catch(() => {
-        errorToast();
-        setIsLoading(false);
-      });
+  const uploadFile = (file: File, photoType: TPhoto) => {
+    fileHeaders.method = photoType;
+    startUpload([file]);
   };
 
   const deleteFile = (fileId: string) => {
-    if (isLoading) return;
-    setIsLoading(true);
-
-    const body = new FormData();
-    body.set('fileId', fileId);
-
-    fetch('/api/images/delete', {
-      method: 'POST',
-      body,
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.status === 'error') {
-          errorToast(res.message);
-        } else {
-          successToast(res.message);
-          refetch();
-        }
-        setIsLoading(false);
+    startTransition(async () => {
+      const body = new FormData();
+      body.set('fileId', fileId);
+      await fetch('/api/uploadthing/delete', {
+        method: 'POST',
+        body,
       })
-      .catch(() => {
-        errorToast();
-        setIsLoading(false);
-      });
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 'error') {
+            errorToast(res.message);
+          } else {
+            successToast(res.message);
+            refetch();
+          }
+        })
+        .catch(() => {
+          errorToast();
+        });
+    });
   };
 
   return (
@@ -86,7 +81,7 @@ const PhotoManager = ({ product, refetch }: TPhotoManager) => {
           <p>Aktualne zdjęcie:</p>
           <span>
             {product.mainPhoto ? (
-              <Button asChild size="sm" disabled={isLoading}>
+              <Button asChild size="sm" disabled={isUploading}>
                 <Link href={product.mainPhoto} className="text-primary ml-2" target="_blank">
                   <div className="flex h-full items-center">
                     <FaImage className="w-5 h-5 mr-2" />
@@ -105,7 +100,7 @@ const PhotoManager = ({ product, refetch }: TPhotoManager) => {
             id="mainAdd"
             type="file"
             className="mr-4 max-w-sm"
-            disabled={isLoading}
+            disabled={isUploading}
             onChange={(e) => e.target.files && uploadFile(e.target.files[0], 'main')}
           />
         </div>
@@ -121,7 +116,7 @@ const PhotoManager = ({ product, refetch }: TPhotoManager) => {
             <ol className="leading-8 pl-4 space-y-2 mb-4">
               {product.extraPhotos.map((photo) => (
                 <li key={photo.id} className="flex items-center space-x-2">
-                  <Button asChild size="sm" disabled={isLoading}>
+                  <Button asChild size="sm" disabled={deletePending}>
                     <Link href={photo.url} className="text-primary" target="_blank">
                       <div className="flex h-full items-center">
                         <FaImage className="w-5 h-5 mr-2" />
@@ -144,7 +139,7 @@ const PhotoManager = ({ product, refetch }: TPhotoManager) => {
             type="file"
             id="extraAdd"
             className="mr-4 max-w-sm"
-            disabled={isLoading}
+            disabled={deletePending}
             onChange={(e) => e.target.files && uploadFile(e.target.files[0], 'extra')}
           />
         </div>
