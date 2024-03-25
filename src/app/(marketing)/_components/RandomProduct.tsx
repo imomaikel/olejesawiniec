@@ -75,7 +75,9 @@ const RandomProduct = ({ isOpen, onClose }: TRandomProduct) => {
                 <p className="font-semibold tracking-wide">Dodatkowo</p>
                 <div className="flex flex-wrap gap-2">
                   {product.tags.map((entry) => (
-                    <Badge key={entry.id}>{entry.label}</Badge>
+                    <Badge key={entry.id} className="capitalize">
+                      {entry.label}
+                    </Badge>
                   ))}
                 </div>
               </div>

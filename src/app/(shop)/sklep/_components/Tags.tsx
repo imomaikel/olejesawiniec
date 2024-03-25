@@ -2,13 +2,10 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { trpc } from '@/components/providers/TRPC';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
 
 const Tags = () => {
-  const [tagCount, setTagCount] = useState(6);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -30,8 +27,6 @@ const Tags = () => {
 
   const tagsExist = !isLoading && tags && tags.length >= 1;
 
-  const tagsLength = tags?.length ?? 0;
-
   return (
     <div className={cn('w-full md:w-[300px] relative z-10', !tagsExist && 'hiddexn')}>
       <div className="flex items-center relative">
@@ -40,12 +35,11 @@ const Tags = () => {
         </div>
         <div className="border flex-1 mx-2" />
       </div>
-      <div className="flex flex-wrap gap-x-1 gap-y-2 mt-2">
-        {tags?.map(({ id, label }, index) => {
-          if (index >= tagCount) return null;
+      <div className="flex flex-wrap gap-1.5 mt-2">
+        {tags?.map(({ id, label }) => {
           return (
             <Badge
-              className="rounded-full cursor-pointer"
+              className="rounded-full cursor-pointer capitalize tracking-tight"
               variant={searchParams.getAll('tag').includes(label) ? 'default' : 'secondary'}
               key={id}
               onClick={() => handleTag(label)}
@@ -55,16 +49,6 @@ const Tags = () => {
           );
         })}
       </div>
-      {tagsLength > tagCount ? (
-        <Button className="w-full mt-3" variant="secondary" size="sm" onClick={() => setTagCount(tagCount + 6)}>
-          Pokaż więcej
-        </Button>
-      ) : (
-        <Button className="w-full mt-3" variant="secondary" size="sm" onClick={() => setTagCount(6)}>
-          Zwiń
-        </Button>
-      )}
-      {/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px] opacity-75' /> */}
     </div>
   );
 };
@@ -83,7 +67,6 @@ Tags.Skeleton = function ShowSkeleton() {
         ))}
       </div>
       <Skeleton className="w-full h-9 mt-3" />
-      {/* <div className='w-full h-full absolute bg-gradient-to-r from-teal-200 to-lime-200 -z-10 inset-0 blur-[125px] opacity-75' /> */}
     </div>
   );
 };

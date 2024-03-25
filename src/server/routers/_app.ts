@@ -39,7 +39,11 @@ export const appRouter = router({
   getTagList: publicProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
-    const tags = await prisma.tag.findMany();
+    const tags = await prisma.tag.findMany({
+      orderBy: {
+        label: 'asc',
+      },
+    });
 
     return tags ?? null;
   }),

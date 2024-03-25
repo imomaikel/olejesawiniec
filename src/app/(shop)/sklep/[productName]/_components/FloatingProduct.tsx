@@ -227,7 +227,7 @@ const FloatingProduct = ({
           {tags &&
             tags.map(({ label }) => (
               <Link key={label} href={`/sklep?tag=${label.replace(/ /g, '+')}`}>
-                <Badge className="cursor-pointer">{label}</Badge>
+                <Badge className="cursor-pointer capitalize">{label}</Badge>
               </Link>
             ))}
         </div>

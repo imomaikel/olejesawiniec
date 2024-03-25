@@ -37,8 +37,8 @@ export const panelRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { tagName } = input;
       const { prisma } = ctx;
+      const tagName = input.tagName.toLowerCase();
 
       let message, status: TPanelRouterResponse['status'];
 

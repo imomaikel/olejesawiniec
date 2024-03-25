@@ -66,7 +66,7 @@ const TagControl = ({ allTags, productTags, productId, refetchTag, refetchProduc
                   <ImSpinner9 className="animate-spin h-4 w-4" />
                 </div>
               )}
-              <span className={cn(isLoading && 'invisible')}>{label}</span>
+              <span className={cn('capitalize', isLoading && 'invisible')}>{label}</span>
             </Badge>
           );
         })}
