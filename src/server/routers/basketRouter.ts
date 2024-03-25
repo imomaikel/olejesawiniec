@@ -182,9 +182,9 @@ export const basketRouter = router({
           where: { id: user.id },
           data: {
             basket: {
-              delete: {
+              update: {
                 variants: {
-                  some: {
+                  deleteMany: {
                     variantId,
                   },
                 },
