@@ -480,7 +480,7 @@ const OrderPage = () => {
 
           <div className="mt-4">
             <Button size="2xl" className="max-w-md w-full" type="submit" disabled={isLoading}>
-              Przejdź do płatności
+              Zamawiam i płacę
             </Button>
           </div>
         </form>

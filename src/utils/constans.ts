@@ -7,7 +7,7 @@ import { RiTodoLine } from 'react-icons/ri';
 import { FaHashtag } from 'react-icons/fa';
 import { TiPlus } from 'react-icons/ti';
 import { FaEdit } from 'react-icons/fa';
-
+// TODO remove unused
 export const TStatuses: {
   value: PaymentStatus;
   label: string;
@@ -44,16 +44,16 @@ export const FOOTER_LINKS = [
     options: [
       {
         label: 'Regulamin',
-        link: '#',
+        link: '/regulamin',
       },
       {
         label: 'Polityka prywatności',
         link: '/polityka-prywatnosci',
       },
-      {
-        label: 'Oferta dla sklepów',
-        link: '#',
-      },
+      // {
+      //   label: 'Oferta dla sklepów',
+      //   link: '#',
+      // },
     ],
   },
   {
