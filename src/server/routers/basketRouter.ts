@@ -312,6 +312,9 @@ export const basketRouter = router({
       const { prisma, user } = ctx;
       const { personalDetails, shippingMethod } = input;
 
+      // TODO
+      if (user.role !== 'ADMIN') throw new TRPCError({ code: 'UNAUTHORIZED' });
+
       try {
         const userData = await prisma.user.findUnique({
           where: { id: user.id },
