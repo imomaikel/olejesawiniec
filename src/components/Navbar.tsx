@@ -47,7 +47,7 @@ const Navbar = ({ className, textColor, topPadding }: TNavbar) => {
         <div className="relative hidden md:block">
           <Link href={signatureImageUrl}>
             <Image
-              src={textColor === 'black' ? '/signatureBlack.png' : '/signature.png'}
+              src={textColor === 'black' ? '/signatureBlack.webp' : '/signature.webp'}
               className="object-contain object-center"
               width={271}
               priority={true}

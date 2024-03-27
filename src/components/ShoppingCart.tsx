@@ -43,7 +43,7 @@ const ShoppingCart = () => {
         {cartData.length <= 0 ? (
           <div className="relative w-full mt-12 z-10 flex items-center justify-center flex-col">
             <Image
-              src="/empty-cart.png"
+              src="/empty-cart.webp"
               alt="puty koszyk"
               loading="eager"
               priority

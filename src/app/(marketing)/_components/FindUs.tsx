@@ -34,7 +34,7 @@ Zapraszamy do zakupów, gdziekolwiek jest Ci wygodniej"
         variants={slideIn('right', 'spring', 0, 0.75)}
       >
         <ImageSwiper
-          urls={['/shop1.jpg', '/shop2.jpg', '/shop3.jpg']}
+          urls={['/shop1.webp', '/shop2.webp', '/shop3.webp']}
           alt="sklep stacjonarny"
           className="max-w-lg"
           caption="Zamość, ul. Partyzantów 100"

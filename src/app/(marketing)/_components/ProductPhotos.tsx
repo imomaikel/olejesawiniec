@@ -35,7 +35,7 @@ i unikalny smak."
         >
           <Image
             loading="eager"
-            src="/product1.jpg"
+            src="/product1.webp"
             alt="produkt"
             width={0}
             height={0}
@@ -52,7 +52,7 @@ i unikalny smak."
         >
           <Image
             loading="eager"
-            src="/product1.jpg"
+            src="/product2.webp"
             alt="produkt"
             width={0}
             height={0}
@@ -69,7 +69,7 @@ i unikalny smak."
         >
           <Image
             loading="eager"
-            src="/product1.jpg"
+            src="/product3.webp"
             alt="produkt"
             width={0}
             height={0}

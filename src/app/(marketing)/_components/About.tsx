@@ -40,7 +40,7 @@ doskonałości sprawia, że każda kropla oleju to 100% smaku i aromatu."
           className="relative max-w-md w-full md:min-w-[400px] md:min-h-[530px] min-h-[400px]"
         >
           <Image
-            src="/oil.png"
+            src="/oil.webp"
             width={0}
             height={0}
             alt="olej"
@@ -48,7 +48,7 @@ doskonałości sprawia, że każda kropla oleju to 100% smaku i aromatu."
             className="w-full h-full max-w-[400px] md:max-w-none"
           />
           {/* <Image
-            src="/oil.png"
+            src="/oil.webp"
             width={0}
             loading="eager"
             height={0}

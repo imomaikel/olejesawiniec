@@ -36,7 +36,7 @@ const MobileNavbar = () => {
           <div className="relative mt-4">
             <Link href={signatureImageUrl}>
               <Image
-                src={'/signatureBlack.png'}
+                src={'/signatureBlack.webp'}
                 className="object-contain object-center"
                 width={271}
                 priority={true}

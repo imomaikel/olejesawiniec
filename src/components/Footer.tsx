@@ -13,7 +13,7 @@ const Footer = () => {
           <div className="cursor-pointer relative	mb-4 lg:block hidden">
             <Link href="/">
               <Image
-                src="/signature.png"
+                src="/signature.webp"
                 className="object-contain object-center"
                 width={271}
                 height={107}
