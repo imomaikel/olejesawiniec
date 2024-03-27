@@ -4,6 +4,7 @@ import { getLandingPageProducts } from './cache';
 import { TSortOptions } from '@/utils/constans';
 import { subDays } from 'date-fns';
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
 
 export const shopRouter = router({
   getProduct: publicProcedure.input(z.object({ productName: z.string() })).query(async ({ ctx, input }) => {
@@ -358,5 +359,31 @@ export const shopRouter = router({
     }
 
     return { success: true, data: config };
+  }),
+  getMyOrders: loggedInProcedure.query(async ({ ctx }) => {
+    const { prisma, user } = ctx;
+
+    if (!user.email) throw new TRPCError({ code: 'UNAUTHORIZED' });
+
+    try {
+      const orders = await prisma.payment.findMany({
+        where: {
+          email: user.email,
+        },
+        select: {
+          cashbillId: true,
+          productsPrice: true,
+          createdAt: true,
+          status: true,
+          totalProducts: true,
+          updatedAt: true,
+          shippingPrice: true,
+        },
+      });
+
+      return orders;
+    } catch {
+      return [];
+    }
   }),
 });

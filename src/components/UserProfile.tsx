@@ -47,6 +47,9 @@ const UserProfile = () => {
         <DropdownMenuItem asChild>
           <Link href="/lista-zyczen">Lista życzeń</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/moje-zamowienia">Moje zamówienia</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>Wyloguj się</DropdownMenuItem>
       </DropdownMenuContent>
