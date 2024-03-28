@@ -498,49 +498,49 @@ export const basketRouter = router({
     const { prisma, user } = ctx;
     const { orderId } = input;
 
-    const payments = (
-      await prisma.user.findUnique({
-        where: { id: user.id },
-        select: {
-          payment: {
-            where: {
-              cashbillId: orderId,
+    if (!user.email) throw new TRPCError({ code: 'BAD_REQUEST' });
+
+    try {
+      const payment = await prisma.payment.findUnique({
+        where: {
+          cashbillId: orderId,
+          OR: [
+            {
+              email: user.email,
             },
+            {
+              userId: user.id,
+            },
+          ],
+        },
+        select: {
+          products: {
             select: {
-              products: {
+              productCapacity: true,
+              productName: true,
+              productUnit: true,
+              productPrice: true,
+              productQuantity: true,
+              originalProduct: {
                 select: {
-                  productCapacity: true,
-                  productName: true,
-                  productUnit: true,
-                  productPrice: true,
-                  productQuantity: true,
-                  originalProduct: {
-                    select: {
-                      link: true,
-                    },
-                  },
+                  link: true,
                 },
               },
-              cashbillId: true,
-              createdAt: true,
-              shippingPrice: true,
-              updatedAt: true,
-              productsPrice: true,
-              totalProducts: true,
-              status: true,
             },
-            take: 1,
           },
+          cashbillId: true,
+          createdAt: true,
+          shippingPrice: true,
+          updatedAt: true,
+          productsPrice: true,
+          totalProducts: true,
+          status: true,
         },
-      })
-    )?.payment;
+      });
 
-    if (!payments || !payments[0]) {
+      return payment;
+    } catch {
       throw new TRPCError({ code: 'BAD_REQUEST' });
     }
-
-    const payment = payments[0];
-
-    return payment;
   }),
 });
