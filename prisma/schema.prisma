@@ -23,15 +23,15 @@ model Product {
   tags          Tag[]
   details       ProductDetail[]
   nutritionFact NutritionFact?
-  opinions      Opinion[]
 
   wishList        WishList[]
   paymentProducts PaymentProduct[]
 
   customFeatures CustomFeature[]
 
-  ratings Rating[]
-  rating  Float
+  ratings  Rating[]
+  rating   Float
+  opinions Opinion[]
 
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
@@ -64,29 +64,23 @@ model Rating {
   id    String @id @default(cuid())
   score Float
 
-  // TODO AUTH PROFILE
-  author String
-  // 
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
 
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
-
-  createdAd DateTime @default(now())
+  createdAd        DateTime @default(now())
+  paymentProductId String?
 }
 
 model Opinion {
   id         String  @id @default(cuid())
   showAvatar Boolean
-  content    String
+  content    String  @db.Text
 
-  // TODO AUTH PROFILE
-  author String
-  // 
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
 
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
-
-  createdAt DateTime @default(now())
+  createdAt        DateTime @default(now())
+  paymentProductId String?
 }
 
 model NutritionFact {
@@ -282,6 +276,9 @@ model PaymentProduct {
 
   originalProduct   Product? @relation(fields: [originalProductId], references: [id])
   originalProductId String?
+
+  opinion Boolean @default(false)
+  rating  Float   @default(0)
 
   payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   paymentId BigInt

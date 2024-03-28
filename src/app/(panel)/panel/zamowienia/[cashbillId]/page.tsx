@@ -219,6 +219,7 @@ const PanelOrderPage = () => {
                                     <span>{productName}</span>
                                   )}
                                   <span className="text-xs text-muted-foreground">
+                                    {/* TODO FIX LINK */}
                                     {productEnabled ? 'Aktualnie włączony' : 'Aktualnie wyłączony'}
                                   </span>
                                 </div>

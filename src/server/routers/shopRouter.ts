@@ -1,10 +1,11 @@
 import { BasketVariantsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
+import { findProductsToReview } from '@/lib/reviews';
 import { getLandingPageProducts } from './cache';
 import { TSortOptions } from '@/utils/constans';
+import { TRPCError } from '@trpc/server';
 import { subDays } from 'date-fns';
 import { z } from 'zod';
-import { TRPCError } from '@trpc/server';
 
 export const shopRouter = router({
   getProduct: publicProcedure.input(z.object({ productName: z.string() })).query(async ({ ctx, input }) => {
@@ -368,7 +369,7 @@ export const shopRouter = router({
     try {
       const orders = await prisma.payment.findMany({
         where: {
-          email: user.email,
+          OR: [{ email: user.email }, { userId: user.id }],
         },
         select: {
           cashbillId: true,
@@ -385,5 +386,14 @@ export const shopRouter = router({
     } catch {
       return [];
     }
+  }),
+  getProductsToReview: loggedInProcedure.query(async ({ ctx }) => {
+    const { user } = ctx;
+
+    if (!user.email) throw new TRPCError({ code: 'UNAUTHORIZED' });
+
+    const products = await findProductsToReview(user.id, user.email);
+
+    return products;
   }),
 });
