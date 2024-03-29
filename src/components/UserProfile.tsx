@@ -50,6 +50,9 @@ const UserProfile = () => {
         <DropdownMenuItem asChild>
           <Link href="/moje-zamowienia">Moje zamówienia</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/wystaw-opinie">Oceń produkty</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>Wyloguj się</DropdownMenuItem>
       </DropdownMenuContent>
