@@ -27,7 +27,7 @@ const PaymentPage = () => {
   );
 
   // TODO skeleton
-  if (isLoading) return <div>Loading</div>;
+  if (isLoading) return <div>Proszę czekać...</div>;
 
   if (!payment) {
     router.replace('/sklep');
@@ -111,10 +111,9 @@ const PaymentPage = () => {
             ))}
           </TableBody>
         </Table>
-        {/* TODO */}
         <p className="text-sm text-muted-foreground">
           Po odebraniu produktów, zachęcamy do wystawienia opinii{' '}
-          <Link href="/zamowienia" className="text-primary">
+          <Link href="/wystaw-opinie" className="text-primary">
             tutaj
           </Link>
         </p>
@@ -166,8 +165,7 @@ const PaymentPage = () => {
           <Link href="/sklep">Powrót do sklepu</Link>
         </Button>
         <Button asChild>
-          {/* TODO */}
-          <Link href="/zamowienia">Wcześniejsze zamówienia</Link>
+          <Link href="/moje-zamowienia">Wcześniejsze zamówienia</Link>
         </Button>
       </div>
     </div>

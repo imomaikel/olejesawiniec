@@ -1,6 +1,6 @@
 'use client';
+import { MAX_STARS, cn, errorToast, formatPrice, successToast } from '@/lib/utils';
 import { ElementRef, useEffect, useMemo, useRef, useState } from 'react';
-import { cn, errorToast, formatPrice, successToast } from '@/lib/utils';
 import { IoStar, IoStarHalf, IoStarOutline } from 'react-icons/io5';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
@@ -19,7 +19,6 @@ import { useCart } from '@/hooks/use-cart';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
-const MAX_STARS = 6;
 const OFFSET = 155;
 const makeOffset = (val: number) => {
   if (val <= OFFSET) return 0;

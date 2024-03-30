@@ -12,7 +12,7 @@ const OrderPage = () => {
       </p>
       <p>
         Planowany start oficjalny naszego sklepu internetowego został zaplanowany na{' '}
-        <span className="font-bold text-primary">30 marca 2024 roku</span>. Od tego dnia będziecie mogli składać
+        <span className="font-bold text-primary">6 kwietnia 2024 roku</span>. Od tego dnia będziecie mogli składać
         zamówienia i cieszyć się szerokim wyborem produktów dostępnych na naszej platformie.
       </p>
       <p>
@@ -20,7 +20,7 @@ const OrderPage = () => {
         Przygotujcie się na ekscytujące zakupy i niesamowite oferty, które czekają na Was już niebawem.
       </p>
       <p>
-        Zapraszamy Was serdecznie do dołączenia do nas na starcie naszej strony internetowej. Bądźcie z nami 30 marca
+        Zapraszamy Was serdecznie do dołączenia do nas na starcie naszej strony internetowej. Bądźcie z nami 6 kwietnia
         2024 roku i dołączcie do wspólnej przygody zakupowej!
       </p>
       <p>

@@ -6,6 +6,8 @@ import { pl } from 'date-fns/locale';
 import { toast } from 'sonner';
 import prisma from './prisma';
 
+export const MAX_STARS = 6;
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -132,7 +134,7 @@ export const isDayOrNight = (): 'day' | 'night' => {
 };
 
 export const getConfig = async () => {
-  let cfg = await prisma?.config.findFirst();
+  let cfg = await prisma.config.findFirst();
   if (!cfg) {
     cfg = await prisma.config.create({ data: {} });
   }
