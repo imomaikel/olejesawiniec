@@ -153,6 +153,12 @@ export const BasketVariantsSchema = z.array(BasketVariantSchema);
 export type TBasketVariantSchema = z.infer<typeof BasketVariantSchema>;
 export type TBasketVariantsSchema = z.infer<typeof BasketVariantsSchema>;
 
+export const OpinionSchema = z.object({
+  cashbillId: z.string(),
+  originalProductId: z.string(),
+  showAvatar: z.boolean(),
+  opinion: z.string().min(4, { message: 'Opinia jest za krótka.' }).max(512, { message: 'Opinia jest za długa.' }),
+});
 export const RatingSchema = z.object({
   cashbillId: z.string(),
   originalProductId: z.string(),

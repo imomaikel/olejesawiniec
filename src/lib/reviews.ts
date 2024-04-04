@@ -34,7 +34,7 @@ export const findProductsToReview = async (userId: string, userEmail: string): P
             },
             {
               rating: {
-                not: 0,
+                equals: 0,
               },
             },
           ],
@@ -68,7 +68,7 @@ export const findProductsToReview = async (userId: string, userEmail: string): P
       updatedAt: updatedAt,
       products: products
         .map((product) => {
-          if (addedProducts.has(product.originalProductId)) {
+          if (addedProducts.has(product.originalProductId) || (product.opinion === true && product.rating !== 0)) {
             return { productName: 'null', variants: [], isOpinion: false, isRating: false, originalProductId: 'null' };
           }
           if (product.originalProductId) {
@@ -143,33 +143,31 @@ export const addReview = async (props: TAddReview) => {
 
   if (method === 'OPINION') {
     try {
-      await prisma.$transaction(async (tx) => {
-        tx.product.update({
-          where: { id: originalProduct.id },
-          data: {
-            opinions: {
-              create: {
-                content: props.opinion,
-                showAvatar: props.showAvatar,
+      await prisma.product.update({
+        where: { id: originalProduct.id },
+        data: {
+          opinions: {
+            create: {
+              content: props.opinion,
+              showAvatar: props.showAvatar,
+            },
+          },
+        },
+      });
+      await prisma.payment.update({
+        where: { cashbillId },
+        data: {
+          products: {
+            updateMany: {
+              where: {
+                originalProductId,
+              },
+              data: {
+                opinion: true,
               },
             },
           },
-        });
-        tx.payment.update({
-          where: { cashbillId },
-          data: {
-            products: {
-              updateMany: {
-                where: {
-                  originalProductId,
-                },
-                data: {
-                  opinion: true,
-                },
-              },
-            },
-          },
-        });
+        },
       });
       return { success: true, message: 'Dodano opinię.' };
     } catch {

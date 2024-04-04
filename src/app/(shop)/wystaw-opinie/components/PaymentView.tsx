@@ -17,7 +17,7 @@ const PaymentView = ({ props, refetch }: TPaymentView) => {
 
   useEffect(() => {
     const product = products.find((entry) => entry.originalProductId === selectedProduct?.originalProductId);
-    if (product) setSelectedProduct(product);
+    setSelectedProduct(product);
   }, [products, selectedProduct]);
 
   return (

@@ -48,10 +48,16 @@ const ReviewProduct = ({ cashbillId, product, onClose, refetch }: TReviewProduct
               </TableBody>
             </Table>
           </div>
-          {product?.isRating === false && (
+          {product?.isRating === false ? (
             <AddRating cashbillId={cashbillId} originalProductId={product.originalProductId} refetch={refetch} />
+          ) : (
+            <p className="py-3 text-center text-sm">Ocena została już dodana. Zachęcamy również do dodania opinii.</p>
           )}
-          {product?.isOpinion === false && <AddOpinion cashbillId={cashbillId} />}
+          {product?.isOpinion === false ? (
+            <AddOpinion cashbillId={cashbillId} originalProductId={product.originalProductId} refetch={refetch} />
+          ) : (
+            <p className="py-3 text-center text-sm">Opinia została już dodana. Zachęcamy również do dodania oceny.</p>
+          )}
         </div>
       </DialogContent>
     </Dialog>

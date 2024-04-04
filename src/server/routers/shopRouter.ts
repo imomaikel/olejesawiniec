@@ -1,4 +1,4 @@
-import { BasketVariantsSchema, RatingSchema, TBasketVariantsSchema } from '@/lib/validators/order';
+import { BasketVariantsSchema, OpinionSchema, RatingSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { addReview, findProductsToReview } from '@/lib/reviews';
 import { getLandingPageProducts } from './cache';
@@ -395,6 +395,24 @@ export const shopRouter = router({
     const products = await findProductsToReview(user.id, user.email);
 
     return products;
+  }),
+  addOpinion: loggedInProcedure.input(OpinionSchema).mutation(async ({ ctx, input }) => {
+    const { cashbillId, opinion, originalProductId, showAvatar } = input;
+    const { user } = ctx;
+
+    if (!user.email) throw new TRPCError({ code: 'UNAUTHORIZED' });
+
+    const action = await addReview({
+      cashbillId,
+      method: 'OPINION',
+      opinion,
+      originalProductId,
+      userEmail: user.email,
+      userId: user.id,
+      showAvatar,
+    });
+
+    return action;
   }),
   addRating: loggedInProcedure.input(RatingSchema).mutation(async ({ ctx, input }) => {
     const { cashbillId, originalProductId, rating } = input;
