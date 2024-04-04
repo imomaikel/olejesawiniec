@@ -8,8 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { trpc } from '@/components/providers/TRPC';
 import { TiChevronRight } from 'react-icons/ti';
 import { Badge } from '@/components/ui/badge';
+import Opinions from './_components/Opinions';
 import { IoWarning } from 'react-icons/io5';
-import Opinion from './_components/Opinion';
 import draftToHtml from 'draftjs-to-html';
 import { useMemo, useState } from 'react';
 
@@ -280,19 +280,7 @@ const ProductPage = () => {
           <div>
             <div className="flex flex-col gap-y-4">
               {opinions.length >= 1 ? (
-                opinions.map((opinion) => {
-                  // TODO Avatar
-                  // TODO opinion
-                  return null;
-                  // return (
-                  //   <Opinion
-                  //     authorName={opinion.author}
-                  //     content={opinion.content}
-                  //     date={opinion.createdAt}
-                  //     key={opinion.id}
-                  //   />
-                  // );
-                })
+                <Opinions totalOpinions={product._count.opinions} initialOpinions={opinions} />
               ) : (
                 <div className="mt-4">
                   <p className="text-justify">

@@ -1,8 +1,8 @@
 import { BasketVariantsSchema, OpinionSchema, RatingSchema, TBasketVariantsSchema } from '@/lib/validators/order';
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
+import { OPINIONS_PER_PAGE, TSortOptions } from '@/utils/constans';
 import { addReview, findProductsToReview } from '@/lib/reviews';
 import { getLandingPageProducts } from './cache';
-import { TSortOptions } from '@/utils/constans';
 import { TRPCError } from '@trpc/server';
 import { subDays } from 'date-fns';
 import { z } from 'zod';
@@ -38,14 +38,35 @@ export const shopRouter = router({
             },
           },
         },
-        opinions: true,
+        opinions: {
+          select: {
+            showAvatar: true,
+            content: true,
+            id: true,
+            createdAt: true,
+            user: {
+              select: {
+                image: true,
+                name: true,
+                firstName: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: OPINIONS_PER_PAGE,
+        },
+        _count: {
+          select: {
+            opinions: true,
+          },
+        },
         ratings: {
           select: { id: true },
         },
       },
     });
-
-    //  TODO Calculate rating
 
     if (product) {
       const fallbackDate = subDays(new Date(), 30);
@@ -59,9 +80,57 @@ export const shopRouter = router({
           });
         }
       });
+      product.opinions = product.opinions.map((opinion) => {
+        if (opinion.user) {
+          if (!opinion.showAvatar) {
+            opinion.user.image = null;
+          }
+          opinion.user.name = opinion.user.name?.split(' ')[0] || null;
+          opinion.user.firstName = opinion.user.firstName?.split(' ')[0] || null;
+        }
+        return opinion;
+      });
     }
 
     return product ?? null;
+  }),
+  getOpinions: publicProcedure.input(z.object({ page: z.number() })).mutation(async ({ ctx, input }) => {
+    const { prisma } = ctx;
+    const { page } = input;
+
+    const opinions = (
+      await prisma.opinion.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          showAvatar: true,
+          content: true,
+          id: true,
+          createdAt: true,
+          user: {
+            select: {
+              image: true,
+              name: true,
+              firstName: true,
+            },
+          },
+        },
+        take: OPINIONS_PER_PAGE,
+        skip: OPINIONS_PER_PAGE * page,
+      })
+    ).map((opinion) => {
+      if (opinion.user) {
+        if (!opinion.showAvatar) {
+          opinion.user.image = null;
+        }
+        opinion.user.name = opinion.user.name?.split(' ')[0] || null;
+        opinion.user.firstName = opinion.user.firstName?.split(' ')[0] || null;
+      }
+      return opinion;
+    });
+
+    return opinions;
   }),
   getEnabledProducts: publicProcedure
     .input(

@@ -210,3 +210,5 @@ export const SORT_OPTIONS = [
   },
 ] as const;
 export type TSortOptions = (typeof SORT_OPTIONS)[number]['id'];
+
+export const OPINIONS_PER_PAGE = 3;

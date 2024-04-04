@@ -150,6 +150,11 @@ export const addReview = async (props: TAddReview) => {
             create: {
               content: props.opinion,
               showAvatar: props.showAvatar,
+              user: {
+                connect: {
+                  id: userId,
+                },
+              },
             },
           },
         },

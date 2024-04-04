@@ -73,11 +73,14 @@ model Rating {
 
 model Opinion {
   id         String  @id @default(cuid())
-  showAvatar Boolean
+  showAvatar Boolean @default(true)
   content    String  @db.Text
 
   product   Product @relation(fields: [productId], references: [id])
   productId String
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 
   createdAt        DateTime @default(now())
   paymentProductId String?
@@ -342,6 +345,7 @@ model User {
   inpostStreet String?
   payment      Payment[]
   forceLogin   Boolean?
+  opinions     Opinion[]
 
   passwordResetToken        String?   @unique
   passwordResetTokenExpires DateTime?
