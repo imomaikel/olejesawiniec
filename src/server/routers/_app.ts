@@ -1,9 +1,7 @@
-import { z } from 'zod';
 import { publicProcedure, router } from '../trpc';
 import { basketRouter } from './basketRouter';
 import { panelRouter } from './panelRouter';
 import { shopRouter } from './shopRouter';
-import { handlePrismaError } from './errors';
 
 export const appRouter = router({
   panel: panelRouter,

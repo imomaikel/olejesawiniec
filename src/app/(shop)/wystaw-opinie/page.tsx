@@ -1,6 +1,6 @@
 'use client';
+import PaymentView from './_components/PaymentView';
 import { trpc } from '@/components/providers/TRPC';
-import PaymentView from './components/PaymentView';
 import Link from 'next/link';
 
 const OpinionPage = () => {

@@ -1,5 +1,5 @@
 'use server';
-import ConfirmButton from './components/ConfirmButton';
+import ConfirmButton from './_components/ConfirmButton';
 import { redirect } from 'next/navigation';
 import { addDays } from 'date-fns';
 import prisma from '@/lib/prisma';

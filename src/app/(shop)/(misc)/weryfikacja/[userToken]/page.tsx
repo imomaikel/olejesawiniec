@@ -1,5 +1,5 @@
 'use server';
-import VerifyButton from './components/VerifyButton';
+import VerifyButton from './_components/VerifyButton';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { signIn } from '@/auth';

@@ -42,7 +42,10 @@ const UserProfile = () => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>{name ?? email}</DropdownMenuLabel>
+        <DropdownMenuLabel className="flex flex-col">
+          {name && <span>{name}</span>}
+          {email && <span>{email}</span>}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/lista-zyczen">Lista życzeń</Link>
