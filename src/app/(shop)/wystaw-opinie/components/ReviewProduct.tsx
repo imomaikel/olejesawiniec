@@ -11,8 +11,9 @@ type TReviewProduct = {
   cashbillId: string;
   product: inferRouterOutputs<typeof shopRouter>['getProductsToReview'][0]['products'][0] | null;
   onClose: () => void;
+  refetch: () => void;
 };
-const ReviewProduct = ({ cashbillId, product, onClose }: TReviewProduct) => {
+const ReviewProduct = ({ cashbillId, product, onClose, refetch }: TReviewProduct) => {
   return (
     <Dialog open={!!product} onOpenChange={onClose}>
       <DialogContent className="max-h-[75%] overflow-y-auto">
@@ -47,7 +48,9 @@ const ReviewProduct = ({ cashbillId, product, onClose }: TReviewProduct) => {
               </TableBody>
             </Table>
           </div>
-          {product?.isRating === false && <AddRating cashbillId={cashbillId} />}
+          {product?.isRating === false && (
+            <AddRating cashbillId={cashbillId} originalProductId={product.originalProductId} refetch={refetch} />
+          )}
           {product?.isOpinion === false && <AddOpinion cashbillId={cashbillId} />}
         </div>
       </DialogContent>

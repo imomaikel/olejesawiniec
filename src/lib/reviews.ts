@@ -1,5 +1,6 @@
 'use server';
 import prisma from './prisma';
+import { z } from 'zod';
 
 type TFindProductsToReviewReturn = {
   cashbillId: string;
@@ -95,4 +96,142 @@ export const findProductsToReview = async (userId: string, userEmail: string): P
   }
 
   return data;
+};
+
+type TAddReview = {
+  cashbillId: string;
+  userId: string;
+  userEmail: string;
+  originalProductId: string;
+} & (TAddReviewRating | TAddReviewOpinion);
+type TAddReviewRating = {
+  method: 'RATING';
+  rating: number;
+};
+type TAddReviewOpinion = {
+  method: 'OPINION';
+  opinion: string;
+  showAvatar: boolean;
+};
+export const addReview = async (props: TAddReview) => {
+  const { cashbillId, method, userEmail, userId, originalProductId } = props;
+
+  const availableReviews = await findProductsToReview(userId, userEmail);
+
+  const safeOpinion = method === 'OPINION' ? z.string().min(4).max(512).safeParse(props.opinion).success : true;
+  const safeRating = method === 'RATING' ? z.number().min(1).max(5).safeParse(props.rating).success : true;
+
+  if (!safeOpinion || !safeRating) return { error: true, message: 'Nieprawidłowe dane.' };
+
+  const payment = availableReviews.find((entry) => entry.cashbillId === cashbillId);
+  const product = payment?.products.find((entry) => entry.originalProductId === originalProductId);
+  const originalProduct = await prisma.product.findUnique({ where: { id: product?.originalProductId || '0' } });
+
+  if (!payment || !product || !originalProduct) {
+    return {
+      error: true,
+      message: `Aktualnie nie możesz dodać ${method === 'OPINION' ? 'opinii' : 'oceny'} do tego produktu.`,
+    };
+  }
+
+  if (method === 'OPINION' && product.isOpinion) {
+    return { error: true, message: 'Opinia do tego produktu została już dodana.' };
+  }
+  if (method === 'RATING' && product.isRating) {
+    return { error: true, message: 'Ocena do tego produktu została już dodana.' };
+  }
+
+  if (method === 'OPINION') {
+    try {
+      await prisma.$transaction(async (tx) => {
+        tx.product.update({
+          where: { id: originalProduct.id },
+          data: {
+            opinions: {
+              create: {
+                content: props.opinion,
+                showAvatar: props.showAvatar,
+              },
+            },
+          },
+        });
+        tx.payment.update({
+          where: { cashbillId },
+          data: {
+            products: {
+              updateMany: {
+                where: {
+                  originalProductId,
+                },
+                data: {
+                  opinion: true,
+                },
+              },
+            },
+          },
+        });
+      });
+      return { success: true, message: 'Dodano opinię.' };
+    } catch {
+      return { error: true, message: 'Nie udało się dodać opinii.' };
+    }
+  }
+
+  if (method === 'RATING') {
+    try {
+      await prisma.product.update({
+        where: { id: originalProduct.id },
+        data: {
+          ratings: {
+            create: {
+              score: props.rating,
+            },
+          },
+        },
+      });
+      await prisma.payment.update({
+        where: { cashbillId },
+        data: {
+          products: {
+            updateMany: {
+              where: {
+                originalProductId,
+              },
+              data: {
+                rating: props.rating,
+              },
+            },
+          },
+        },
+      });
+      updateRating(originalProductId);
+
+      return { success: true, message: 'Dodano ocenę.' };
+    } catch {
+      return { error: true, message: 'Nie udało się dodać oceny.' };
+    }
+  }
+
+  return { error: true };
+};
+
+const updateRating = async (productId: string) => {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: {
+      ratings: true,
+    },
+  });
+  if (!product) return;
+
+  const ratings = product.ratings.length || 1;
+  const totalScore = product.ratings.reduce((acc, curr) => (acc += curr.score), 0);
+  const newRating = parseFloat((totalScore / ratings).toFixed(2));
+
+  await prisma.product.update({
+    where: { id: productId },
+    data: {
+      rating: newRating,
+    },
+  });
 };

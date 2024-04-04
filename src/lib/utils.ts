@@ -6,7 +6,7 @@ import { pl } from 'date-fns/locale';
 import { toast } from 'sonner';
 import prisma from './prisma';
 
-export const MAX_STARS = 6;
+export const MAX_STARS = 5;
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

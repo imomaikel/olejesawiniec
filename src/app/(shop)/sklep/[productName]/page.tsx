@@ -282,14 +282,16 @@ const ProductPage = () => {
               {opinions.length >= 1 ? (
                 opinions.map((opinion) => {
                   // TODO Avatar
-                  return (
-                    <Opinion
-                      authorName={opinion.author}
-                      content={opinion.content}
-                      date={opinion.createdAt}
-                      key={opinion.id}
-                    />
-                  );
+                  // TODO opinion
+                  return null;
+                  // return (
+                  //   <Opinion
+                  //     authorName={opinion.author}
+                  //     content={opinion.content}
+                  //     date={opinion.createdAt}
+                  //     key={opinion.id}
+                  //   />
+                  // );
                 })
               ) : (
                 <div className="mt-4">

@@ -1,4 +1,4 @@
-import { number, z } from 'zod';
+import { z } from 'zod';
 
 export const OrderDetailsSchema = z
   .object({
@@ -152,3 +152,12 @@ export const BasketVariantSchema = z.object({
 export const BasketVariantsSchema = z.array(BasketVariantSchema);
 export type TBasketVariantSchema = z.infer<typeof BasketVariantSchema>;
 export type TBasketVariantsSchema = z.infer<typeof BasketVariantsSchema>;
+
+export const RatingSchema = z.object({
+  cashbillId: z.string(),
+  originalProductId: z.string(),
+  rating: z
+    .number()
+    .min(1, { message: 'Ocena musi być w skali 1-5' })
+    .max(5, { message: 'Ocena musi być w skali 1-5' }),
+});

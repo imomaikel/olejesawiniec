@@ -4,7 +4,7 @@ import PaymentView from './components/PaymentView';
 import Link from 'next/link';
 
 const OpinionPage = () => {
-  const { data: products, isLoading } = trpc.shop.getProductsToReview.useQuery();
+  const { data: products, isLoading, refetch } = trpc.shop.getProductsToReview.useQuery();
 
   // TODO Skeleton
   if (isLoading) return 'Ładowanie';
@@ -31,7 +31,7 @@ const OpinionPage = () => {
       ) : (
         <div className="flex gap-y-4 flex-col">
           {products.map((product) => (
-            <PaymentView key={product.cashbillId} props={product} />
+            <PaymentView key={product.cashbillId} props={product} refetch={refetch} />
           ))}
         </div>
       )}

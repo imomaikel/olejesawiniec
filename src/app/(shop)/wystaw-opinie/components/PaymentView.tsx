@@ -4,15 +4,21 @@ import { inferRouterOutputs } from '@trpc/server';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ReviewProduct from './ReviewProduct';
+import { useEffect, useState } from 'react';
 import { BsStars } from 'react-icons/bs';
-import { useState } from 'react';
 
 type TPaymentView = {
   props: inferRouterOutputs<typeof shopRouter>['getProductsToReview'][0];
+  refetch: () => void;
 };
-const PaymentView = ({ props }: TPaymentView) => {
+const PaymentView = ({ props, refetch }: TPaymentView) => {
   const [selectedProduct, setSelectedProduct] = useState<TPaymentView['props']['products'][0]>();
   const { cashbillId, createdAt, products, updatedAt } = props;
+
+  useEffect(() => {
+    const product = products.find((entry) => entry.originalProductId === selectedProduct?.originalProductId);
+    if (product) setSelectedProduct(product);
+  }, [products, selectedProduct]);
 
   return (
     <>
@@ -78,6 +84,7 @@ const PaymentView = ({ props }: TPaymentView) => {
         cashbillId={cashbillId}
         product={selectedProduct || null}
         onClose={() => setSelectedProduct(undefined)}
+        refetch={refetch}
       />
     </>
   );
