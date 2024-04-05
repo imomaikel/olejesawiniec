@@ -250,6 +250,7 @@ model Payment {
   // TODO
   totalProducts Int
   products      PaymentProduct[]
+  notified      Boolean          @default(false)
 
   // Details
   firstName String
