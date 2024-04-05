@@ -312,9 +312,6 @@ export const basketRouter = router({
       const { prisma, user } = ctx;
       const { personalDetails, shippingMethod } = input;
 
-      // TODO
-      if (user.role !== 'ADMIN') throw new TRPCError({ code: 'UNAUTHORIZED' });
-
       try {
         const userData = await prisma.user.findUnique({
           where: { id: user.id },
@@ -378,6 +375,17 @@ export const basketRouter = router({
         const paymentLink = await prisma.paymentLink.create({
           data: {},
         });
+
+        const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
+
+        const shippingPrice = await calculateShipping({
+          method,
+          productsTotalPrice: totalPrice,
+        });
+        if (shippingPrice === 'error') {
+          return { error: true, message: 'Wystąpił błąd (cena dostawy)' };
+        }
+
         const createTransaction = await createNewTransaction(
           {
             title: 'Olejesawiniec.pl - Zamówienie',
@@ -386,7 +394,7 @@ export const basketRouter = router({
 
             amount: {
               currencyCode: 'PLN',
-              value: totalPrice,
+              value: shippingMethod === 'COURIER' ? shippingPrice : totalPrice,
             },
             description,
             personalData: {
@@ -396,15 +404,6 @@ export const basketRouter = router({
           },
           getPaymentMode(),
         );
-
-        const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
-        const shippingPrice = await calculateShipping({
-          method,
-          productsTotalPrice: totalPrice,
-        });
-        if (shippingPrice === 'error') {
-          return { error: true, message: 'Wystąpił błąd (cena dostawy)' };
-        }
 
         if (createTransaction.statusCode === 200) {
           const payment = await prisma.payment.create({
