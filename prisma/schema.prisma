@@ -20,6 +20,7 @@ model Product {
   extraPhotos   ExtraPhoto[]
   variants      Variant[]
   lowestPrice   Float?
+  highestPrice  Float?
   tags          Tag[]
   details       ProductDetail[]
   nutritionFact NutritionFact?

@@ -2,6 +2,7 @@
 import { MdOutlineImageNotSupported } from 'react-icons/md';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatPrice } from '@/lib/utils';
+import { BsDashLg } from 'react-icons/bs';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -9,10 +10,11 @@ type TShopProduct = {
   link: string;
   label: string;
   image: string | null;
-  price?: number;
+  lowestPrice?: number;
+  highestPrice?: number;
   editMode?: boolean;
 };
-const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
+const ShopProduct = ({ link, image, label, lowestPrice, highestPrice, editMode }: TShopProduct) => {
   const productLink = editMode ? `/panel/produkty/${link}` : `/sklep/${link}`;
 
   return (
@@ -39,7 +41,17 @@ const ShopProduct = ({ link, image, label, price, editMode }: TShopProduct) => {
         </div>
         <div className="py-2 px-4 text-center flex flex-col">
           <span className="font-medium tracking-wide mb-1">{label}</span>
-          {!editMode && price && <span className="text-primary font-bold">{formatPrice(price)}</span>}
+          <div className="flex justify-center items-center">
+            {!editMode && lowestPrice && <span className="text-primary font-bold">{formatPrice(lowestPrice)}</span>}
+            {!editMode && highestPrice && (
+              <div className="flex items-center">
+                <div className="font-semibold mx-1">
+                  <BsDashLg />
+                </div>
+                <span className="text-primary font-bold">{formatPrice(highestPrice)}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Link>

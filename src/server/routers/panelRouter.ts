@@ -284,6 +284,17 @@ export const panelRouter = router({
           },
         })
         .catch(() => {});
+      await prisma.product
+        .update({
+          where: {
+            id: productId,
+            OR: [{ highestPrice: { lt: price } }, { highestPrice: { equals: null } }],
+          },
+          data: {
+            highestPrice: price,
+          },
+        })
+        .catch(() => {});
       status = 'success';
       message = `Dodano opcję "${capacity}${unit}"`;
     } catch (error: any) {
@@ -334,10 +345,11 @@ export const panelRouter = router({
         });
 
         const lowestPrice = variant.product?.variants.sort((a, b) => a.price - b.price)[0]?.price ?? null;
+        const highestPrice = variant.product?.variants.sort((a, b) => b.price - a.price)[0]?.price ?? null;
 
         await prisma.product.updateMany({
           where: { id: variant.product?.id },
-          data: { lowestPrice },
+          data: { lowestPrice, highestPrice },
         });
 
         return true;
@@ -373,10 +385,11 @@ export const panelRouter = router({
         });
 
         const lowestPrice = product.variants.sort((a, b) => a.price - b.price)[0]?.price ?? null;
+        const highestPrice = product.variants.sort((a, b) => b.price - a.price)[0]?.price ?? null;
 
         await prisma.product.update({
           where: { id: productId },
-          data: { lowestPrice },
+          data: { lowestPrice, highestPrice },
         });
 
         return `Opcja "${capacityUnit}" została usunięta`;

@@ -88,8 +88,17 @@ const Products = () => {
         {isLoading ? (
           <Products.Skeleton />
         ) : filteredProducts.length >= 1 ? (
-          filteredProducts.map(({ label, link, mainPhoto, lowestPrice }) => {
-            return <ShopProduct label={label} image={mainPhoto ?? ''} link={link} key={link} price={lowestPrice!} />;
+          filteredProducts.map(({ label, link, mainPhoto, lowestPrice, highestPrice }) => {
+            return (
+              <ShopProduct
+                label={label}
+                image={mainPhoto ?? ''}
+                link={link}
+                key={link}
+                lowestPrice={lowestPrice || undefined}
+                highestPrice={highestPrice || undefined}
+              />
+            );
           })
         ) : isFiltered ? (
           'Brak produktów z podanymi filtrami.'

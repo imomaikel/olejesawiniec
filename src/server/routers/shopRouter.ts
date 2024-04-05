@@ -149,7 +149,15 @@ export const shopRouter = router({
             gte: 1,
           },
         },
-        select: { tags: true, category: true, label: true, mainPhoto: true, link: true, lowestPrice: true },
+        select: {
+          tags: true,
+          category: true,
+          label: true,
+          mainPhoto: true,
+          link: true,
+          lowestPrice: true,
+          highestPrice: true,
+        },
         ...((!orderBy || orderBy === 'domyślnie') && {
           orderBy: {
             createdAt: 'asc',
