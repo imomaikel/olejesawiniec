@@ -174,7 +174,7 @@ const CartItem = ({ quantity, variant }: TBasketVariantSchema) => {
           </div>
           <div className="select-none">
             <Button asChild size="sm" variant="ghost" className="px-0 py-0 mt-0.5">
-              <Link href={productLink ?? '/sklep'}>
+              <Link href={`/sklep/${productLink}` ?? '/sklep'}>
                 Zobacz produkt
                 <FaExternalLinkAlt className="ml-1 h-3 w-3 mb-1" />
               </Link>

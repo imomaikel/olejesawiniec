@@ -94,6 +94,12 @@ const ProductPage = () => {
     return value;
   };
 
+  const pricePer100 = selectedVariant ? (100 * selectedVariant.price) / selectedVariant.capacity : 0;
+  const priceDiffPer100 =
+    product.variants[0] && pricePer100
+      ? (100 * product.variants[0].price) / product.variants[0].capacity - pricePer100
+      : 0;
+
   return (
     <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0">
       <FloatingProduct
@@ -168,6 +174,31 @@ const ProductPage = () => {
               </Badge>
               <div>Najniższa cena w ciągu 30 dni</div>
               <div className="font-semibold">{formatPrice(selectedVariant.priceHistory[0].price)}</div>
+            </div>
+          )}
+          {pricePer100 > 0 && selectedVariant && (
+            <div className="flex flex-col relative mb-4">
+              <div className="flex mt-4 lg:space-x-2 flex-col lg:flex-row lg:mt-2">
+                <Badge className="w-min">
+                  {selectedVariant.capacity}
+                  {selectedVariant.unit}
+                </Badge>
+                <div>Cena w przeliczeniu na 100{selectedVariant.unit}</div>
+                <div className="font-semibold">{formatPrice(pricePer100)}</div>
+              </div>
+              {priceDiffPer100 > 0 && (
+                <div className="space-x-1 text-muted-foreground text-sm absolute -bottom-5">
+                  <Badge className="w-min invisible">
+                    {selectedVariant.capacity}
+                    {selectedVariant.unit}
+                  </Badge>
+                  <span className="!ml-2">To aż</span>
+                  <span className="font-semibold">{formatPrice(priceDiffPer100)}</span>
+                  <span>
+                    oszczędności na <span>100{selectedVariant.unit}</span>
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
