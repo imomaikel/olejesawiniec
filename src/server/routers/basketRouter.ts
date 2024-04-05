@@ -394,7 +394,7 @@ export const basketRouter = router({
 
             amount: {
               currencyCode: 'PLN',
-              value: shippingMethod === 'COURIER' ? shippingPrice : totalPrice,
+              value: shippingMethod === 'COURIER' ? shippingPrice : totalPrice + shippingPrice,
             },
             description,
             personalData: {
