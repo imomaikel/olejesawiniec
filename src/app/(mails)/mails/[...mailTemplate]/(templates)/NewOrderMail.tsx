@@ -28,7 +28,7 @@ export const NewOrderMail = ({
   products,
   shippingPrice = 0,
 }: TNewOrderMail) => {
-  const toalPrice = products.reduce((acc, curr) => (acc += curr.price), shippingPrice);
+  const toalPrice = products.reduce((acc, curr) => (acc += curr.price * curr.quantity), shippingPrice);
 
   return (
     <MailTemplate title={`Nowe zamówienie: ${orderId}`}>
