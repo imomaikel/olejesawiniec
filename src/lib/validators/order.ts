@@ -145,6 +145,12 @@ export const BasketVariantSchema = z.object({
         link: z.string(),
         label: z.string(),
         mainPhoto: z.string().nullable(),
+        customFeatures: z.object({ id: z.number(), label: z.string() }).array().optional(),
+        category: z
+          .object({
+            customFeatures: z.object({ id: z.number(), label: z.string() }).array(),
+          })
+          .optional(),
       })
       .nullable(),
   }),

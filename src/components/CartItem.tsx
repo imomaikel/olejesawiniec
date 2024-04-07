@@ -15,18 +15,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Hover from './Hover';
 
-const CartItem = ({ quantity, variant }: TBasketVariantSchema) => {
+const CartItem = ({
+  quantity,
+  variant,
+  features,
+}: TBasketVariantSchema & {
+  features: {
+    id: number;
+    label: string;
+  }[];
+}) => {
   const user = useCurrentUser();
   const {
     removeProduct: _removeProduct,
     increaseQuantity: _increaseQuantity,
     decreaseQuantity: _decreaseQuantity,
     cartData: _cartData,
+    customFeatureMenuOnOpen,
   } = useCart();
 
-  const { mutate: serverAddToBasket } = trpc.basket.add.useMutation();
-  const { mutate: serverRemoveFromBasket } = trpc.basket.remove.useMutation();
-  const { mutate: serverSetProductQuantity } = trpc.basket.setQuantity.useMutation();
+  const { mutate: serverAddToBasket, isLoading: isAdding } = trpc.basket.add.useMutation();
+  const { mutate: serverRemoveFromBasket, isLoading: isRemoving } = trpc.basket.remove.useMutation();
+  const { mutate: serverSetProductQuantity, isLoading: isUpdating } = trpc.basket.setQuantity.useMutation();
 
   const addToBasket = () => {
     if (!!user) {
@@ -123,22 +133,21 @@ const CartItem = ({ quantity, variant }: TBasketVariantSchema) => {
   const variantPrice = variant.price;
   const variantId = variant.id;
 
+  const isApiLoading = isUpdating || isAdding || isRemoving;
+
   return (
-    <div className="px-1 py-2 flex bg-gray-100 rounded-md relative space-x-3 group">
+    <div className="flex bg-gray-100 rounded-md relative space-x-3 pr-12 shadow-xl border hover:border-primary transition-colors">
       <div className="flex items-center justify-center overflow-hidden">
         {image ? (
-          <Image
-            src={image}
-            width={64}
-            height={64}
-            alt="produkt"
-            className="group-hover:scale-110 transition-transform"
-          />
+          <Image src={image} width={128} height={128} alt="produkt" className="rounded-tl-md rounded-bl-md" />
         ) : (
-          <MdOutlineImageNotSupported className="w-16 h-16" />
+          <div className="flex items-center justify-center flex-col px-2 text-center">
+            <MdOutlineImageNotSupported className="w-16 h-16" />
+            <span className="text-xs">Brak zdjęcia</span>
+          </div>
         )}
       </div>
-      <div className="flex flex-1">
+      <div className="flex flex-1 items-center py-2">
         <div className="flex flex-col">
           <span className="text-lg font-medium">{productLabel}</span>
           <div className="flex items-center text-sm text-muted-foreground">
@@ -149,43 +158,54 @@ const CartItem = ({ quantity, variant }: TBasketVariantSchema) => {
             <BsDot className="w-4 h-4 mb-1" />
             <span>{formatPrice(variantPrice)}/szt.</span>
           </div>
-          <div className="text-muted-foreground text-sm flex items-center space-x-2">
+          <div className="text-muted-foreground text-sm flex items-center space-x-2 mb-2">
             <span>{quantity} szt.</span>
             <Hover content="Dodaj jedną sztukę">
-              <div
+              <Button
                 className="transition-colors hover:text-primary cursor-pointer"
-                role="button"
-                aria-label="dodaj jedną sztuke"
                 onClick={addToBasket}
+                disabled={isApiLoading}
+                size="xsIcon"
+                variant="outline"
+                aria-label="dodaj jedną sztuke"
               >
                 <AiOutlinePlus className="mb-1 w-5 h-5" />
-              </div>
+              </Button>
             </Hover>
             <Hover content="Usuń jedną sztukę">
-              <div
+              <Button
                 className="transition-colors hover:text-primary cursor-pointer"
                 aria-label="usuń jedną sztuke"
-                role="button"
+                size="xsIcon"
+                variant="outline"
                 onClick={removeOneFromBasket}
+                disabled={isApiLoading}
               >
                 <AiOutlineMinus className="mb-1 w-5 h-5" />
-              </div>
+              </Button>
             </Hover>
           </div>
-          <div className="select-none">
-            <Button asChild size="sm" variant="ghost" className="px-0 py-0 mt-0.5">
+          <div className="select-none space-y-2">
+            <Button asChild size="sm" className="w-full">
               <Link href={`/sklep/${productLink}` ?? '/sklep'}>
                 Zobacz produkt
                 <FaExternalLinkAlt className="ml-1 h-3 w-3 mb-1" />
               </Link>
             </Button>
+            {features.length >= 1 && (
+              <Button size="sm" className="w-full" onClick={() => customFeatureMenuOnOpen(variant.id)}>
+                Personalizuj
+              </Button>
+            )}
           </div>
         </div>
       </div>
       <Hover content="Usuń z koszyka">
         <div
           className="bg-destructive/75 absolute right-0 top-0 h-full w-10 flex items-center justify-center rounded-tr-md rounded-br-md transition-colors hover:bg-destructive cursor-pointer"
-          onClick={removeProductFromBasket}
+          onClick={() => {
+            if (!isApiLoading) removeProductFromBasket();
+          }}
         >
           <BsCartDash className="h-6 w-6" />
         </div>

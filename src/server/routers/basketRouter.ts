@@ -33,6 +33,12 @@ export const basketRouter = router({
                             link: true,
                             label: true,
                             mainPhoto: true,
+                            customFeatures: true,
+                            category: {
+                              select: {
+                                customFeatures: true,
+                              },
+                            },
                           },
                         },
                       },

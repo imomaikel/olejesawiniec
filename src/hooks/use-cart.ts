@@ -15,10 +15,20 @@ type TUseCart = {
 
   increaseQuantity: (variantId: string) => void;
   decreaseQuantity: (variantId: string) => void;
+
+  isCustomFeatureMenuOpen: boolean;
+  customFeatureVariantId: string | null;
+  customFeatureMenuOnOpen: (id: string) => void;
+  customFeatureMenuOnOpenChange: () => void;
 };
 export const useCart = create<TUseCart>()(
   persist(
     (set, get) => ({
+      customFeatureVariantId: null,
+      isCustomFeatureMenuOpen: false,
+      customFeatureMenuOnOpen: (id) => set(() => ({ customFeatureVariantId: id, isCustomFeatureMenuOpen: true })),
+      customFeatureMenuOnOpenChange: () => set(() => ({ isCustomFeatureMenuOpen: false })),
+
       isOpen: false,
       onOpen: () => set(() => ({ isOpen: true })),
       onOpenChange: () => set(() => ({ isOpen: false })),

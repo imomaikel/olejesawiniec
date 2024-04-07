@@ -508,4 +508,39 @@ export const shopRouter = router({
 
     return action;
   }),
+  getCustomFeatures: loggedInProcedure.input(z.object({ variantId: z.string() })).query(async ({ ctx, input }) => {
+    const { variantId } = input;
+    const { prisma } = ctx;
+
+    const variant = await prisma.variant.findUnique({
+      where: { id: variantId },
+      select: {
+        product: {
+          where: {
+            enabled: true,
+          },
+          select: {
+            label: true,
+            customFeatures: true,
+            category: {
+              select: {
+                customFeatures: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const productFeatures = variant?.product?.customFeatures || [];
+    const categoryFeatures = variant?.product?.category?.customFeatures || [];
+
+    for (const feature of categoryFeatures) {
+      if (!productFeatures.find((entry) => entry.id === feature.id)) {
+        productFeatures.push(feature);
+      }
+    }
+
+    return { features: productFeatures, productLabel: variant?.product?.label || null };
+  }),
 });
