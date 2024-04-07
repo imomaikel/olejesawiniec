@@ -3,6 +3,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { errorToast, formatPrice } from '@/lib/utils';
@@ -30,6 +31,7 @@ const OrderPage = () => {
   } | null>(null);
   const [shippingMethod, setShippingMethod] = useState<ShippingType>('INPOST');
   const [shippingPrice, setShippingPrice] = useState<number | null>();
+  const user = useCurrentUser();
 
   const { onOpenChange: closeCart } = useCart();
   const router = useRouter();
@@ -72,6 +74,13 @@ const OrderPage = () => {
       method: 'INPOST',
     },
   });
+
+  useEffect(() => {
+    if (user?.email && form.getValues('email').length <= 0) {
+      form.setValue('email', user.email);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email]);
 
   const onSubmit = (values: TOrderDetailsSchema) => {
     toast.info('Za chwilę nastąpi przekierowanie...', { duration: 6000 });
