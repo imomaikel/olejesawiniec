@@ -13,7 +13,7 @@ export const TStatuses: {
   label: string;
   color: string;
 }[] = [
-  { value: 'PositiveFinish', label: 'Złożone', color: 'black' },
+  { value: 'PositiveFinish', label: 'Opłacone', color: 'black' },
   { value: 'Order_processing', label: 'W realizacji', color: '#3c40c6' },
   { value: 'Order_ready', label: 'Gotowe do wysyłki', color: '#8e44ad' },
   { value: 'Order_sent', label: 'Wysłane', color: '#8e44ad' },

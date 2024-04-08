@@ -621,7 +621,7 @@ export const panelRouter = router({
     try {
       const orders = await prisma.payment.findMany({
         where: {
-          status: 'Order_processing',
+          OR: [{ status: 'PositiveFinish' }, { status: 'Order_processing' }],
         },
         select: {
           products: {
@@ -946,7 +946,7 @@ export const panelRouter = router({
   verifyOrder: panelProcedure.input(z.object({ cashbillId: z.string().min(1) })).mutation(async ({ input }) => {
     const { cashbillId } = input;
 
-    const payment = await getTransactionStatus(cashbillId, getPaymentMode());
+    const payment = await getTransactionStatus(cashbillId, await getPaymentMode());
 
     if (payment.statusCode === 200) {
       const { amount, personalData, requestedAmount, status } = payment;
