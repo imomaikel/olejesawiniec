@@ -32,7 +32,7 @@ const handler = async (req: NextRequest) => {
 
     if (cmd === 'transactionStatusChanged') {
       const orderId = args;
-      const updatedTransaction = await getTransactionStatus(orderId, getPaymentMode());
+      const updatedTransaction = await getTransactionStatus(orderId, await getPaymentMode());
 
       if (updatedTransaction.statusCode === 200) {
         const { status } = updatedTransaction;

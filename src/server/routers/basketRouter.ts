@@ -416,7 +416,7 @@ export const basketRouter = router({
             },
             languageCode: 'PL',
           },
-          getPaymentMode(),
+          await getPaymentMode(),
         );
 
         if (createTransaction.statusCode === 200) {
