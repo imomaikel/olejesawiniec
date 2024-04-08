@@ -138,6 +138,13 @@ const handler = async (req: NextRequest) => {
                 });
               } catch {}
             }
+          } else if (!notified) {
+            await prisma.payment.update({
+              where: { cashbillId: updatedTransaction.id },
+              data: {
+                status,
+              },
+            });
           }
         }
       }

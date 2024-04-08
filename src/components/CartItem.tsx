@@ -192,11 +192,12 @@ const CartItem = ({
                 <FaExternalLinkAlt className="ml-1 h-3 w-3 mb-1" />
               </Link>
             </Button>
-            {features.length >= 1 && (
+            {/* TODO Custom Features Support */}
+            {/* {features.length >= 1 && (
               <Button size="sm" className="w-full" onClick={() => customFeatureMenuOnOpen(variant.id)}>
                 Personalizuj
               </Button>
-            )}
+            )} */}
           </div>
         </div>
       </div>

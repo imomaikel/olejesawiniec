@@ -3,6 +3,7 @@ import { getPaymentMode } from '@/utils/paymentMode';
 import { loggedInProcedure, router } from '../trpc';
 import { calculateShipping } from '@/lib/shipping';
 import { createNewTransaction } from '../payments';
+import { formatPrice } from '@/lib/utils';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -374,9 +375,10 @@ export const basketRouter = router({
         for (const item of products) {
           if (!item.variant.product?.enabled) return;
           totalProducts += item.quantity;
-          description += `${item.quantity}x ${item.variant.product.label}(${item.variant.capacity}${item.variant.unit}) • `;
+          description += `${item.quantity}x ${item.variant.product.label}(${item.variant.capacity}${
+            item.variant.unit
+          }, ${formatPrice(item.variant.price)}/szt) • `;
         }
-        description += 'Dziękujemy za zakupy w naszym sklepie!';
 
         const paymentLink = await prisma.paymentLink.create({
           data: {},
@@ -391,6 +393,12 @@ export const basketRouter = router({
         if (shippingPrice === 'error') {
           return { error: true, message: 'Wystąpił błąd (cena dostawy)' };
         }
+
+        if (shippingPrice > 0) {
+          description += `Dostawa: (${formatPrice(shippingPrice)}) • `;
+        }
+
+        description += 'Dziękujemy za zakupy w naszym sklepie!';
 
         const createTransaction = await createNewTransaction(
           {

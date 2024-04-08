@@ -30,7 +30,9 @@ const CustomFeature = () => {
 
   const cartVariant = cartData?.find((entry) => entry.variant.id === customFeatureVariantId);
 
-  if (!cartData || !cartVariant) return 'Nie znaleziono koszyka.';
+  // TODO
+  if (!cartData || !cartVariant) return null;
+  // if (!cartData || !cartVariant) return 'Nie znaleziono koszyka.';
 
   return (
     <Dialog open={isCustomFeatureMenuOpen} onOpenChange={customFeatureMenuOnOpenChange}>

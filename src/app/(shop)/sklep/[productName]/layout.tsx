@@ -26,6 +26,13 @@ export async function generateMetadata({ params }: { params: { productName: stri
     } catch {}
   }
 
+  let mainPhoto = '';
+  if (product?.mainPhoto?.startsWith('/')) {
+    mainPhoto = `${process.env.NEXT_PUBLIC_PRODUCTION_URL}${product.mainPhoto}`;
+  } else if (product?.mainPhoto) {
+    mainPhoto = product.mainPhoto;
+  }
+
   return {
     title: startCase(product?.label || 'Sklep'),
     description,
