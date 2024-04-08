@@ -1,5 +1,5 @@
 'use client';
-import { FaApple, FaFacebook, FaGoogle } from 'react-icons/fa';
+import { FaFacebook, FaGoogle } from 'react-icons/fa';
 import { signIn } from 'next-auth/react';
 import { slideIn } from '@/utils/motion';
 import { motion } from 'framer-motion';
@@ -31,7 +31,7 @@ const Providers = ({ redirectTo }: TProviders) => {
         >
           <FaGoogle className="w-8 h-8 group-hover:text-primary transition-colors" />
         </motion.div>
-        <motion.div
+        {/* <motion.div
           initial="hidden"
           animate="show"
           variants={slideIn('bottom', 'spring', 0.1, 0.4, 20)}
@@ -46,8 +46,8 @@ const Providers = ({ redirectTo }: TProviders) => {
           }
         >
           <FaApple className="w-8 h-8 group-hover:text-primary transition-colors" />
-        </motion.div>
-        <motion.div
+        </motion.div> */}
+        {/* <motion.div
           initial="hidden"
           animate="show"
           variants={slideIn('bottom', 'spring', 0.2, 0.4, 20)}
@@ -62,7 +62,7 @@ const Providers = ({ redirectTo }: TProviders) => {
           }
         >
           <FaFacebook className="w-8 h-8 group-hover:text-primary transition-colors" />
-        </motion.div>
+        </motion.div> */}
       </div>
     </div>
   );
