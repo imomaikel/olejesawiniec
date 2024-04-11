@@ -907,6 +907,9 @@ export const panelRouter = router({
             },
           },
         },
+        orderBy: {
+          updatedAt: 'desc',
+        },
       })
     ).map((order) => ({
       id: order.cashbillId,
