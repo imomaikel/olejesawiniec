@@ -795,6 +795,9 @@ export const panelRouter = router({
           gte: firstDay,
           lte: lastDay,
         },
+        status: {
+          in: ['Order_finished', 'Order_processing', 'Order_ready', 'Order_sent', 'PositiveFinish'],
+        },
       },
       select: {
         productsPrice: true,
@@ -817,6 +820,9 @@ export const panelRouter = router({
         createdAt: {
           gte: yearStart,
           lte: yearEnd,
+        },
+        status: {
+          in: ['Order_finished', 'Order_processing', 'Order_ready', 'Order_sent', 'PositiveFinish'],
         },
       },
       select: {
