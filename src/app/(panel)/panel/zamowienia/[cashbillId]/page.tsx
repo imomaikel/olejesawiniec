@@ -212,14 +212,13 @@ const PanelOrderPage = () => {
                               {productExists ? (
                                 <div className="flex flex-col">
                                   {productLink && productEnabled ? (
-                                    <Link href={productLink} className="underline">
+                                    <Link href={`/sklep/${productLink}`} className="underline">
                                       {productName}
                                     </Link>
                                   ) : (
                                     <span>{productName}</span>
                                   )}
                                   <span className="text-xs text-muted-foreground">
-                                    {/* TODO FIX LINK */}
                                     {productEnabled ? 'Aktualnie włączony' : 'Aktualnie wyłączony'}
                                   </span>
                                 </div>
