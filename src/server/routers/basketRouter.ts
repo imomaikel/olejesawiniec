@@ -527,6 +527,7 @@ export const basketRouter = router({
           ],
         },
         select: {
+          pixelNotification: true,
           products: {
             select: {
               productCapacity: true,
@@ -550,6 +551,15 @@ export const basketRouter = router({
           status: true,
         },
       });
+
+      if (payment?.pixelNotification === false) {
+        await prisma.payment.update({
+          where: { cashbillId: orderId },
+          data: {
+            pixelNotification: true,
+          },
+        });
+      }
 
       return payment;
     } catch {

@@ -8,7 +8,7 @@ const PrivacyPolicyPage = () => {
           <h1 className="text-2xl font-bold text-center flex flex-col mb-2">
             <span>POLITYKA PRYWATNOŚCI STRONY INTERNETOWEJ</span> <span>(ANNA SAWINIEC)</span>
           </h1>
-          <p className="text-muted-foreground text-center mb-4">Z dnia 26.03.2024r</p>
+          <p className="text-muted-foreground text-center mb-4">Z dnia 24.04.2024r</p>
           <ol className="list-decimal text-justify ml-4">
             <li>
               Dla Właściciela niniejszej strony internetowej, ochrona danych osobowych Użytkowników jest sprawą
@@ -468,6 +468,46 @@ const PrivacyPolicyPage = () => {
                     </span>
                   </li>
                 </ol>
+              </li>
+            </ol>
+          </li>
+
+          {/* IX */}
+          <li className="marker:font-bold">
+            <h2 className="font-bold">Facebook Pixel</h2>
+            <ol className="list-decimal text-justify ml-4 marker:font-normal">
+              <li>
+                <span>
+                  Facebook Pixel to narzędzie analityczne udostępnione przez Facebook, Inc., które umożliwia nam
+                  śledzenie aktywności użytkowników na naszej stronie internetowej.
+                </span>
+              </li>
+              <li>
+                <span>
+                  Dane zbierane za pomocą Facebook Pixela są wykorzystywane w celach analitycznych i marketingowych.
+                  Pozwalają nam lepiej zrozumieć zachowania użytkowników na stronie oraz dostosować nasze działania
+                  marketingowe, w tym wyświetlać spersonalizowane reklamy na platformie Facebooka.
+                </span>
+              </li>
+              <li>
+                <span>
+                  Niektóre z plików cookies, występujące na stronie internetowej, są dostępne tylko przez czas trwania
+                  danej sesji internetowej i wygasają po zamknięciu przeglądarki. Inne pliki cookies służą do
+                  zapamiętywania Użytkownika, który po powrocie na stronę internetową, jest na niej rozpoznawany. Są one
+                  wówczas zachowywane przed dłuższy czas.
+                </span>
+              </li>
+              <li>
+                <span>
+                  Facebook Pixel zbiera różne rodzaje danych, w tym informacje o przeglądarkach, urządzeniach,
+                  aktywności na stronie (takie jak odwiedzane strony czy wykonane akcje) oraz identyfikatory urządzeń.
+                </span>
+              </li>
+              <li>
+                <span>
+                  Użytkownicy mogą zarządzać ustawieniami dotyczącymi śledzenia za pomocą Facebook Pixela poprzez
+                  narzędzia kontroli prywatności dostępne na platformie Facebooka.
+                </span>
               </li>
             </ol>
           </li>

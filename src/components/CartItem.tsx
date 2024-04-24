@@ -9,6 +9,7 @@ import { BsCartDash } from 'react-icons/bs';
 import { useCart } from '@/hooks/use-cart';
 import { trpc } from './providers/TRPC';
 import { BsDot } from 'react-icons/bs';
+import { fbPixel } from '@/lib/pixel';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -45,6 +46,7 @@ const CartItem = ({
         {
           onSuccess: ({ message, error, success }) => {
             if (success) {
+              fbPixel('AddToCart');
               toast.success(message);
               refetch();
             } else if (error) {
@@ -106,6 +108,7 @@ const CartItem = ({
   const { mutate: verifyIncrease, isLoading } = trpc.shop.verifyCartItem.useMutation({
     onSuccess: (response) => {
       if (response === true) {
+        fbPixel('AddToCart');
         _increaseQuantity(variant.id);
       } else {
         toast.error(response);

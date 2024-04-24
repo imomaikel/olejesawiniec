@@ -244,14 +244,15 @@ model Payment {
 
   cashbillId String @unique
 
-  checkoutUrl   String
-  status        PaymentStatus
-  productsPrice Float
-  shippingPrice Float
+  checkoutUrl       String
+  status            PaymentStatus
+  productsPrice     Float
+  shippingPrice     Float
+  pixelNotification Boolean          @default(false)
   // TODO
-  totalProducts Int
-  products      PaymentProduct[]
-  notified      Boolean          @default(false)
+  totalProducts     Int
+  products          PaymentProduct[]
+  notified          Boolean          @default(false)
 
   // Details
   firstName String

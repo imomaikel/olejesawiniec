@@ -16,6 +16,7 @@ import { ImSpinner9 } from 'react-icons/im';
 import VariantPicker from './VariantPicker';
 import { useAnimate } from 'framer-motion';
 import { useCart } from '@/hooks/use-cart';
+import { fbPixel } from '@/lib/pixel';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
@@ -108,6 +109,7 @@ const FloatingProduct = ({
       if (error) {
         errorToast();
       } else if (success) {
+        fbPixel('AddToWishlist');
         successToast('Dodano do listy życzeń!');
         update();
       }
@@ -124,6 +126,7 @@ const FloatingProduct = ({
         {
           onSuccess: ({ message, error, success }) => {
             if (success) {
+              fbPixel('AddToCart');
               toast.success(message);
               onOpen();
               refetch();
@@ -157,6 +160,7 @@ const FloatingProduct = ({
           quantity: 1,
         });
         toast.success(`Dodano "${productName}" do koszyka!`);
+        fbPixel('AddToCart');
         onOpen();
       } else {
         toast.error(response);

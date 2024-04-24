@@ -6,6 +6,7 @@ import { trpc } from '@/components/providers/TRPC';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SyncLoader } from 'react-spinners';
+import { fbPixel } from '@/lib/pixel';
 import { useRef } from 'react';
 import Link from 'next/link';
 
@@ -13,6 +14,7 @@ const PaymentPage = () => {
   const router = useRouter();
   const { cashbillId } = useParams<{ cashbillId: string }>();
   const enableRefetch = useRef(false);
+  const pixelSent = useRef(false);
 
   const { data: payment, isLoading } = trpc.basket.paymentInfo.useQuery(
     {
@@ -23,6 +25,12 @@ const PaymentPage = () => {
       retry: 1,
       enabled: !!cashbillId,
       refetchInterval: enableRefetch.current ? 2000 : false,
+      onSuccess: (response) => {
+        if (response?.pixelNotification === false && !pixelSent.current) {
+          pixelSent.current = true;
+          fbPixel('Purchase', { value: response.productsPrice + response.shippingPrice, currency: 'PLN' });
+        }
+      },
     },
   );
 

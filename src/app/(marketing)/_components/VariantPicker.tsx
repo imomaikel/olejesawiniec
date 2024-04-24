@@ -16,6 +16,7 @@ import { inferRouterOutputs } from '@trpc/server';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
+import { fbPixel } from '@/lib/pixel';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
@@ -46,6 +47,7 @@ const VariantPicker = ({ onClose, product }: TVariantPicker) => {
         {
           onSuccess: ({ message, error, success }) => {
             if (success) {
+              fbPixel('AddToCart');
               toast.success(message);
               onOpen();
               // refetch();
@@ -66,6 +68,7 @@ const VariantPicker = ({ onClose, product }: TVariantPicker) => {
               const variant = product?.variants.find((entry) => entry.id === variantId);
               const mainPhoto = product?.mainPhoto ?? null;
               if (!variant) return;
+              fbPixel('AddToCart');
               _addProduct({
                 variant: {
                   product: {

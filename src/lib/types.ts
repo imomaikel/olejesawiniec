@@ -1,3 +1,23 @@
+export type TPixelAction =
+  | 'AddPaymentInfo'
+  | 'AddToCart'
+  | 'AddToWishlist'
+  | 'CompleteRegistration'
+  | 'Contact'
+  | 'CustomizeProduct'
+  | 'Donate'
+  | 'FindLocation'
+  | 'InitiateCheckout'
+  | 'Lead'
+  | 'Purchase'
+  | 'Schedule'
+  | 'Search'
+  | 'StartTrial'
+  | 'SubmitApplication'
+  | 'Subscribe'
+  | 'ViewContent'
+  | 'PageView';
+
 export type TInPostPointSelect = {
   name: string;
   location_description: string;

@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
 import { useForm } from 'react-hook-form';
 import InPost from './_components/InPost';
+import { fbPixel } from '@/lib/pixel';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -78,6 +79,7 @@ const OrderPage = () => {
   useEffect(() => {
     if (user?.email && form.getValues('email').length <= 0) {
       form.setValue('email', user.email);
+      fbPixel('InitiateCheckout');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.email]);

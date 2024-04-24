@@ -3,9 +3,9 @@ import { REPLACE_LETTERS, TSortOptions } from '@/utils/constans';
 import { useEffect, useMemo, useState } from 'react';
 import { trpc } from '@/components/providers/TRPC';
 import { useSearchParams } from 'next/navigation';
-import { useDebounceValue } from 'usehooks-ts';
 import SortProducts from './SortProducts';
 import ShopProduct from './ShopProduct';
+import { fbPixel } from '@/lib/pixel';
 import { cn } from '@/lib/utils';
 
 const Products = () => {
@@ -16,12 +16,18 @@ const Products = () => {
   const filterValue = searchParams.get('nazwa') || '';
   const tags = searchParams.getAll('tag').join();
 
-  const [debouncedFilter, setFilter] = useDebounceValue(filterValue, 400);
+  const [nameFilter, setNameFilter] = useState(filterValue);
 
-  if (filterValue) {
+  useEffect(() => {
+    if (nameFilter.length >= 1) {
+      fbPixel('Search');
+    }
+  }, [nameFilter]);
+
+  if (filterValue !== nameFilter) {
     let filter = filterValue?.replace(/ /gi, '');
     REPLACE_LETTERS.forEach((letter) => (filter = filter!.replaceAll(letter.from, letter.to)));
-    setFilter(filter);
+    setNameFilter(filter);
   }
 
   useEffect(() => {
@@ -41,12 +47,12 @@ const Products = () => {
     const tagsArr = tags.split(',');
     const categoriesArr = categories.split(',');
     let filtered = products;
-    if (debouncedFilter.length >= 1) {
+    if (nameFilter.length >= 1) {
       filtered = products.filter(({ link }) =>
         link
           .toLowerCase()
           .replace(/-/gi, '')
-          .includes(debouncedFilter ?? ''),
+          .includes(nameFilter ?? ''),
       );
     }
     if (tagsArr.length >= 1 && tagsArr[0] !== '') {
@@ -65,9 +71,9 @@ const Products = () => {
       });
     }
     return filtered;
-  }, [products, debouncedFilter, tags, categories]);
+  }, [products, nameFilter, tags, categories]);
 
-  const isFiltered = !!debouncedFilter || tags.length >= 1 || categories.length >= 1;
+  const isFiltered = !!nameFilter || tags.length >= 1 || categories.length >= 1;
 
   return (
     <div className="flex flex-col w-full space-y-8">

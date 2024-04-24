@@ -1,6 +1,7 @@
 'use client';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ElementRef, useEffect, useRef } from 'react';
+import { useDebounceValue } from 'usehooks-ts';
 import { Input } from '@/components/ui/input';
 
 type TSearch = {
@@ -13,29 +14,25 @@ const Search = ({ mobileVersion }: TSearch) => {
   const router = useRouter();
 
   const searchValue = searchParams.get('nazwa');
+  const [debouncedValue, updateDebouncedValue] = useDebounceValue(searchValue, 500);
 
   useEffect(() => {
-    if (searchValue === null) {
-      if (ref.current) ref.current.value = '';
-    }
-  }, [searchValue]);
-
-  const handleSearch = (value: string) => {
     const params = new URLSearchParams(searchParams);
-    if (value) {
-      params.set('nazwa', value);
+    if (debouncedValue) {
+      params.set('nazwa', debouncedValue);
     } else {
       params.delete('nazwa');
     }
     router.replace(`${pathname}?${params.toString()}`);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
 
   return (
     <Search.Body>
       <Input
         placeholder="Wpisz nazwe produktu..."
         ref={ref}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e) => updateDebouncedValue(e.target.value)}
         defaultValue={searchParams.get('nazwa')?.toString()}
         tabIndex={mobileVersion ? -1 : undefined}
       />

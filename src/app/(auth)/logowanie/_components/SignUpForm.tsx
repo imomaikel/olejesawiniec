@@ -10,6 +10,7 @@ import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { fbPixel } from '@/lib/pixel';
 
 const SignUpForm = () => {
   const [isLoading, setIsStransition] = useTransition();
@@ -35,6 +36,7 @@ const SignUpForm = () => {
             setError(response.error);
           }
           if (response.success) {
+            fbPixel('CompleteRegistration');
             setSuccess(
               'Twoje konto zostało pomyślnie założone. Wysłaliśmy do Ciebie e-maila z prośbą o weryfikację konta. Prosimy o sprawdzenie skrzynki odbiorczej i potwierdzenie swoich danych.',
             );

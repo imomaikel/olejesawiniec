@@ -1,4 +1,5 @@
 import { TRPCProvider } from '@/components/providers/TRPC';
+import FacebookPixel from '@/components/FacebookPixel';
 import ShoppingCart from '@/components/ShoppingCart';
 import MobileNavbar from '@/components/MobileNavbar';
 import { SessionProvider } from 'next-auth/react';
@@ -28,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <MobileNavbar />
           </TRPCProvider>
           <Toaster richColors position="top-center" />
+          <FacebookPixel />
         </body>
       </html>
     </SessionProvider>
