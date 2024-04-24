@@ -5,11 +5,22 @@ const PASSWORD_VALIDATOR = z
   .min(6, { message: 'Hasło jest za krótkie!' })
   .max(128, { message: 'Hasło jest za długie!' });
 
-export const SignUpSchema = z.object({
-  firstName: z.string().min(1, { message: 'Imię jest za krótkie!' }),
-  email: z.string().email({ message: 'Nieprawidłowy e-mail!' }).max(64, { message: 'E-mail jest za długi!' }),
-  password: PASSWORD_VALIDATOR,
-});
+export const SignUpSchema = z
+  .object({
+    firstName: z.string().min(1, { message: 'Imię jest za krótkie!' }),
+    email: z.string().email({ message: 'Nieprawidłowy e-mail!' }).max(64, { message: 'E-mail jest za długi!' }),
+    password: PASSWORD_VALIDATOR,
+    acceptRules: z.boolean(),
+  })
+  .superRefine(({ acceptRules }, ctx) => {
+    if (!acceptRules) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Aby założyć konto, zaakceptuj regulamin.',
+        path: ['acceptRules'],
+      });
+    }
+  });
 export type TSignUpSchema = z.infer<typeof SignUpSchema>;
 
 export const SignInSchema = z.object({

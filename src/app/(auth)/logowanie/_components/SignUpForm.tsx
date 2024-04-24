@@ -1,16 +1,18 @@
 'use client';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SignUpSchema, TSignUpSchema } from '@/lib/validators/auth';
-import { signInUser, signUpUser } from '@/lib/authenticate';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Checkbox } from '@/components/ui/checkbox';
 import FormSuccess from '@/components/FormSuccess';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
+import { signUpUser } from '@/lib/authenticate';
 import FormError from '@/components/FormError';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { fbPixel } from '@/lib/pixel';
+import Link from 'next/link';
 
 const SignUpForm = () => {
   const [isLoading, setIsStransition] = useTransition();
@@ -20,17 +22,18 @@ const SignUpForm = () => {
       email: '',
       password: '',
       firstName: '',
+      acceptRules: false,
     },
   });
   const [success, setSuccess] = useState<null | string>();
   const [error, setError] = useState<null | string>();
 
-  const onSubmit = ({ email, password, firstName }: TSignUpSchema) => {
+  const onSubmit = ({ email, password, firstName, acceptRules }: TSignUpSchema) => {
     setSuccess('');
     setError('');
 
     setIsStransition(() => {
-      signUpUser({ email, password, firstName })
+      signUpUser({ email, password, firstName, acceptRules })
         .then((response) => {
           if (response.error) {
             setError(response.error);
@@ -84,6 +87,28 @@ const SignUpForm = () => {
                 <FormLabel>Hasło</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="Wpisz tutaj swoje hasło" {...field} disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="acceptRules"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Regulamin</FormLabel>
+                <FormControl>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    <span className="text-sm">
+                      Zaakceptuj{' '}
+                      <Link href="/regulamin" className="underline">
+                        regulamin
+                      </Link>
+                      , aby zalożyć konto.
+                    </span>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
