@@ -13,7 +13,8 @@ const epilogue = Epilogue({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Oleje Sawiniec',
-  description: 'Olejarnia w zgodzie z naturą',
+  description:
+    'Olejarnia w zgodzie z naturą - Odkryj moc natury w naszych olejach zimnotłoczonych. Wyjątkowe eliksiry zdrowia, pełne cennych składników odżywczych, które wspierają kondycję mózgu, skóry i układu krążenia.',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

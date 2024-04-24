@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     default: 'Sklep | Oleje Sawiniec',
     template: '%s | Oleje Sawiniec',
   },
+  description:
+    'Odkryj nasz wyjątkowy sklep internetowy, oferujący szeroki wybór zimnotłoczonych olejów 100% naturalnych. Nasze produkty są starannie wyselekcjonowane, aby zapewnić Ci najwyższą jakość i korzyści dla Twojego zdrowia. Sprawdź naszą ofertę już teraz!',
 };
 
 const ShopLayout = async ({ children }: { children: React.ReactNode }) => {
