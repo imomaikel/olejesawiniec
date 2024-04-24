@@ -26,20 +26,23 @@ export async function generateMetadata({ params }: { params: { productName: stri
     } catch {}
   }
 
-  let mainPhoto = '';
+  let mainPhoto: string | null = '';
   if (product?.mainPhoto?.startsWith('/')) {
     mainPhoto = `${process.env.NEXT_PUBLIC_PRODUCTION_URL}${product.mainPhoto}`;
   } else if (product?.mainPhoto) {
     mainPhoto = product.mainPhoto;
   }
+  if (mainPhoto.length <= 2) {
+    mainPhoto = null;
+  }
 
   return {
     title: startCase(product?.label || 'Sklep'),
     description,
-    ...(product?.mainPhoto && {
+    ...(mainPhoto && {
       openGraph: {
         images: {
-          url: product.mainPhoto,
+          url: mainPhoto,
         },
       },
     }),
