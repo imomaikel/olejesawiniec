@@ -119,12 +119,14 @@ const PaymentPage = () => {
             ))}
           </TableBody>
         </Table>
-        <p className="text-sm text-muted-foreground">
-          Po odebraniu produktów, zachęcamy do wystawienia opinii{' '}
-          <Link href="/wystaw-opinie" className="text-primary">
-            tutaj
-          </Link>
-        </p>
+        {!payment.guestOrder && (
+          <p className="text-sm text-muted-foreground">
+            Po odebraniu produktów, zachęcamy do wystawienia opinii{' '}
+            <Link href="/wystaw-opinie" className="text-primary">
+              tutaj
+            </Link>
+          </p>
+        )}
       </div>
       <div className="w-full md:max-w-md">
         <h2 className="text-2xl font-semibold">Szczegóły zamówienia</h2>
@@ -172,9 +174,11 @@ const PaymentPage = () => {
         <Button asChild>
           <Link href="/sklep">Powrót do sklepu</Link>
         </Button>
-        <Button asChild>
-          <Link href="/moje-zamowienia">Wcześniejsze zamówienia</Link>
-        </Button>
+        {!payment.guestOrder && (
+          <Button asChild>
+            <Link href="/moje-zamowienia">Wcześniejsze zamówienia</Link>
+          </Button>
+        )}
       </div>
     </div>
   );

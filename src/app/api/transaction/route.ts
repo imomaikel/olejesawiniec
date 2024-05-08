@@ -112,18 +112,20 @@ const handler = async (req: NextRequest) => {
               },
             );
 
-            await prisma.user.update({
-              where: { id: userId },
-              data: {
-                basket: {
-                  update: {
-                    variants: {
-                      set: [],
+            if (userId) {
+              await prisma.user.update({
+                where: { id: userId },
+                data: {
+                  basket: {
+                    update: {
+                      variants: {
+                        set: [],
+                      },
                     },
                   },
                 },
-              },
-            });
+              });
+            }
 
             for await (const product of products) {
               if (!product.variantId) continue;

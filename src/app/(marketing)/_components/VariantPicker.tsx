@@ -72,6 +72,7 @@ const VariantPicker = ({ onClose, product }: TVariantPicker) => {
               _addProduct({
                 variant: {
                   product: {
+                    id: variant.productId,
                     mainPhoto,
                     label: product?.label!,
                     link,

@@ -900,12 +900,14 @@ export const panelRouter = router({
           createdAt: true,
           productsPrice: true,
           status: true,
+          email: true,
           totalProducts: true,
           user: {
             select: {
               email: true,
             },
           },
+          guestOrder: true,
         },
         orderBy: {
           updatedAt: 'desc',
@@ -915,9 +917,10 @@ export const panelRouter = router({
       id: order.cashbillId,
       date: order.createdAt,
       amount: order.productsPrice,
-      userEmail: order.user.email ?? 'Błąd',
+      userEmail: order.user?.email || order.email || 'Błąd',
       status: order.status,
       productCount: order.totalProducts,
+      guestOrder: order.guestOrder,
     }));
 
     return orders;

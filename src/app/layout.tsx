@@ -22,6 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <SessionProvider>
       <html lang="pl" className="h-full scroll-smooth">
         <body className={cn('h-full relative', epilogue.className)}>
+          <FacebookPixel />
           <TRPCProvider>
             <main className="relative flex flex-col min-h-screen">
               <div className="flex-1 flex-grow overflow-hidden relative">{children}</div>
@@ -30,7 +31,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <MobileNavbar />
           </TRPCProvider>
           <Toaster richColors position="top-center" />
-          <FacebookPixel />
         </body>
       </html>
     </SessionProvider>

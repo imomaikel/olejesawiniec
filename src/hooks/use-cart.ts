@@ -96,7 +96,7 @@ export const useCart = create<TUseCart>()(
       },
     }),
     {
-      name: 'oleje-koszyk',
+      name: 'oleje-koszyk-0805',
       storage: createJSONStorage(() => sessionStorage),
     },
   ),

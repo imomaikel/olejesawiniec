@@ -1,10 +1,12 @@
-import { OrderDetailsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
+import { BasketVariantsSchema, OrderDetailsSchema, TBasketVariantsSchema } from '@/lib/validators/order';
+import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { getPaymentMode } from '@/utils/paymentMode';
-import { loggedInProcedure, router } from '../trpc';
+import { verifyUserCart } from '../payments/verify';
 import { calculateShipping } from '@/lib/shipping';
 import { createNewTransaction } from '../payments';
 import { formatPrice } from '@/lib/utils';
 import { TRPCError } from '@trpc/server';
+import { auth } from '@/auth';
 import { z } from 'zod';
 
 export const basketRouter = router({
@@ -31,6 +33,7 @@ export const basketRouter = router({
                         unit: true,
                         product: {
                           select: {
+                            id: true,
                             link: true,
                             label: true,
                             mainPhoto: true,
@@ -308,6 +311,162 @@ export const basketRouter = router({
         return { error: true, message: 'Wystąpił błąd.' };
       }
     }),
+  clientPay: publicProcedure
+    .input(
+      z.object({
+        cart: BasketVariantsSchema,
+        personalDetails: OrderDetailsSchema,
+        shippingMethod: z.enum(['INPOST', 'COURIER']),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { hasChanged, updatedCart: basket } = await verifyUserCart(input.cart);
+      const { personalDetails, shippingMethod } = input;
+      const { prisma } = ctx;
+
+      try {
+        if (basket.length <= 0) {
+          return { error: true, message: 'Koszyk jest pusty.' };
+        }
+
+        const totalPrice = basket.reduce((acc, curr) => (acc += curr.quantity * curr.variant.price), 0);
+
+        if (totalPrice < 1) {
+          return { error: true, message: 'Wystąpił błąd (1)' };
+        }
+
+        let description = '';
+        let totalProducts = 0;
+        for (const item of basket) {
+          totalProducts += item.quantity;
+          description += `${item.quantity}x ${item.variant.product?.label}(${item.variant.capacity}${
+            item.variant.unit
+          }, ${formatPrice(item.variant.price)}/szt) • `;
+        }
+
+        const paymentLink = await prisma.paymentLink.create({
+          data: {},
+        });
+
+        const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
+
+        const shippingPrice = await calculateShipping({
+          method,
+          productsTotalPrice: totalPrice,
+        });
+        if (shippingPrice === 'error') {
+          return { error: true, message: 'Wystąpił błąd (cena dostawy)' };
+        }
+
+        if (shippingPrice > 0) {
+          description += `Dostawa: (${formatPrice(shippingPrice)}) • `;
+        }
+
+        description += 'Dziękujemy za zakupy w naszym sklepie!';
+
+        const createTransaction = await createNewTransaction(
+          {
+            title: 'Olejesawiniec.pl - Zamówienie',
+            negativeReturnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/anulowane?id=${paymentLink.id}`,
+            returnUrl: `${process.env.NEXT_PUBLIC_SERVER_URL}/zamowienie/link/${paymentLink.id}`,
+
+            amount: {
+              currencyCode: 'PLN',
+              value: shippingMethod === 'COURIER' ? shippingPrice : totalPrice + shippingPrice,
+            },
+            description,
+            personalData: {
+              ...personalDetails,
+            },
+            languageCode: 'PL',
+          },
+          await getPaymentMode(),
+        );
+
+        if (createTransaction.statusCode === 200) {
+          const payment = await prisma.payment.create({
+            data: {
+              firstName,
+              surname,
+              phone,
+              email,
+              cashbillId: createTransaction.id,
+              checkoutUrl: createTransaction.redirectUrl,
+              status: 'PreStart',
+              productsPrice: totalPrice,
+              shipping: {
+                create: {
+                  method: shippingMethod,
+                  ...(method === 'COURIER' && {
+                    courierBuilding: courierData?.building,
+                    courierCity: courierData?.city,
+                    courierFlat: courierData?.flat,
+                    courierPostCode: courierData?.postCode,
+                    courierProvince: courierData?.province,
+                    courierStreet: courierData?.street,
+                  }),
+                  ...(method === 'INPOST' && {
+                    inpostBuildingNumber: inpostData?.buildingNumber,
+                    inpostCity: inpostData?.city,
+                    inpostFlatNumber: inpostData?.flatNumber,
+                    inpostName: inpostData?.name,
+                    inpostPostCode: inpostData?.postCode,
+                    inpostProvince: inpostData?.province,
+                    inpostStreet: inpostData?.street,
+                  }),
+                },
+              },
+              shippingPrice,
+              totalProducts,
+              guestOrder: true,
+            },
+          });
+          await prisma.paymentLink.update({
+            where: { id: paymentLink.id },
+            data: {
+              cashbillId: createTransaction.id,
+              checkoutUrl: createTransaction.redirectUrl,
+            },
+          });
+          for await (const item of basket) {
+            await prisma.payment.update({
+              where: { id: payment.id },
+              data: {
+                products: {
+                  create: {
+                    productCapacity: item.variant.capacity,
+                    productName: item.variant.product?.label ?? 'Produkt',
+                    productPrice: item.variant.price,
+                    productQuantity: item.quantity,
+                    productUnit: item.variant.unit,
+                    variantId: item.variant.id,
+                    ...(item.variant.product?.id && {
+                      originalProduct: {
+                        connect: {
+                          id: item.variant.product.id,
+                        },
+                      },
+                    }),
+                  },
+                },
+              },
+            });
+          }
+          return { success: true, redirectUrl: createTransaction.redirectUrl, hasChanged, basket };
+        } else {
+          await prisma.paymentLink.delete({
+            where: { id: paymentLink.id },
+          });
+          console.log('Create transaction reject!');
+          console.log(createTransaction);
+          return { error: true, message: 'Wystąpił błąd (2)' };
+        }
+      } catch (error) {
+        console.log('! Client Payment Error');
+        console.log(error);
+        return { error: true, message: 'Wystąpił błąd (3)' };
+      }
+    }),
   pay: loggedInProcedure
     .input(
       z.object({
@@ -507,24 +666,42 @@ export const basketRouter = router({
         return { error: true, message: 'Wystąpił błąd (3)' };
       }
     }),
-  paymentInfo: loggedInProcedure.input(z.object({ orderId: z.string() })).query(async ({ ctx, input }) => {
-    const { prisma, user } = ctx;
+  paymentInfo: publicProcedure.input(z.object({ orderId: z.string() })).query(async ({ ctx, input }) => {
+    const { prisma } = ctx;
     const { orderId } = input;
 
-    if (!user.email) throw new TRPCError({ code: 'BAD_REQUEST' });
+    const session = await auth();
+    const user = session?.user;
+
+    const isGuestOrder = (
+      await prisma.payment.findUnique({
+        where: { cashbillId: orderId },
+      })
+    )?.guestOrder;
+
+    if (isGuestOrder === undefined) {
+      throw new TRPCError({ code: 'BAD_REQUEST' });
+    }
+
+    if (!isGuestOrder && !user?.email) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
 
     try {
       const payment = await prisma.payment.findUnique({
         where: {
           cashbillId: orderId,
-          OR: [
-            {
-              email: user.email,
-            },
-            {
-              userId: user.id,
-            },
-          ],
+          ...(!isGuestOrder &&
+            user?.email && {
+              OR: [
+                {
+                  email: user.email,
+                },
+                {
+                  userId: user.id,
+                },
+              ],
+            }),
         },
         select: {
           pixelNotification: true,
@@ -549,6 +726,7 @@ export const basketRouter = router({
           productsPrice: true,
           totalProducts: true,
           status: true,
+          guestOrder: true,
         },
       });
 

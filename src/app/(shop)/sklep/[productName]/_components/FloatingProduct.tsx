@@ -28,6 +28,7 @@ const makeOffset = (val: number) => {
 
 type TFloatingProduct = {
   productName: string;
+  productId: string;
   imageUrls: string[];
   tags?: Tag[];
   rating: number;
@@ -39,6 +40,7 @@ type TFloatingProduct = {
 const FloatingProduct = ({
   imageUrls,
   productName,
+  productId,
   tags,
   rating,
   ratingCount,
@@ -148,6 +150,7 @@ const FloatingProduct = ({
         _addProduct({
           variant: {
             product: {
+              id: productId,
               mainPhoto: imageUrls[0] ?? null,
               label: productName,
               link,

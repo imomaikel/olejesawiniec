@@ -113,7 +113,7 @@ const PanelOrderPage = () => {
             <InfoBox content={firstName} title="Imię" />
             <InfoBox content={surname} title="Nazwisko" />
             <InfoBox content={email} title="Email w zamówieniu" />
-            <InfoBox content={user.email} title="Email konta" />
+            {user?.email && <InfoBox content={user.email} title="Email konta" />}
             <InfoBox
               content={
                 <a href={`tel:${phone}`} className="underline">
@@ -123,7 +123,11 @@ const PanelOrderPage = () => {
               raw={phone}
               title="Numer telefonu"
             />
-            <InfoBox content={userId} title="Identyfikator użytkownika" />
+            {userId ? (
+              <InfoBox content={userId} title="Identyfikator użytkownika" />
+            ) : (
+              <InfoBox content="Jako gość" title="Identyfikator użytkownika" />
+            )}
           </div>
         </div>
         <div className="mt-3">

@@ -24,6 +24,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { LuArrowUpDown } from 'react-icons/lu';
 import { Input } from '@/components/ui/input';
+import { FaUserSlash } from 'react-icons/fa6';
 import { TStatuses } from '@/utils/constans';
 import { format } from 'date-fns';
 import { useState } from 'react';
@@ -36,8 +37,13 @@ type Order = {
   userEmail: string;
   status: TOrderStatus;
   productCount: number;
+  guestOrder: boolean;
 };
 const columns: ColumnDef<Order>[] = [
+  {
+    accessorKey: 'guestOrder',
+    header: 'As Guest',
+  },
   {
     accessorKey: 'id',
     header: 'ID',
@@ -45,9 +51,25 @@ const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: 'userEmail',
-    header: 'Email',
-    footer: 'Email',
     enableHiding: false,
+    footer: 'Email',
+    header: 'Email',
+    cell: ({ row }) => {
+      const email = row.getValue('userEmail') as string;
+      const asGuest = row.getValue('guestOrder') as boolean;
+
+      return (
+        <div>
+          {asGuest && (
+            <div className="flex space-x-2">
+              <FaUserSlash className="h-4 w-4" />
+              <span className="text-muted-foreground">Jako gość</span>
+            </div>
+          )}
+          <span>{email}</span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'status',
@@ -148,7 +170,7 @@ const PanelOrdersPage = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     { id: 'status', value: TStatuses.map(({ value }) => value) },
   ]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ id: false });
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ id: false, guestOrder: false });
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const [orders, setOrders] = useState<Order[]>([]);

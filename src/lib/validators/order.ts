@@ -142,6 +142,7 @@ export const BasketVariantSchema = z.object({
     capacity: z.number(),
     product: z
       .object({
+        id: z.string().nullable(),
         link: z.string(),
         label: z.string(),
         mainPhoto: z.string().nullable(),

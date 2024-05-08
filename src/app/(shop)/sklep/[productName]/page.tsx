@@ -103,6 +103,7 @@ const ProductPage = () => {
   return (
     <div className="flex justify-center relative flex-col lg:flex-row mb-24 space-y-12 lg:space-y-0">
       <FloatingProduct
+        productId={product.id}
         productName={label}
         imageUrls={photos}
         tags={tags}

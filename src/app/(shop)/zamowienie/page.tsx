@@ -1,13 +1,14 @@
 'use client';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { OrderDetailsSchema, TBasketVariantsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { OrderDetailsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { errorToast, formatPrice } from '@/lib/utils';
 import { useEffect, useMemo, useState } from 'react';
+import ChangedCart from './_components/ChangedCart';
 import { calculateShipping } from '@/lib/shipping';
 import { trpc } from '@/components/providers/TRPC';
 import { TInPostPointSelect } from '@/lib/types';
@@ -33,20 +34,35 @@ const OrderPage = () => {
   const [shippingMethod, setShippingMethod] = useState<ShippingType>('INPOST');
   const [shippingPrice, setShippingPrice] = useState<number | null>();
   const user = useCurrentUser();
+  const [changedCart, setChangedCart] = useState<{
+    cart: TBasketVariantsSchema;
+    isOpen: boolean;
+    paymentUrl: string;
+  }>();
+  const [isMounted, setIsMounted] = useState(false);
 
-  const { onOpenChange: closeCart } = useCart();
+  const { onOpenChange: closeCart, cartData: clientCartData, setCart } = useCart();
   const router = useRouter();
 
-  useEffect(() => closeCart(), [closeCart]);
+  useEffect(() => {
+    setIsMounted(true);
+    closeCart();
+    fbPixel('InitiateCheckout');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const { data: cartData } = trpc.basket.get.useQuery(undefined, {
+  const { data: serverCartData } = trpc.basket.get.useQuery(undefined, {
     retry: 1,
+    enabled: !!user?.email,
   });
   const { data: shippingConfig } = trpc.shop.getShippingConfig.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
+  const { mutate: pay, isLoading: serverPayLoading } = trpc.basket.pay.useMutation();
+  const { mutate: clientPay, isLoading: clientPayLoading } = trpc.basket.clientPay.useMutation();
 
-  const { mutate: pay, isLoading } = trpc.basket.pay.useMutation();
+  const isLoading = serverPayLoading || clientPayLoading;
+  const cartData = serverCartData || clientCartData;
 
   const form = useForm<TOrderDetailsSchema>({
     resolver: zodResolver(OrderDetailsSchema),
@@ -79,31 +95,62 @@ const OrderPage = () => {
   useEffect(() => {
     if (user?.email && form.getValues('email').length <= 0) {
       form.setValue('email', user.email);
-      fbPixel('InitiateCheckout');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.email]);
 
   const onSubmit = (values: TOrderDetailsSchema) => {
-    toast.info('Za chwilę nastąpi przekierowanie...', { duration: 6000 });
-    pay(
-      {
-        personalDetails: {
-          ...values,
+    if (user?.email) {
+      toast.info('Za chwilę nastąpi przekierowanie...', { duration: 6000 });
+      pay(
+        {
+          personalDetails: {
+            ...values,
+          },
+          shippingMethod: form.getValues('method'),
         },
-        shippingMethod: form.getValues('method'),
-      },
-      {
-        onSuccess: (data) => {
-          if (data?.error) {
-            errorToast(data.message);
-          } else if (data?.success) {
-            router.push(data.redirectUrl);
-          }
+        {
+          onSuccess: (data) => {
+            if (data?.error) {
+              errorToast(data.message);
+            } else if (data?.success) {
+              router.push(data.redirectUrl);
+            }
+          },
+          onError: () => errorToast(),
         },
-        onError: () => errorToast(),
-      },
-    );
+      );
+    } else {
+      toast.info('Proszę czekać...', { duration: 6000 });
+      clientPay(
+        {
+          cart: clientCartData,
+          personalDetails: {
+            ...values,
+          },
+          shippingMethod: form.getValues('method'),
+        },
+        {
+          onSuccess: (data) => {
+            if (data?.error) {
+              errorToast(data.message);
+            } else if (data?.success) {
+              if (!data.hasChanged) {
+                router.push(data.redirectUrl);
+              } else {
+                setCart(data.basket);
+                setChangedCart({
+                  cart: data.basket,
+                  isOpen: true,
+                  paymentUrl: data.redirectUrl,
+                });
+              }
+            }
+          },
+          onError: () => errorToast(),
+        },
+      );
+    }
   };
 
   const productsTotalPrice = useMemo(
@@ -163,12 +210,44 @@ const OrderPage = () => {
   };
 
   // TODO Skeleton
+  if (!isMounted) return null;
   if (!cartData) return null;
+
+  if (cartData.length <= 0) {
+    return (
+      <div className="max-w-lg space-y-2">
+        <h1 className="text-2xl font-bold">Koszyk jest pusty!</h1>
+        <p className="text-muted-foreground">
+          Twój koszyk jest pusty. Aby złożyć zamówienie, dodaj coś smacznego do koszyka!
+        </p>
+        <Button asChild className="w-full">
+          <Link href="/sklep">Zobacz Sklep</Link>
+        </Button>
+      </div>
+    );
+  }
 
   const shipping = shippingConfig?.data;
 
   return (
     <div className="mb-12">
+      {!user?.email && (
+        <>
+          <div className="max-w-lg">
+            <p className="text-2xl font-bold">
+              Przed złożeniem zamówienia, zalecamy założenie konta na naszej stronie.
+            </p>
+            <p className="text-muted-foreground">
+              W ten sposób otrzymasz dodatkowo możliwość oceniania zakupionych produktów, przeglądania historii zamówień
+              oraz korzystania z innych funkcji.
+            </p>
+            <Button asChild className="w-full mt-2" size="lg">
+              <Link href="/logowanie?powrót=/zamowienie">Logowanie</Link>
+            </Button>
+          </div>
+          <Separator className="my-12" />
+        </>
+      )}
       <h1 className="text-2xl font-bold">Aktualny koszyk</h1>
       <CartItems items={cartData} />
       <div className="mb-6 mt-3 flex items-center space-x-1">
@@ -513,6 +592,13 @@ const OrderPage = () => {
           </div>
         </form>
       </Form>
+      <ChangedCart
+        cart={changedCart?.cart}
+        isOpen={changedCart?.isOpen}
+        paymentUrl={changedCart?.paymentUrl}
+        onClose={() => setChangedCart(undefined)}
+        shippingPrice={shippingPrice}
+      />
     </div>
   );
 };

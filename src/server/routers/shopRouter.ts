@@ -1,7 +1,8 @@
-import { BasketVariantsSchema, OpinionSchema, RatingSchema, TBasketVariantsSchema } from '@/lib/validators/order';
+import { BasketVariantsSchema, OpinionSchema, RatingSchema } from '@/lib/validators/order';
 import { loggedInProcedure, publicProcedure, router } from '../trpc';
 import { OPINIONS_PER_PAGE, TSortOptions } from '@/utils/constans';
 import { addReview, findProductsToReview } from '@/lib/reviews';
+import { verifyUserCart } from '../payments/verify';
 import { getLandingPageProducts } from './cache';
 import { TRPCError } from '@trpc/server';
 import { subDays } from 'date-fns';
@@ -243,45 +244,9 @@ export const shopRouter = router({
         cart: BasketVariantsSchema,
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const { prisma } = ctx;
-      const { cart } = input;
-
-      const ids = cart.map(({ variant }) => variant.id);
-
-      const variants = await prisma.variant.findMany({
-        where: {
-          id: {
-            in: ids,
-          },
-        },
-        include: {
-          product: true,
-        },
-      });
-
-      const updatedProducts: TBasketVariantsSchema = [];
-
-      cart.forEach((item) => {
-        const variant = variants.find((entry) => entry.id === item.variant.id);
-        if (!variant) return;
-
-        if (!variant.product?.enabled) return;
-
-        // No stock
-        if (variant.stock < item.quantity) {
-          item.quantity = variant.stock;
-        }
-
-        // Price
-        if (variant.price !== item.variant.price) {
-          item.variant.price = variant.price;
-        }
-
-        updatedProducts.push(item);
-      });
-
-      return updatedProducts;
+    .query(async ({ input }) => {
+      const cart = await verifyUserCart(input.cart);
+      return cart;
     }),
   addToWishList: loggedInProcedure
     .input(
