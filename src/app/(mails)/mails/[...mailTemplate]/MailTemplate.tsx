@@ -28,7 +28,7 @@ export const MailTemplate = ({ children, title }: TMailTemplate) => {
             <Container className="mx-6">
               <Section className="mt-8">
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_PRODUCTION_URL}/signatureBlack.webp`}
+                  src={`${process.env.NEXT_PUBLIC_PRODUCTION_URL}/signatureBlackBg.webp`}
                   alt="podpis"
                   className="my-0 mx-auto w-[330px] h-[134px]"
                 />
