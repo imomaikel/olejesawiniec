@@ -350,9 +350,12 @@ export const basketRouter = router({
 
         const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
 
+        const postCode = (method === 'COURIER' ? courierData?.postCode : inpostData?.postCode) || '';
+
         const shippingPrice = await calculateShipping({
           method,
           productsTotalPrice: totalPrice,
+          postCode,
         });
         if (shippingPrice === 'error') {
           return { error: true, message: 'Wystąpił błąd (cena dostawy)' };
@@ -545,9 +548,12 @@ export const basketRouter = router({
 
         const { email, phone, firstName, surname, courierData, inpostData, method } = personalDetails;
 
+        const postCode = (method === 'COURIER' ? courierData?.postCode : inpostData?.postCode) || '';
+
         const shippingPrice = await calculateShipping({
           method,
           productsTotalPrice: totalPrice,
+          postCode,
         });
         if (shippingPrice === 'error') {
           return { error: true, message: 'Wystąpił błąd (cena dostawy)' };

@@ -3,6 +3,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { OrderDetailsSchema, TBasketVariantsSchema, TOrderDetailsSchema } from '@/lib/validators/order';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +15,7 @@ import { trpc } from '@/components/providers/TRPC';
 import { TInPostPointSelect } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import CartItems from './_components/CartItems';
+import { FaShippingFast } from 'react-icons/fa';
 import { Input } from '@/components/ui/input';
 import { ShippingType } from '@prisma/client';
 import { Badge } from '@/components/ui/badge';
@@ -158,16 +160,21 @@ const OrderPage = () => {
     [cartData],
   );
 
+  const postCode =
+    (shippingMethod === 'COURIER' ? form.getValues('courierData.postCode') : form.getValues('inpostData.postCode')) ||
+    '';
+
   useEffect(() => {
     calculateShipping({
       method: shippingMethod,
       productsTotalPrice,
+      postCode,
     }).then((res) => {
       if (res !== 'error') {
         setShippingPrice(res);
       }
     });
-  }, [productsTotalPrice, shippingMethod]);
+  }, [productsTotalPrice, shippingMethod, postCode]);
 
   const onPointSelect = (point: TInPostPointSelect) => {
     toast.info(`Wybrano punkt "${point.name}"`);
@@ -337,6 +344,16 @@ const OrderPage = () => {
 
           <div className="mt-6">
             <h2 className="text-xl font-semibold">Metoda dostawy</h2>
+            <Alert className="mb-2 max-w-lg">
+              <FaShippingFast className="h-8 w-8" />
+              <AlertTitle className="ml-4">Dostawa Lokalna</AlertTitle>
+              <AlertDescription className="ml-4 text-justify">
+                Jeśli wybierzesz metodę dostawy &quot;Kurier za pobraniem&quot; oraz podasz kod pocztowy
+                &quot;22-400&quot; (tylko Zamość), dostawa będzie darmowa, niezależnie od wartości zamówionych
+                produktów.
+              </AlertDescription>
+            </Alert>
+
             <Tabs
               defaultValue="machine"
               className="w-full"
