@@ -1,4 +1,3 @@
-'use server';
 import { render } from '@react-email/render';
 import * as MAILS from '@mails/index';
 import nodemailer from 'nodemailer';

@@ -1,4 +1,3 @@
-'use server';
 import { TBasketVariantsSchema } from '@/lib/validators/order';
 import prisma from '@/lib/prisma';
 import crypto from 'node:crypto';

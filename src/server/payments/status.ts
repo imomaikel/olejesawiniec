@@ -1,5 +1,3 @@
-'use server';
-
 import {
   TPaymentGateway400,
   TPaymentGateway401,
