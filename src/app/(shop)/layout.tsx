@@ -1,3 +1,4 @@
+import ImportantMessage from './sklep/_components/ImportantMessage';
 import { Separator } from '@/components/ui/separator';
 import AfterLogin from '@/components/AfterLogin';
 import Footer from '@/components/Footer';
@@ -29,6 +30,7 @@ const ShopLayout = async ({ children }: { children: React.ReactNode }) => {
       </div>
       <Footer />
       <AfterLogin />
+      <ImportantMessage />
     </div>
   );
 };

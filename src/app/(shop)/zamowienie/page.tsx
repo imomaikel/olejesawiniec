@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import StoreDisabled from '@/components/StoreDisabled';
 import { Separator } from '@/components/ui/separator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { errorToast, formatPrice } from '@/lib/utils';
@@ -603,9 +604,13 @@ const OrderPage = () => {
           <Separator className="my-6" />
 
           <div className="mt-4">
-            <Button size="2xl" className="max-w-md w-full" type="submit" disabled={isLoading}>
-              Zamawiam i płacę
-            </Button>
+            {process.env.NEXT_PUBLIC_STORE_DISABLED === 'true' ? (
+              <StoreDisabled />
+            ) : (
+              <Button size="2xl" className="max-w-md w-full" type="submit" disabled={isLoading}>
+                Zamawiam i płacę
+              </Button>
+            )}
           </div>
         </form>
       </Form>

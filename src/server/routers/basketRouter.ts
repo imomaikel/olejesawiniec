@@ -324,6 +324,13 @@ export const basketRouter = router({
       const { personalDetails, shippingMethod } = input;
       const { prisma } = ctx;
 
+      if (process.env.NEXT_PUBLIC_STORE_DISABLED === 'true') {
+        return {
+          error: true,
+          message: 'Aktualnie sklep jest wyłączony',
+        };
+      }
+
       try {
         if (basket.length <= 0) {
           return { error: true, message: 'Koszyk jest pusty.' };
@@ -480,6 +487,13 @@ export const basketRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
       const { personalDetails, shippingMethod } = input;
+
+      if (process.env.NEXT_PUBLIC_STORE_DISABLED === 'true') {
+        return {
+          error: true,
+          message: 'Aktualnie sklep jest wyłączony',
+        };
+      }
 
       try {
         const userData = await prisma.user.findUnique({

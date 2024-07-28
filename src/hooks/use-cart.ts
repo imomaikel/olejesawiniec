@@ -20,10 +20,16 @@ type TUseCart = {
   customFeatureVariantId: string | null;
   customFeatureMenuOnOpen: (id: string) => void;
   customFeatureMenuOnOpenChange: () => void;
+
+  importantMessageHidden: boolean;
+  toggleImportantMessageHidden: (newState: boolean) => void;
 };
 export const useCart = create<TUseCart>()(
   persist(
     (set, get) => ({
+      importantMessageHidden: false,
+      toggleImportantMessageHidden: (newState) => set(() => ({ importantMessageHidden: newState })),
+
       customFeatureVariantId: null,
       isCustomFeatureMenuOpen: false,
       customFeatureMenuOnOpen: (id) => set(() => ({ customFeatureVariantId: id, isCustomFeatureMenuOpen: true })),
