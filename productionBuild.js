@@ -37,7 +37,8 @@ const lstat = promisify(fs.lstat);
   await writeFile('./.env', newEnv)
 
   // Create zip archive
-  const output = fs.createWriteStream(path.join(__dirname, `build/${new Date().toISOString()}.zip`));
+  const output = fs.createWriteStream(path.join(__dirname, 'build', `${new Date().toISOString().replace(/:/g, '')}.zip`));
+  console.log(path.join(__dirname, 'build', `${new Date().toISOString().replace(/:/g, '')}.zip`));
   const archive = archiver('zip', {
     zlib: { level: 9 }
   });
@@ -65,8 +66,8 @@ const lstat = promisify(fs.lstat);
     } else {
       archive.append(fs.createReadStream(file), { name: file })
     }
-  }));
-  archive.finalize();
+  })); -
+    archive.finalize();
 
 
   // Rollback the old env file
