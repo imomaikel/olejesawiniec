@@ -35,9 +35,9 @@ export default function Home() {
           <About />
         </section>
 
-        <section>
+        {/* <section>
           <FindUs />
-        </section>
+        </section> */}
 
         <section>
           <Quote />
